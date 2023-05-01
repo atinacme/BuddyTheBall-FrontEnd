@@ -1,0 +1,1 @@
+export const AUTH_PAGE_ITEM = "AUTH_PAGE_ITEM";
