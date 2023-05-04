@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
 import { GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
-import { SelectList } from 'react-native-dropdown-select-list';
 import { Dropdown } from 'react-native-element-dropdown';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -11,7 +10,6 @@ import { GetClassCreatedByUserIdService } from '../services/ClassService';
 
 export default function CoachCustomerDescription({ navigation, route }) {
     const state = useSelector((state) => state);
-    const [data, setData] = useState([]);
     const [customerData, setCustomerData] = useState({
         email: '',
         password: '',
@@ -22,41 +20,7 @@ export default function CoachCustomerDescription({ navigation, route }) {
     const [classList, setClassList] = useState([]);
 
     useEffect(() => {
-        // const added = state.authPage.auth_data?.assigned_schools.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
-        // const result = added.filter(v => { return (v.region == state.authPage.auth_data?.assigned_region); });
-        // setData(result);
         try {
-            // const getParticularCustomer = async () => {
-            //     const result = await GetParticularCustomerService(route.params.customerData._id);
-            //     if (result) {
-            //         var childrenData = [];
-            //         result.children_data.length > 0 && result.children_data.forEach(element => {
-            //             childrenData.push({
-            //                 player_name: element.player_name,
-            //                 player_age: element.player_age,
-            //                 wristband_level: element.wristband_level,
-            //                 school: element.school._id,
-            //                 slot_list: state.authPage.auth_data?.schedules.map((v) => Object.assign(v, { key: `${v.date} (${v.start_time} to ${v.end_time})`, value: `${v.date} (${v.start_time} to ${v.end_time})` })).filter(v => { return (v.school == element.school._id); }),
-            //                 slot: element.slot,
-            //                 handed: element.handed,
-            //                 num_buddy_books_read: element.num_buddy_books_read,
-            //                 jersey_size: element.jersey_size,
-            //                 visible: false,
-            //                 current_award: { name: element.current_award.name, image: element.current_award.image }
-            //             });
-            //         });
-            //         setCustomerData({
-            //             user_id: result.user_id,
-            //             email: result.email,
-            //             password: result.password,
-            //             parent_name: result.parent_name,
-            //             created_by: result.created_by,
-            //             children_data: childrenData
-            //         });
-            //     }
-            // };
-            // getParticularCustomer();
-
             const getAwardsList = async () => {
                 const result = await GetAwardPhotosService();
                 if (result) {
@@ -88,9 +52,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                 wristband_level: element.wristband_level,
                                 class_list: result,
                                 class: element.class,
-                                // school: element.school._id,
-                                // slot_list: state.authPage.auth_data?.schedules.map((v) => Object.assign(v, { key: `${v.date} (${v.start_time} to ${v.end_time})`, value: `${v.date} (${v.start_time} to ${v.end_time})` })).filter(v => { return (v.school == element.school._id); }),
-                                // slot: element.slot,
                                 handed: element.handed,
                                 num_buddy_books_read: element.num_buddy_books_read,
                                 jersey_size: element.jersey_size,
@@ -117,7 +78,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
         try {
             customerData.children_data.forEach(v => delete v.calendar_visible);
             customerData.children_data.forEach(v => delete v.class_list);
-            // customerData.children_data.forEach(v => delete v.slot_list);
             customerData.children_data.forEach(v => delete v.visible);
             const data = {
                 email: customerData.email,
@@ -145,8 +105,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
             );
         }
     };
-
-    console.log("values--->", customerData.children_data);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
@@ -188,9 +146,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                     wristband_level: '',
                                     class_list: classList,
                                     class: '',
-                                    // school: '',
-                                    // slot_list: [],
-                                    // slot: '',
                                     handed: '',
                                     num_buddy_books_read: '',
                                     jersey_size: '',
@@ -281,76 +236,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                 {!item.class &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
-                                {/* <Text style={styles.label}>School</Text>
-                                {item.school === '' ?
-                                    <SelectList
-                                        setSelected={(val) => {
-                                            let newArr = [...customerData.children_data];
-                                            newArr[index].school = val;
-                                            setCustomerData({ ...customerData, children_data: newArr });
-                                        }}
-                                        data={data}
-                                        save="key"
-                                        onSelect={() => {
-                                            let newArr = [...customerData.children_data];
-                                            const slots = state.authPage.auth_data?.schedules.map((v) => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` }));
-                                            const result = slots.filter(v => { return (v.school == item.school); });
-                                            newArr[index].slot_list = result;
-                                            setCustomerData({ ...customerData, children_data: newArr });
-                                        }}
-                                        label="Selected School"
-                                    />
-                                    :
-                                    <SelectList
-                                        setSelected={(val) => {
-                                            let newArr = [...customerData.children_data];
-                                            newArr[index].school = val;
-                                            setCustomerData({ ...customerData, children_data: newArr });
-                                        }}
-                                        data={data}
-                                        save="key"
-                                        onSelect={() => {
-                                            let newArr = [...customerData.children_data];
-                                            const slots = state.authPage.auth_data?.schedules.map((v) => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` }));
-                                            const result = slots.filter(v => { return (v.school == item.school); });
-                                            newArr[index].slot_list = result;
-                                            setCustomerData({ ...customerData, children_data: newArr });
-                                        }}
-                                        label="Selected School"
-                                        defaultOption={{ key: item.school, value: data.filter(v => v.key === item.school)[0].value }}
-                                    />
-                                }
-                                {!item.school &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
-                                }
-                                <Text style={styles.label}>Slot</Text>
-                                {item.slot === '' ?
-                                    <SelectList
-                                        setSelected={(val) => {
-                                            let newArr = [...customerData.children_data];
-                                            newArr[index].slot = val;
-                                            setCustomerData({ ...customerData, children_data: newArr });
-                                        }}
-                                        data={item.slot_list}
-                                        save="key"
-                                        label="Selected Slot"
-                                    />
-                                    :
-                                    <SelectList
-                                        setSelected={(val) => {
-                                            let newArr = [...customerData.children_data];
-                                            newArr[index].slot = val;
-                                            setCustomerData({ ...customerData, children_data: newArr });
-                                        }}
-                                        data={item.slot_list}
-                                        save="value"
-                                        label="Selected Slot"
-                                        defaultOption={{ key: item.slot, value: item.slot }}
-                                    />
-                                }
-                                {!item.slot &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Slot is Required</Text>
-                                } */}
                                 <Text style={styles.label}>Handed</Text>
                                 <TextInput
                                     name="handed"
@@ -402,7 +287,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                     newArr[index].visible = !newArr[index].visible;
                                     setCustomerData({ ...customerData, children_data: newArr });
                                 }}>
-                                    {/* <View style={styles.buttonText}><Text>Select the Award</Text></View> */}
                                     <View style={styles.buttonText}>{item.current_award.image ? <Image source={{ uri: item.current_award.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
                                 </TouchableOpacity>
                                 {item.visible &&
@@ -415,7 +299,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                                         newArr[index].current_award.name = v.name;
                                                         newArr[index].current_award.image = v.url;
                                                         newArr[index].visible = !newArr[index].visible;
-
                                                         setCustomerData({ ...customerData, children_data: newArr });
                                                     }}>
                                                         <Image source={{ uri: v.url }} style={{ height: 100, width: 100 }} />
@@ -429,7 +312,6 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity
-                                    // style={[styles.agendaButton, styles.buttonClose]}
                                     onPress={() => {
                                         var array = [...customerData.children_data];
                                         var indexData = array.indexOf(item);

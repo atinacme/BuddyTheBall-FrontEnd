@@ -1,24 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
-    SafeAreaView, TouchableOpacity, StyleSheet, Text, View, ScrollView
+    SafeAreaView, TouchableOpacity, StyleSheet, Text, View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetClassesService } from '../services/ClassService';
 
 export default function SuperAdminCalendar({ navigation }) {
-    const [classes, setClasses] = useState([]);
-
-    useEffect(() => {
-        try {
-            const getClasses = async () => {
-                const result = await GetClassesService();
-                if (result.length > 0) {
-                    setClasses(result);
-                }
-            };
-            getClasses();
-        } catch (e) { }
-    }, []);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
@@ -28,7 +14,7 @@ export default function SuperAdminCalendar({ navigation }) {
                         <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>SCHEDULES</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Classes")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>CLASSES</Text>
+                        <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>CLASSES</Text>
                     </TouchableOpacity>
                 </Text>
                 <View style={styles.adminbtn}>

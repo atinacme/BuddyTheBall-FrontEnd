@@ -23,7 +23,11 @@ const RegionalManagerUpdateService = async (userId, regionalManagerId, data) => 
     return await HttpRequest("PUT", `${baseUrl}/updateRegionalManager/${userId}/${regionalManagerId}`, data);
 };
 
+const DeleteRegionalManagerService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteRegionalManager`, data);
+};
+
 export {
     GetAllRegionalManagersService, GetParticularRegionalManagerService, GetCoachesOfParticularRegionalManager,
-    GetCoachOfParticularRegionalManager, RegionalManagerUpdateService
+    GetCoachOfParticularRegionalManager, RegionalManagerUpdateService, DeleteRegionalManagerService
 };

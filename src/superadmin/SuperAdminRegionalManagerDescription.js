@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, TextInput, StyleSheet, Button, Image, Alert, ScrollView, View } from "react-native";
+import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, View, TouchableOpacity } from "react-native";
 import buddy from '../assets/buddy.png';
+import LinearGradient from 'react-native-linear-gradient';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { GetParticularRegionalManagerService, RegionalManagerUpdateService } from '../services/RegionalManagerService';
+import { DeleteRegionalManagerService, GetParticularRegionalManagerService, RegionalManagerUpdateService } from '../services/RegionalManagerService';
+import { GetAllRegionsService } from '../services/RegionService';
 
 export default function SuperAdminRegionalManagerDescription({ navigation, route }) {
     const [regionalManagerData, setRegionalManagerData] = useState({
@@ -12,24 +14,7 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
         regional_manager_name: "",
         assigned_region: ""
     });
-    const regionList = [
-        {
-            key: "Region1",
-            value: "Region1"
-        },
-        {
-            key: "Region2",
-            value: "Region2"
-        },
-        {
-            key: "Region3",
-            value: "Region3"
-        },
-        {
-            key: "Region4",
-            value: "Region4"
-        }
-    ];
+    const [regions, setRegions] = useState([]);
 
     useEffect(() => {
         try {
@@ -46,6 +31,15 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                 }
             };
             getParticularRegionalManager();
+
+            const getRegions = async () => {
+                const result = await GetAllRegionsService();
+                if (result) {
+                    result.map(v => Object.assign(v, { key: v.region_name, value: v.region_name }));
+                    setRegions(result);
+                }
+            };
+            getRegions();
         } catch (e) { }
     }, []);
 
@@ -57,7 +51,6 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                 regional_manager_name: regionalManagerData.regional_manager_name,
                 assigned_region: regionalManagerData.assigned_region
             };
-            console.log("route---->", data, regionalManagerData.regional_manager_user_id);
             const result = await RegionalManagerUpdateService(regionalManagerData.regional_manager_user_id, route.params.regional_manager._id, data);
             if (result) {
                 Alert.alert(
@@ -79,53 +72,120 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
         }
     };
 
+    const handleRegionalManagerDelete = async () => {
+        try {
+            Alert.alert(
+                "Alert",
+                "Do You Want to Delete the RegionalManager ?",
+                [
+                    {
+                        text: "YES",
+                        onPress: async () => {
+                            const data = { id: route.params.regional_manager._id, user_id: regionalManagerData.regional_manager_user_id }
+                            const result = await DeleteRegionalManagerService(data)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Regional Manager Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
+                    }
+                ]
+            );
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Customer!"
+            );
+        }
+    };
+
     return (
-        <SafeAreaView style={styles.wrapper}>
-            <ScrollView style={styles.scrollView}>
-                <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <Text style={styles.label}>Email</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, email: e })}
-                    value={regionalManagerData.email}
-                />
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, password: e })}
-                    value={regionalManagerData.password}
-                />
-                <Text style={styles.label}>Regional Manager Name</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, regional_manager_name: e })}
-                    value={regionalManagerData.regional_manager_name}
-                />
-                <Text style={styles.label}>Assigned Region</Text>
-                <SelectList
-                    setSelected={(val) => setRegionalManagerData({ ...regionalManagerData, assigned_region: val })}
-                    data={regionList}
-                    save="key"
-                    defaultOption={{ key: regionalManagerData.assigned_region, value: regionalManagerData.assigned_region }}
-                />
-                <View style={{ marginTop: 20 }}>
-                    <Button
-                        title="Submit"
-                        color="#000"
-                        onPress={handleUpdateRegionalManager}
+        <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
+            <SafeAreaView style={styles.wrapper}>
+                <ScrollView style={styles.scrollView}>
+                    <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, email: e })}
+                        value={regionalManagerData.email}
                     />
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                    <Text style={styles.label}>Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, password: e })}
+                        value={regionalManagerData.password}
+                    />
+                    <Text style={styles.label}>Regional Manager Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, regional_manager_name: e })}
+                        value={regionalManagerData.regional_manager_name}
+                    />
+                    <Text style={styles.label}>Assigned Region</Text>
+                    <SelectList
+                        setSelected={(val) => setRegionalManagerData({ ...regionalManagerData, assigned_region: val })}
+                        data={regions}
+                        save="key"
+                        defaultOption={{ key: regionalManagerData.assigned_region, value: regionalManagerData.assigned_region }}
+                    />
+                    <View style={{ marginTop: 20 }}>
+                        <TouchableOpacity onPress={handleUpdateRegionalManager}>
+                            <Text style={styles.btnWrapper}>Upload</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleRegionalManagerDelete}>
+                            <Text style={styles.btnWrapper}>Delete</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
+                            <Text style={styles.btnWrapper}>Back</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     wrapper: {
-        padding: 20,
+        marginTop: 60,
+        flex: 1,
+        position: 'relative',
+        padding: 15,
+        justifyContent: 'flex-end'
+    },
+    backbtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        right: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    linearGradient: {
+        flex: 1,
+        borderRadius: 5
     },
     scrollView: {
-        marginHorizontal: 20,
+        marginHorizontal: 5,
     },
     input: {
         borderWidth: 1,
@@ -135,9 +195,20 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     label: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#000',
         paddingTop: 10,
-        paddingBottom: 0
-    }
+        paddingBottom: 5
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
+    },
 });

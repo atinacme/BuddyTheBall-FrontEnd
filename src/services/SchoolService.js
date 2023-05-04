@@ -27,7 +27,11 @@ const SchoolUpdationService = async (id, data) => {
     return await HttpRequest("PUT", `${baseUrl}/updateSchool/${id}`, data);
 };
 
+const DeleteSchoolService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteSchool`, data);
+};
+
 export {
     GetSchoolsService, SchoolCreationService, GetParticularSchoolService, GetRegionWiseSchools,
-    GetParticularSchoolPhotosService, SchoolUpdationService
+    GetParticularSchoolPhotosService, SchoolUpdationService, DeleteSchoolService
 };

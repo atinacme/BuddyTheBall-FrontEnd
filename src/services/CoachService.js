@@ -27,7 +27,11 @@ const CoachUpdateService = async (userId, coachId, data) => {
     return await HttpRequest("PUT", `${baseUrl}/updateCoach/${userId}/${coachId}`, data);
 };
 
+const DeleteCoachService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteCoach`, data);
+};
+
 export {
     CoachPhotoUploadService, GetAllCoachesService, GetParticularCoachService, GetCustomersOfParticularCoachService,
-    GetCustomersOfParticularCoachOfParticularSchool, CoachUpdateService
+    GetCustomersOfParticularCoachOfParticularSchool, CoachUpdateService, DeleteCoachService
 };

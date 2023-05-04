@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Button, TouchableOpacity, ScrollView, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, View, TouchableOpacity, ScrollView, Text } from 'react-native';
 import { DataTable } from 'react-native-paper';
+import moment from 'moment';
 import { GetSchoolsService } from '../services/SchoolService';
 import LinearGradient from 'react-native-linear-gradient';
-
 
 export default function SuperAdminSchools({ navigation }) {
     const [schools, setSchools] = useState([]);
@@ -29,7 +29,7 @@ export default function SuperAdminSchools({ navigation }) {
                             <DataTable.Header style={styles.tableHeader}>
                                 <DataTable.Title>SCHOOL</DataTable.Title>
                                 <DataTable.Title>REGION</DataTable.Title>
-                                <DataTable.Title>ASSIGNED DAY</DataTable.Title>
+                                <DataTable.Title>REGISTERED ON</DataTable.Title>
                             </DataTable.Header>
                             {schools.map(item => {
                                 return (
@@ -37,7 +37,7 @@ export default function SuperAdminSchools({ navigation }) {
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.school_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.region}</DataTable.Cell>
-                                            <DataTable.Cell>{item.assigned_day}</DataTable.Cell>
+                                            <DataTable.Cell>{moment(item.time).format("YYYY-MM-DD h:mm A")}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );

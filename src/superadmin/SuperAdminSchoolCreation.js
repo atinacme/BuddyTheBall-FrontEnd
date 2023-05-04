@@ -10,6 +10,7 @@ import { GetAllRegionsService } from '../services/RegionService';
 
 export default function SuperAdminSchoolCreation({ navigation }) {
     const [regions, setRegions] = useState([]);
+
     useEffect(() => {
         try {
             const getRegions = async () => {
@@ -22,36 +23,7 @@ export default function SuperAdminSchoolCreation({ navigation }) {
             getRegions();
         } catch (e) { }
     }, []);
-    const dayList = [
-        {
-            key: "Monday",
-            value: "Monday"
-        },
-        {
-            key: "Tuesday",
-            value: "Tuesday"
-        },
-        {
-            key: "Wednesday",
-            value: "Wednesday"
-        },
-        {
-            key: "Thursday",
-            value: "Thursday"
-        },
-        {
-            key: "Friday",
-            value: "Friday"
-        },
-        {
-            key: "Saturday",
-            value: "Saturday"
-        },
-        {
-            key: "Sunday",
-            value: "Sunday"
-        }
-    ];
+
     const loginValidationSchema = yup.object().shape({
         school_name: yup
             .string()
@@ -59,9 +31,15 @@ export default function SuperAdminSchoolCreation({ navigation }) {
         region: yup
             .string()
             .required('Region is required'),
-        assigned_day: yup
+        director_name: yup
             .string()
-            .required('Assigned Day is required'),
+            .required('Director Name is required'),
+        director_email: yup
+            .string()
+            .required('Director Email is required'),
+        director_phone: yup
+            .string()
+            .required('Director Phone is required'),
         address: yup
             .string()
             .required('Address is Required')
@@ -72,7 +50,9 @@ export default function SuperAdminSchoolCreation({ navigation }) {
             const data = {
                 school_name: values.school_name,
                 region: values.region,
-                assigned_day: values.assigned_day,
+                director_name: values.director_name,
+                director_email: values.director_email,
+                director_phone: values.director_phone,
                 address: values.address
             };
             const result = await SchoolCreationService(data);
@@ -103,7 +83,7 @@ export default function SuperAdminSchoolCreation({ navigation }) {
                     <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
                     <Formik
                         validationSchema={loginValidationSchema}
-                        initialValues={{ school_name: '', region: '', assigned_day: '', address: '' }}
+                        initialValues={{ school_name: '', region: '', director_name: '', director_email: '', director_phone: '', address: '' }}
                         onSubmit={(values) => handleAddSchool(values)}
                     >
                         {({
@@ -136,14 +116,41 @@ export default function SuperAdminSchoolCreation({ navigation }) {
                                 {errors.region &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>{errors.region}</Text>
                                 }
-                                <Text style={styles.label}>Assigned Day</Text>
-                                <SelectList
-                                    setSelected={handleChange('assigned_day')}
-                                    data={dayList}
-                                    save="key"
+                                <Text style={styles.label}>Director Name</Text>
+                                <TextInput
+                                    name="director_name"
+                                    placeholder="Director Name"
+                                    onChangeText={handleChange('director_name')}
+                                    onBlur={handleBlur('director_name')}
+                                    value={values.director_name}
+                                    style={styles.input}
                                 />
-                                {errors.assigned_day &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>{errors.assigned_day}</Text>
+                                {errors.director_name &&
+                                    <Text style={{ fontSize: 10, color: 'red' }}>{errors.director_name}</Text>
+                                }
+                                <Text style={styles.label}>Director Email</Text>
+                                <TextInput
+                                    name="director_email"
+                                    placeholder="Director Email"
+                                    onChangeText={handleChange('director_email')}
+                                    onBlur={handleBlur('director_email')}
+                                    value={values.director_email}
+                                    style={styles.input}
+                                />
+                                {errors.director_email &&
+                                    <Text style={{ fontSize: 10, color: 'red' }}>{errors.director_email}</Text>
+                                }
+                                <Text style={styles.label}>Director Phone</Text>
+                                <TextInput
+                                    name="director_phone"
+                                    placeholder="Director Phone"
+                                    onChangeText={handleChange('director_phone')}
+                                    onBlur={handleBlur('director_phone')}
+                                    value={values.director_phone}
+                                    style={styles.input}
+                                />
+                                {errors.director_phone &&
+                                    <Text style={{ fontSize: 10, color: 'red' }}>{errors.director_phone}</Text>
                                 }
                                 <Text style={styles.label}>Address</Text>
                                 <TextInput
@@ -163,10 +170,12 @@ export default function SuperAdminSchoolCreation({ navigation }) {
                             </>
                         )}
                     </Formik>
+                    <View style={{ marginTop: 80 }}>
+                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
+                            <Text style={styles.backbtn}>Back</Text>
+                        </TouchableOpacity>
+                    </View>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -179,6 +188,24 @@ const styles = StyleSheet.create({
         position: 'relative',
         padding: 15,
         justifyContent: 'flex-end'
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
     },
     backbtn: {
         borderColor: "#fff",

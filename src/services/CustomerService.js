@@ -51,8 +51,12 @@ const GetCustomerWithSlot = async (data) => {
     return await HttpRequest("POST", `${baseUrl}/findCustomerWithSlot`, data);
 };
 
+const DeleteCustomerService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteCustomer`, data);
+};
+
 export {
     GetCustomersService, GetCustomerWithSchoolIdService, GetParticularCustomerPhotosService, GetParticularCustomerService,
     UpdateCustomerService, GetCustomerParticularPhotoService, UpdateCustomerPhotosOnMessageService, CreateAndUpdateMessageService,
-    GetMessagesBySenderIdService, GetMessagesBySenderIdReceiverIdService, GetAwardPhotosService, GetCustomerWithSlot
+    GetMessagesBySenderIdService, GetMessagesBySenderIdReceiverIdService, GetAwardPhotosService, GetCustomerWithSlot, DeleteCustomerService
 };

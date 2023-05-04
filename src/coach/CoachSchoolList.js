@@ -76,7 +76,7 @@ export default function CoachSchoolList({ navigation }) {
                                 }
                                 <DataTable style={styles.container}>
                                     <DataTable.Header style={styles.tableHeader}>
-                                        <DataTable.Title>DAY</DataTable.Title>
+                                        {/* <DataTable.Title>DAY</DataTable.Title> */}
                                         <DataTable.Title>SCHOOL</DataTable.Title>
                                     </DataTable.Header>
                                     <TouchableOpacity key={item._id} onPress={() => item.session === 'current' ?
@@ -101,8 +101,8 @@ export default function CoachSchoolList({ navigation }) {
                                     } style={styles.cachpicWrap}
                                     >
                                         <DataTable.Row>
-                                            <DataTable.Cell>{item.school.assigned_day}</DataTable.Cell>
-                                            <DataTable.Cell>{item.school.school_name}</DataTable.Cell>
+                                            {/* <DataTable.Cell>{item.school.assigned_day}</DataTable.Cell> */}
+                                            <DataTable.Cell>{item.school?.school_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 </DataTable>

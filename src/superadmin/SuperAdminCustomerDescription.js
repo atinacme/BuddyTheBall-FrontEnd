@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
-import { GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
+import { DeleteCustomerService, GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -98,6 +98,41 @@ export default function SuperAdminCustomerDescription({ navigation, route }) {
                     ]
                 );
             }
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Customer!"
+            );
+        }
+    };
+
+    const handleCustomerDelete = async () => {
+        try {
+            Alert.alert(
+                "Alert",
+                "Do You Want to Delete the Customer ?",
+                [
+                    {
+                        text: "OK",
+                        onPress: async () => {
+                            const data = { id: route.params.customerData._id, user_id: customerData.user_id }
+                            const result = await DeleteCustomerService(data)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Customer Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
+                    }
+                ]
+            );
         } catch (e) {
             Alert.alert(
                 "Alert",
@@ -325,8 +360,12 @@ export default function SuperAdminCustomerDescription({ navigation, route }) {
                     <TouchableOpacity onPress={handleCustomerUpdate}>
                         <Text style={styles.submit}>Update</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity onPress={handleCustomerDelete}>
+                        <Text style={styles.submit}>Delete</Text>
+                    </TouchableOpacity>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Customers")}>
+                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Customers")}>
                     <Text style={styles.backbtn}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>

@@ -51,7 +51,7 @@ export default function CoachClasses({ navigation }) {
                                             {item.schedules.map(v => {
                                                 return <DataTable.Cell>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</DataTable.Cell>
                                             })}
-                                            <DataTable.Cell>{item.school.school_name}</DataTable.Cell>
+                                            <DataTable.Cell>{item.school?.school_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );
