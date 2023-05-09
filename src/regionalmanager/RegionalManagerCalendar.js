@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         width: '100%'
-
     },
     backbtn: {
         borderColor: "#fff",
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "700",
         marginTop: 25,
-        width: 120,
+        width: 325,
     },
     btnWrapper: {
         borderColor: "#fff",

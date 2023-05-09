@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, TextInput, StyleSheet, Button, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
+import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { SelectList } from 'react-native-dropdown-select-list';
 import buddy from '../assets/buddy.png';
 import { SchoolCreationService } from '../services/SchoolService';
@@ -170,12 +170,12 @@ export default function SuperAdminSchoolCreation({ navigation }) {
                             </>
                         )}
                     </Formik>
-                    <View style={{ marginTop: 80 }}>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
-                            <Text style={styles.backbtn}>Back</Text>
-                        </TouchableOpacity>
-                    </View>
                 </ScrollView>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );

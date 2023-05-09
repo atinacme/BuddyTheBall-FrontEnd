@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, TextInput, StyleSheet, Button, Image, Alert, ScrollView, View, Pressable, Modal } from "react-native";
-import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
+import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView, View, Pressable } from "react-native";
+import { MultipleSelectList } from 'react-native-dropdown-select-list';
 import buddy from '../assets/buddy.png';
-import { CoachUpdateService } from '../services/CoachService';
+import { CoachUpdateService, DeleteCoachService } from '../services/CoachService';
 import { GetRegionWiseSchools } from '../services/SchoolService';
-import { Calendar } from 'react-native-calendars';
-import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { GetCoachOfParticularRegionalManager } from '../services/RegionalManagerService';
 
@@ -29,39 +28,11 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
     const [assignedSchools, setAssignedSchools] = useState([]);
     const [assignedSlots, setAssignedSlots] = useState([]);
     const [selected, setSelected] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [markedDates, setMarkedDates] = useState({});
-    const [isStartDatePicked, setIsStartDatePicked] = useState(false);
-    const [startDate, setStartDate] = useState('');
-    const [assignCal, setAssignCal] = useState({
-        timePeriod: '',
-        startDate: '',
-        endDate: '',
-        school: ''
-    });
-    const regionList = [
-        {
-            key: "Kanpur",
-            value: "Kanpur"
-        },
-        {
-            key: "Lucknow",
-            value: "Lucknow"
-        },
-        {
-            key: "Allahabad",
-            value: "Allahabad"
-        },
-        {
-            key: "Banaras",
-            value: "Banaras"
-        }
-    ];
 
     useEffect(() => {
         try {
             const getParticularCoach = async () => {
-                const result = await GetCoachOfParticularRegionalManager(route.params.coachData._id, state.authPage.auth_data?._id);
+                const result = await GetCoachOfParticularRegionalManager(route.params.coachData._id, state.authPage.auth_data?.user_id);
                 if (result) {
                     setCoachData({
                         coach_id: result[0]._id,
@@ -81,11 +52,7 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                 }
             };
             getParticularCoach();
-        } catch (e) { }
-    }, []);
 
-    useEffect(() => {
-        try {
             const getAllSchools = async () => {
                 const data = { region: state.authPage.auth_data?.assigned_region };
                 const result = await GetRegionWiseSchools(data);
@@ -100,89 +67,36 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
             };
             getAllSchools();
         } catch (e) { }
-    }, [assignedSchools]);
-
-    function dateRange(startDate, endDate, steps = 1) {
-        const dateArray = [];
-        let currentDate = new Date(startDate);
-        while (currentDate <= new Date(endDate)) {
-            let dateNew = moment(new Date(currentDate)).format('YYYY-MM-DD');
-            dateArray.push(dateNew);
-            currentDate.setUTCDate(currentDate.getUTCDate() + steps);
-        }
-        dateArray.shift();
-        return dateArray;
-    }
-
-    const onDayPress = (day) => {
-        if (isStartDatePicked == false) {
-            let markedDates = {};
-            markedDates[day.dateString] = { startingDay: true, color: '#00B0BF', textColor: '#FFFFFF' };
-            setMarkedDates(markedDates);
-            setIsStartDatePicked(true);
-            setStartDate(day.dateString);
-            setAssignCal({ ...assignCal, startDate: day.dateString });
-        } else {
-            let endDate = moment(day.dateString);
-            let range = endDate.diff(startDate, 'days');
-            let allRange = dateRange(startDate, endDate);
-            let currentDate = new Date(endDate);
-            let utcEndDate = currentDate.setUTCDate(currentDate.getUTCDate());
-            let newDate = moment(new Date(utcEndDate)).format('YYYY-MM-DD');
-            allRange.push(newDate);
-            if (range > 0) {
-                for (let i = 0; i <= allRange.length - 1; i++) {
-                    markedDates[allRange[i]] = { color: '#50cebb', textColor: '#FFFFFF' };
-                }
-                markedDates[Object.keys(markedDates)[Object.keys(markedDates).length - 1]] = { endingDay: true, color: '#00B0BF', textColor: '#FFFFFF' };
-                setMarkedDates(markedDates);
-                setIsStartDatePicked(false);
-                setStartDate('');
-                setAssignCal({ ...assignCal, timePeriod: markedDates, endDate: day.dateString });
-            } else {
-                alert('Select an upcomming date!');
-            }
-        }
-    };
-
-    const handleCreate = () => {
-        setAssignedSlots(prevState => [...prevState, assignCal]);
-        setModalVisible(!modalVisible);
-        setMarkedDates([]);
-        setAssignCal({
-            timePeriod: '',
-            startDate: '',
-            endDate: '',
-            school: ''
-        });
-    };
+    }, []);
 
     const handleCoachUpdate = async () => {
         try {
-            const data = {
-                email: coachData.email,
-                password: coachData.password,
-                coach_name: coachData.coach_name,
-                tennis_club: coachData.tennis_club,
-                assigned_region: coachData.assigned_region,
-                assigned_schools: coachSchools.concat(selected),
-                assign_slot: assignedSlots,
-                favorite_pro_player: coachData.favorite_pro_player,
-                handed: coachData.handed,
-                favorite_drill: coachData.favorite_drill
-            };
-            const result = await CoachUpdateService(coachData.user_id, coachData.coach_id, data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Coach Updated Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Regional Manager Dashboard")
-                        }
-                    ]
-                );
+            if (coachData.email && coachData.password && coachData.coach_name && coachData.assigned_region && coachSchools.concat(selected).length > 0 && coachData.tennis_club && coachData.favorite_pro_player && coachData.handed && coachData.favorite_drill) {
+                const data = {
+                    email: coachData.email,
+                    password: coachData.password,
+                    coach_name: coachData.coach_name,
+                    tennis_club: coachData.tennis_club,
+                    assigned_region: coachData.assigned_region,
+                    assigned_schools: coachSchools.concat(selected),
+                    assign_slot: assignedSlots,
+                    favorite_pro_player: coachData.favorite_pro_player,
+                    handed: coachData.handed,
+                    favorite_drill: coachData.favorite_drill
+                };
+                const result = await CoachUpdateService(coachData.user_id, coachData.coach_id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Coach Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Regional Manager Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -192,176 +106,233 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
         }
     };
 
+    const handleCoachDelete = async () => {
+        try {
+            Alert.alert(
+                "Alert",
+                "Do You Want to Delete the Coach ?",
+                [
+                    {
+                        text: "YES",
+                        onPress: async () => {
+                            const data = { id: route.params.coach._id, user_id: coachData.user_id }
+                            const result = await DeleteCoachService(data)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Coach Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
+                    }
+                ]
+            );
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Coach!"
+            );
+        }
+    };
+
     return (
-        <SafeAreaView style={styles.wrapper}>
-            <ScrollView style={styles.scrollView}>
-                <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <Text style={styles.label}>Email</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, email: e })}
-                    value={coachData.email}
-                />
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, password: e })}
-                    value={coachData.password}
-                />
-                <Text style={styles.label}>Coach Name</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, coach_name: e })}
-                    value={coachData.coach_name}
-                />
-                <Text style={styles.label}>Assigned Schools</Text>
-                {assignedSchools.length > 0 && assignedSchools.map((item) => {
-                    return (
-                        <View key={item.key} style={{
-                            alignItems: 'center',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between'
-                        }}>
-                            <View style={{ flexDirection: 'column' }}>
-                                <Text>{item.value}</Text>
+        <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
+            <SafeAreaView style={styles.wrapper}>
+                <ScrollView style={styles.scrollView}>
+                    <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, email: e })}
+                        value={coachData.email}
+                    />
+                    {!coachData.email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
+                    }
+                    <Text style={styles.label}>Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, password: e })}
+                        value={coachData.password}
+                    />
+                    {!coachData.password &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Password is Required</Text>
+                    }
+                    <Text style={styles.label}>Coach Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, coach_name: e })}
+                        value={coachData.coach_name}
+                    />
+                    {!coachData.coach_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Coach Name is Required</Text>
+                    }
+                    <Text style={styles.label}>Assigned Schools</Text>
+                    {assignedSchools.length > 0 && assignedSchools.map((item) => {
+                        return (
+                            <View key={item.key} style={{
+                                alignItems: 'center',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between'
+                            }}>
+                                <View style={{ flexDirection: 'column' }}>
+                                    <Text>{item.value}</Text>
+                                </View>
+                                <Pressable
+                                    style={[styles.agendaButton, styles.buttonClose]}
+                                    onPress={() => {
+                                        setAssignedSchools(assignedSchools.filter((school) => school.key !== item.key));
+                                        setCoachSchools(coachSchools.filter((school) => school !== item.value));
+                                    }}>
+                                    <Text style={styles.agendaCrossBtn}>X</Text>
+                                </Pressable>
                             </View>
-                            <Pressable
-                                style={[styles.agendaButton, styles.buttonClose]}
-                                onPress={() => {
-                                    setAssignedSchools(assignedSchools.filter((school) => school.key !== item.key));
-                                    setCoachSchools(coachSchools.filter((school) => school !== item.value));
-                                }}>
-                                <Text style={styles.agendaCrossBtn}>X</Text>
-                            </Pressable>
-                        </View>
-                    );
-                })}
-                <MultipleSelectList
-                    setSelected={(val) => setSelected(val)}
-                    data={data}
-                    save="value"
-                    onSelect={() => alert(selected)}
-                    label="Selected Schools"
-                />
-                {/* <View style={{ flexDirection: 'row', textAlign: 'center', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Text style={styles.label}>Assign Period</Text>
-                    <Pressable
-                        style={[styles.plusButton, styles.buttonOpen]}
-                        onPress={() => setModalVisible(!modalVisible)}>
-                        <Text style={styles.textPlus}>+</Text>
-                    </Pressable>
+                        );
+                    })}
+                    <MultipleSelectList
+                        setSelected={(val) => setSelected(val)}
+                        data={data}
+                        save="value"
+                        onSelect={() => alert(selected)}
+                        label="Selected Schools"
+                    />
+                    {coachSchools.concat(selected).length === 0 &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Assigned Schools is Required</Text>
+                    }
+                    <Text style={styles.label}>Tennis Club</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, tennis_club: e })}
+                        value={coachData.tennis_club}
+                    />
+                    {!coachData.tennis_club &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Tennis Club is Required</Text>
+                    }
+                    <Text style={styles.label}>Favourite Pro Player</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, favorite_pro_player: e })}
+                        value={coachData.favorite_pro_player}
+                    />
+                    {!coachData.favorite_pro_player &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
+                    }
+                    <Text style={styles.label}>Handed</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
+                        value={coachData.handed}
+                    />
+                    {!coachData.handed &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>
+                    }
+                    <Text style={styles.label}>Favourite Drill</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(e) => setCoachData({ ...coachData, favorite_drill: e })}
+                        value={coachData.favorite_drill}
+                    />
+                    {!coachData.favorite_drill &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Favorite Drill is Required</Text>
+                    }
+                </ScrollView>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleCoachUpdate}>
+                        <Text style={styles.submit}>Update</Text>
+                    </TouchableOpacity>
                 </View>
-                <View style={styles.centeredView}>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(!modalVisible);
-                        }}
-                    >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <ScrollView style={styles.scrollView}>
-                                    <View>
-                                        <View style={styles.schoolList}>
-                                            <SelectList
-                                                setSelected={(val) => setAssignCal({ ...assignCal, school: val })}
-                                                data={regionSchools}
-                                                save="value"
-                                            />
-                                        </View>
-                                        <View style={styles.container}>
-                                            <Calendar
-                                                minDate={Date()}
-                                                monthFormat={"MMMM yyyy"}
-                                                markedDates={markedDates}
-                                                markingType="period"
-                                                hideExtraDays={true}
-                                                hideDayNames={true}
-                                                onDayPress={onDayPress}
-                                            />
-                                        </View>
-                                    </View>
-                                    <Pressable
-                                        style={[styles.button, styles.buttonOpen]}
-                                        onPress={handleCreate}>
-                                        <Text style={styles.textStyle}>Create</Text>
-                                    </Pressable>
-                                    <Pressable
-                                        style={[styles.button, styles.buttonClose]}
-                                        onPress={() => {
-                                            setModalVisible(!modalVisible);
-                                        }}>
-                                        <Text style={styles.textStyle}>Don't Create !!</Text>
-                                    </Pressable>
-                                </ScrollView>
-                            </View>
-                        </View>
-                    </Modal>
+                <View style={{ marginTop: 80 }}>
+                    <TouchableOpacity onPress={handleCoachDelete}>
+                        <Text style={styles.deletebtn}>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Coaches")}>
+                        <Text style={styles.backbtn}>Back</Text>
+                    </TouchableOpacity>
                 </View>
-                {assignedSlots.length > 0 && assignedSlots.map((item) => {
-                    return (
-                        <View style={{
-                            alignItems: 'center',
-                            flexDirection: 'row',
-                            justifyContent: 'space-between'
-                        }}>
-                            <View style={{ flexDirection: 'column' }}>
-                                <Text>{item.school}</Text>
-                                <Text>{item.startDate} to {item.endDate}</Text>
-                            </View>
-                            <Pressable
-                                style={[styles.agendaButton, styles.buttonClose]}
-                                onPress={() => {
-                                    setAssignedSlots(assignedSlots.filter((slot) => slot.startDate !== item.startDate));
-                                }}>
-                                <Text style={styles.agendaCrossBtn}>X</Text>
-                            </Pressable>
-                        </View>
-                    );
-                })} */}
-                <Text style={styles.label}>Tennis Club</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, tennis_club: e })}
-                    value={coachData.tennis_club}
-                />
-                <Text style={styles.label}>Favourite Pro Player</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, favorite_pro_player: e })}
-                    value={coachData.favorite_pro_player}
-                />
-                <Text style={styles.label}>Handed</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
-                    value={coachData.handed}
-                />
-                <Text style={styles.label}>Favourite Drill</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(e) => setCoachData({ ...coachData, favorite_drill: e })}
-                    value={coachData.favorite_drill}
-                />
-                <Button
-                    title="Update"
-                    color="#000"
-                    style={{ marginTop: 40, marginBottom: 40 }}
-                    onPress={handleCoachUpdate}
-                />
-            </ScrollView>
-        </SafeAreaView>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
     wrapper: {
-        padding: 20,
+        marginTop: 60,
+        flex: 1,
+        position: 'relative',
+        padding: 15,
+        justifyContent: 'flex-end'
     },
     scrollView: {
         marginHorizontal: 20,
+    },
+    submit: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    backbtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        right: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
+    },
+    linearGradient: {
+        flex: 1,
     },
     input: {
         borderWidth: 1,
@@ -443,5 +414,29 @@ const styles = StyleSheet.create({
         width: 225,
         marginTop: 10,
         marginBottom: 10
-    }
+    },
+    dropdown: {
+        margin: 16,
+        height: 40,
+        borderBottomColor: 'gray',
+        borderBottomWidth: 0.5,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+        height: 40
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
 });

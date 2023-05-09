@@ -33,9 +33,11 @@ export default function SuperAdminParticularSchoolPhotos({ navigation, route }) 
                         })}
                     </View>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Photos")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Photos")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -59,6 +61,17 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         flexDirection: 'row'
     },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10,
+    },
     cta: {
         borderRadius: 4,
         elevation: 3,
@@ -73,12 +86,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     wrapper: {
-        flex: 2,
-        paddingLeft: 15,
-        paddingRight: 15,
+        marginTop: 60,
+        flex: 1,
         position: 'relative',
-        marginBottom: 56,
-        marginTop: 60
+        padding: 15,
+        justifyContent: 'flex-end'
     },
     backbtn: {
         borderColor: "#fff",

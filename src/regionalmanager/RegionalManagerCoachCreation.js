@@ -36,32 +36,34 @@ export default function RegionalManagerCoachCreation({ navigation }) {
 
     const handleSignUp = async () => {
         try {
-            const data = {
-                email: coachData.email,
-                password: coachData.password,
-                roles: ['coach'],
-                coach_name: coachData.coach_name,
-                assigned_region: state.authPage.auth_data?.assigned_region,
-                assigned_schools: selected,
-                assigned_by: 'Regional Manager',
-                assigned_by_user_id: state.authPage.auth_data?.user_id,
-                tennis_club: coachData.tennis_club,
-                favorite_pro_player: coachData.favorite_pro_player,
-                handed: coachData.handed,
-                favorite_drill: coachData.favorite_drill
-            };
-            const result = await SignUpService(data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Coach Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Regional Manager Dashboard")
-                        }
-                    ]
-                );
+            if (coachData.email && coachData.password && coachData.coach_name && coachData.assigned_region && selected.length > 0 && coachData.tennis_club && coachData.favorite_pro_player && coachData.handed && coachData.favorite_drill) {
+                const data = {
+                    email: coachData.email,
+                    password: coachData.password,
+                    roles: ['coach'],
+                    coach_name: coachData.coach_name,
+                    assigned_region: state.authPage.auth_data?.assigned_region,
+                    assigned_schools: selected,
+                    assigned_by: 'Regional Manager',
+                    assigned_by_user_id: state.authPage.auth_data?.user_id,
+                    tennis_club: coachData.tennis_club,
+                    favorite_pro_player: coachData.favorite_pro_player,
+                    handed: coachData.handed,
+                    favorite_drill: coachData.favorite_drill
+                };
+                const result = await SignUpService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Coach Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Regional Manager Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -82,18 +84,27 @@ export default function RegionalManagerCoachCreation({ navigation }) {
                         onChangeText={(e) => setCoachData({ ...coachData, email: e })}
                         value={coachData.email}
                     />
+                    {!coachData.email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
+                    }
                     <Text style={styles.label}>Password</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, password: e })}
                         value={coachData.password}
                     />
+                    {!coachData.password &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Password is Required</Text>
+                    }
                     <Text style={styles.label}>Coach Name</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, coach_name: e })}
                         value={coachData.coach_name}
                     />
+                    {!coachData.coach_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Coach Name is Required</Text>
+                    }
                     <Text style={styles.label}>Assigned Schools</Text>
                     <MultipleSelectList
                         setSelected={(val) => setSelected(val)}
@@ -102,34 +113,52 @@ export default function RegionalManagerCoachCreation({ navigation }) {
                         onSelect={() => alert(selected)}
                         label="Selected Schools"
                     />
+                    {selected.length === 0 &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
+                    }
                     <Text style={styles.label}>Tennis Club</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, tennis_club: e })}
                         value={coachData.tennis_club}
                     />
+                    {!coachData.tennis_club &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Tennis Club is Required</Text>
+                    }
                     <Text style={styles.label}>Favourite Pro Player</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, favorite_pro_player: e })}
                         value={coachData.favorite_pro_player}
                     />
+                    {!coachData.favorite_pro_player &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
+                    }
                     <Text style={styles.label}>Handed</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
                         value={coachData.handed}
                     />
+                    {!coachData.handed &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>
+                    }
                     <Text style={styles.label}>Favourite Drill</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, favorite_drill: e })}
                         value={coachData.favorite_drill}
                     />
+                    {!coachData.favorite_drill &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Favorite Drill is Required</Text>
+                    }
                     <TouchableOpacity onPress={handleSignUp}>
                         <Text style={styles.btnWrapper}>Submit</Text>
                     </TouchableOpacity>
                 </ScrollView>
+                <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Coaches")}>
+                    <Text style={styles.btnWrapper}>Back</Text>
+                </TouchableOpacity>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -137,8 +166,11 @@ export default function RegionalManagerCoachCreation({ navigation }) {
 
 const styles = StyleSheet.create({
     wrapper: {
-        padding: 15,
         marginTop: 60,
+        flex: 1,
+        position: 'relative',
+        padding: 15,
+        justifyContent: 'flex-end'
     },
     heading: {
         textAlign: "center",

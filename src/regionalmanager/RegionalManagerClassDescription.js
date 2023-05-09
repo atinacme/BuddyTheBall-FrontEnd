@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Button } from 'react-native';
+import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Image } from 'react-native';
 import { useSelector } from "react-redux";
+import LinearGradient from 'react-native-linear-gradient';
+import buddy from '../assets/buddy.png';
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
 import { GetScheduleCreatedByUserIdService } from '../services/ScheduleService';
-import { UpdateClassService } from '../services/ClassService';
+import { DeleteClassService, UpdateClassService } from '../services/ClassService';
 import { GetRegionWiseSchools } from '../services/SchoolService';
 
 export default function RegionalManagerClassDescription({ navigation, route }) {
@@ -44,168 +46,201 @@ export default function RegionalManagerClassDescription({ navigation, route }) {
 
     const handleUpdateClass = async () => {
         const selectedSessionsId = selectedSessions.map(v => { return v._id })
-        const data = {
-            schedules: selectedSessionsId.concat(sessions),
-            school: selectedSchool
-        };
-        const result = await UpdateClassService(route.params.classData._id, data);
-        if (result) {
+        if (selectedSessionsId.concat(sessions).length > 0 && selectedSchool) {
+            const data = {
+                schedules: selectedSessionsId.concat(sessions),
+                school: selectedSchool
+            };
+            const result = await UpdateClassService(route.params.classData._id, data);
+            if (result) {
+                Alert.alert(
+                    "Alert",
+                    "Class Updated Successfully",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+                        }
+                    ]
+                );
+            }
+        }
+    };
+
+    const handleClassDelete = async () => {
+        try {
             Alert.alert(
                 "Alert",
-                "Class Updated Successfully",
+                "Do You Want to Delete the Class ?",
                 [
                     {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    {
                         text: "OK",
-                        onPress: () => navigation.navigate("Regional Manager Dashboard")
+                        onPress: async () => {
+                            const data = { id: route.params.classData._id }
+                            const result = await DeleteClassService(data)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Class Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
                     }
                 ]
+            );
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Delete Class!"
             );
         }
     };
 
     return (
-        <SafeAreaView style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            {selectedSessions.map(v => {
-                return (
-                    <View>
-                        <Text style={styles.label}>Schedules :</Text>
-                        <Text>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</Text>
-                        <TouchableOpacity onPress={() => {
-                            v.key = v._id;
-                            v.value = `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coaches.map(u => u.coach_name)}`
-                            var array = [...selectedSessions];
-                            var indexData = array.indexOf(v);
-                            if (indexData !== -1) {
-                                array.splice(indexData, 1);
-                                setSelectedSessions(array);
-                            }
-                            setSessionsList(prevState => [...prevState, v]);
-                        }}>
-                            <Text>X</Text>
-                        </TouchableOpacity>
-                    </View>
-                )
-            })}
-            <MultipleSelectList
-                setSelected={(val) => setSessions(val)}
-                data={sessionsList}
-                save="key"
-                label="Selected Sessions"
-            />
-            <Text style={styles.label}>School :</Text>
-            <SelectList
-                setSelected={(val) => setSelectedSchool(val)}
-                data={schoolsList}
-                save="key"
-                defaultOption={{ key: route.params.classData.school._id, value: route.params.classData.school.school_name }}
-            />
-            <Button onPress={handleUpdateClass} title="Update Class" />
-        </SafeAreaView>
+        <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
+            <SafeAreaView style={styles.wrapper}>
+                <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
+                <Text style={styles.label}>Schedules :</Text>
+                {selectedSessions.map(v => {
+                    return (
+                        <View>
+                            <Text>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</Text>
+                            <TouchableOpacity onPress={() => {
+                                v.key = v._id;
+                                v.value = `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coaches.map(u => u.coach_name)}`
+                                var array = [...selectedSessions];
+                                var indexData = array.indexOf(v);
+                                if (indexData !== -1) {
+                                    array.splice(indexData, 1);
+                                    setSelectedSessions(array);
+                                }
+                                setSessionsList(prevState => [...prevState, v]);
+                            }}>
+                                <Text>X</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
+                })}
+                <MultipleSelectList
+                    setSelected={(val) => setSessions(val)}
+                    data={sessionsList}
+                    save="key"
+                    label="Selected Sessions"
+                />
+                {selectedSessions.concat(sessions).length === 0 &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>Schedule is Required</Text>
+                }
+                <Text style={styles.label}>School :</Text>
+                <SelectList
+                    setSelected={(val) => setSelectedSchool(val)}
+                    data={schoolsList}
+                    save="key"
+                    defaultOption={{ key: route.params.classData.school._id, value: route.params.classData.school.school_name }}
+                />
+                {!selectedSchool &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>Coach is Required</Text>
+                }
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleUpdateClass}>
+                        <Text style={styles.btnWrapper}>Update</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 80 }}>
+                    <TouchableOpacity onPress={handleClassDelete}>
+                        <Text style={styles.deletebtn}>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Classes")}>
+                        <Text style={styles.backbtn}>Back</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    wrapper: {
+        marginTop: 60,
         flex: 1,
-        justifyContent: 'center'
+        position: 'relative',
+        padding: 15
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    backbtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        right: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    linearGradient: {
+        flex: 1,
+        borderRadius: 5
     },
     scrollView: {
-        marginHorizontal: 20,
-        marginVertical: 20,
-        maxHeight: 190
+        marginHorizontal: 5,
     },
     input: {
         borderWidth: 1,
         padding: 10,
         borderRadius: 5,
         marginTop: 5,
-        marginBottom: 10,
-        width: 180
-    },
-    item: {
-        backgroundColor: '#fff',
-        flex: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginRight: 10,
-        marginTop: 17
-    },
-    itemText: {
-        color: '#888',
-        fontSize: 16,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-        margin: 5
-    },
-    agendaButton: {
-        borderRadius: 50,
-        elevation: 2,
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    agendaCrossBtn: {
-        fontSize: 15,
-    },
-    buttonOpen: {
-        backgroundColor: '#2196F3'
-    },
-    plusButton: {
-        borderRadius: 50,
-        elevation: 2,
-        width: 30,
-        height: 30,
-        alignItems: 'center'
-    },
-    mainText: {
-        marginRight: 40
-    },
-    textPlus: {
-        fontSize: 20,
-    },
-    buttonClose: {
-        backgroundColor: 'red'
-    },
-    textStyle: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center'
-    },
-    modalText: {
-        marginBottom: 15,
-        flexDirection: 'row'
-    },
-    schoolList: {
-        width: 225,
-        marginTop: 10,
         marginBottom: 10
     },
-    itemTextFirst: {
-        color: 'black'
+    label: {
+        fontSize: 16,
+        color: '#000',
+        paddingTop: 10,
+        paddingBottom: 5
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
     }
 });

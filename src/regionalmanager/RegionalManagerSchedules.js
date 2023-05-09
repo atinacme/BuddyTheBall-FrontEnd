@@ -3,8 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } fr
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import moment from 'moment';
-import { GetScheduleByCoachService, GetSchedulesService } from '../services/ScheduleService';
+import { GetSchedulesService } from '../services/ScheduleService';
 
 export default function RegionalManagerSchedules({ navigation }) {
     const state = useSelector((state) => state);
@@ -57,7 +56,7 @@ export default function RegionalManagerSchedules({ navigation }) {
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Schedule Creation")}>
                         <Text style={styles.coach_cta}>Schedule Creation</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Calendar")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 350,
+        width: 600,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

@@ -19,6 +19,10 @@ const RegionUpdateService = async (id, data) => {
     return await HttpRequest("PUT", `${baseUrl}/updateRegion/${id}`, data);
 };
 
+const DeleteRegionService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteRegion`, data);
+};
+
 export {
-    CreateRegionService, GetAllRegionsService, GetParticularRegionService, RegionUpdateService
+    CreateRegionService, GetAllRegionsService, GetParticularRegionService, RegionUpdateService, DeleteRegionService
 };

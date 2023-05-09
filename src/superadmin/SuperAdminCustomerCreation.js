@@ -49,32 +49,55 @@ export default function SuperAdminCustomerCreation({ navigation }) {
         try {
             childrenData.forEach(v => delete v.calendar_visible);
             childrenData.forEach(v => delete v.class_list);
-            // childrenData.forEach(v => delete v.school_list);
-            // childrenData.forEach(v => delete v.coach_list);
-            // childrenData.forEach(v => delete v.schedule_list);
             childrenData.forEach(v => delete v.visible);
-            const data = {
-                email: parentData.email,
-                password: parentData.password,
-                roles: ['customer'],
-                parent_name: parentData.parent_name,
-                created_by: 'superadmin',
-                created_by_name: "Super Admin",
-                created_by_user_id: state.authPage?.id,
-                children_data: childrenData
-            };
-            const result = await SignUpService(data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Customer Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+            function checkKeyValues(obj) {
+                for (let key in obj) {
+                    if (typeof obj[key] === 'object' && obj[key] !== null) {
+                        if (!checkKeyValues(obj[key])) {
+                            return false;
                         }
-                    ]
-                );
+                    } else {
+                        if (!obj[key]) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            function checkArrayObjects(array) {
+                for (let obj of array) {
+                    if (!checkKeyValues(obj)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if (checkArrayObjects(childrenData) && parentData.email !== "" && parentData.password !== "" && parentData.parent_name !== "") {
+                const data = {
+                    email: parentData.email,
+                    password: parentData.password,
+                    roles: ['customer'],
+                    parent_name: parentData.parent_name,
+                    created_by: 'superadmin',
+                    created_by_name: "Super Admin",
+                    created_by_user_id: state.authPage?.id,
+                    children_data: childrenData
+                };
+                const result = await SignUpService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Parent Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -204,67 +227,13 @@ export default function SuperAdminCustomerCreation({ navigation }) {
                                         newArr[index].class = val;
                                         setChildrenData(newArr);
                                     }}
-                                    data={item.class_list}
+                                    data={item?.class_list?.length > 0 ? item?.class_list : []}
                                     save="key"
                                     label="Selected School"
                                 />
-                                {!item.class &&
+                                {!item?.class &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
-                                {/* <Text style={styles.label}>School</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].school = val;
-                                        const coach = newArr[index].school_list?.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
-                                        const coachData = coach.filter(v => { return (v._id == val); });
-                                        const result = coachData[0].coaches?.map(v => Object.assign(v, { key: v._id, value: v.coach_name }));
-                                        newArr[index].coach_list = result;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.school_list}
-                                    save="key"
-                                    label="Selected School"
-                                />
-                                {!item.school &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
-                                }
-                                <Text style={styles.label}>Coach</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].coach = val;
-                                        const coachData = newArr[index].coach_list.filter(v => { return (v._id == val); });
-                                        var schedules;
-                                        coachData?.map(v => {
-                                            schedules = v.schedules;
-                                        });
-                                        const scheduleData = schedules.filter(v => { return (v.school == item.school); });
-                                        const result = scheduleData?.map((v) => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` }));
-                                        newArr[index].schedule_list = result;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.coach_list}
-                                    save="key"
-                                    label="Selected Coach"
-                                />
-                                {!item.coach &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Coach is Required</Text>
-                                }
-                                <Text style={styles.label}>Schedule</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].schedule = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.schedule_list}
-                                    save="key"
-                                    label="Selected Schedule"
-                                />
-                                {!item.schedule &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Schedule is Required</Text>
-                                } */}
                                 <Text style={styles.label}>Handed</Text>
                                 <TextInput
                                     name="handed"
@@ -316,12 +285,11 @@ export default function SuperAdminCustomerCreation({ navigation }) {
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
                                 }}>
-                                    {/* <View style={styles.buttonText}><Text>Select the Award</Text></View> */}
                                     <View style={styles.buttonText}>{item.current_award.image ? <Image source={{ uri: item.current_award.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
                                 </TouchableOpacity>
-                                {item.visible &&
+                                {item?.visible &&
                                     (<View style={styles.award}>
-                                        {item.visible && awardList.map(v => {
+                                        {item?.visible && awardList.length > 0 && awardList.map(v => {
                                             return (
                                                 <ScrollView showsVerticalScrollIndicator>
                                                     <TouchableOpacity key={v.index} onPress={() => {
@@ -356,16 +324,15 @@ export default function SuperAdminCustomerCreation({ navigation }) {
                             </View>
                         );
                     })}
-                    <TouchableOpacity onPress={handleAddCustomer}>
-                        <Text style={styles.submit}>Submit</Text>
-                    </TouchableOpacity>
-                    {/* </>
-                        )}
-                    </Formik> */}
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Coach Dashboard")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleAddCustomer}>
+                        <Text style={styles.btnWrapper}>Submit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Customers")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -373,12 +340,11 @@ export default function SuperAdminCustomerCreation({ navigation }) {
 
 const styles = StyleSheet.create({
     wrapper: {
-        flex: 2,
-        paddingLeft: 15,
-        paddingRight: 15,
+        marginTop: 60,
+        flex: 1,
         position: 'relative',
-        marginBottom: 56,
-        marginTop: 60
+        padding: 15,
+        justifyContent: 'flex-end'
     },
     submit: {
         borderColor: "#fff",
@@ -392,6 +358,17 @@ const styles = StyleSheet.create({
         marginTop: 5,
         display: 'flex',
         justifyContent: 'flex-end'
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
     },
     backbtn: {
         borderColor: "#fff",

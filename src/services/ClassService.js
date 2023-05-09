@@ -23,6 +23,11 @@ const UpdateClassService = async (id, data) => {
     return await HttpRequest("PUT", `${baseUrl}/updateClass/${id}`, data);
 };
 
+const DeleteClassService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteClass`, data);
+};
+
 export {
-    CreateClassService, GetClassCreatedByUserIdService, GetCoachClassesService, GetClassesService, UpdateClassService
+    CreateClassService, GetClassCreatedByUserIdService, GetCoachClassesService, GetClassesService, UpdateClassService,
+    DeleteClassService
 };

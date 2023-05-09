@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
 import { DataTable } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetCustomersService } from '../services/CustomerService';
 
 export default function RegionalManagerCustomers({ navigation }) {
+    const state = useSelector((state) => state);
     const [customers, setCustomers] = useState([]);
 
     useEffect(() => {
@@ -35,7 +37,8 @@ export default function RegionalManagerCustomers({ navigation }) {
                                     <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Customer Description", { customerData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.parent_name}</DataTable.Cell>
-                                            <DataTable.Cell>{item.created_by === 'regionalmanager' ? 'You' : item.created_by === 'coach' ? 'Coach' : 'Shopify'}</DataTable.Cell>
+                                            <DataTable.Cell>
+                                                {item.created_by_user_id === state.authPage?.auth_data.user_id ? 'You' : item.created_by === 'coach' ? item.created_by_name : item.created_by === 'superadmin' ? item.created_by_name : 'Shopify'}</DataTable.Cell>
                                             <DataTable.Cell>{item.email}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>

@@ -30,7 +30,11 @@ const GetScheduleByRegionalManagerAndSchoolService = async (data) => {
     return await HttpRequest("POST", `${baseUrl}/getScheduleByRegionalManagerAndSchool`, data);
 };
 
+const DeleteScheduleService = async (data) => {
+    return await HttpRequest("DELETE", `${baseUrl}/deleteSchedule`, data);
+};
+
 export {
     CreateScheduleService, GetSchedulesService, GetScheduleByDateAndCoachService, GetScheduleByCoachService,
-    GetScheduleCreatedByUserIdService, UpdateScheduleService, GetScheduleByRegionalManagerAndSchoolService
+    GetScheduleCreatedByUserIdService, UpdateScheduleService, GetScheduleByRegionalManagerAndSchoolService, DeleteScheduleService
 };

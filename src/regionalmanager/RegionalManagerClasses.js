@@ -3,9 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } fr
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import moment from 'moment';
-import { GetClassCreatedByUserIdService } from '../services/ClassService';
-// import { GetScheduleByCoachService, GetclassesService } from '../services/classeservice';
+import { GetClassesService } from '../services/ClassService';
 
 export default function RegionalManagerClasses({ navigation }) {
     const state = useSelector((state) => state);
@@ -14,10 +12,13 @@ export default function RegionalManagerClasses({ navigation }) {
     useEffect(() => {
         try {
             const getClasses = async () => {
-                const data = { created_by_user_id: state.authPage.auth_data?.user_id }
-                const result = await GetClassCreatedByUserIdService(data);
+                const result = await GetClassesService();
                 if (result) {
-                    setClasses(result);
+                    result.map(v => {
+                        if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                            setClasses(result);
+                        }
+                    })
                 }
             };
             getClasses();
@@ -55,7 +56,7 @@ export default function RegionalManagerClasses({ navigation }) {
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Class Creation")}>
                         <Text style={styles.coach_cta}>Class Creation</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Calendar")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

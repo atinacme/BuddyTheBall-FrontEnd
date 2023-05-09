@@ -63,32 +63,56 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
         try {
             childrenData.forEach(v => delete v.calendar_visible);
             childrenData.forEach(v => delete v.class_list);
-            // childrenData.forEach(v => delete v.school_list);
-            // childrenData.forEach(v => delete v.coach_list);
-            // childrenData.forEach(v => delete v.schedule_list);
             childrenData.forEach(v => delete v.visible);
-            const data = {
-                email: parentData.email,
-                password: parentData.password,
-                roles: ['customer'],
-                parent_name: parentData.parent_name,
-                created_by: 'regionalmanager',
-                created_by_name: state.authPage.auth_data?.regional_manager_name,
-                created_by_user_id: state.authPage.auth_data?.user_id,
-                children_data: childrenData
-            };
-            const result = await SignUpService(data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Customer Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+
+            function checkKeyValues(obj) {
+                for (let key in obj) {
+                    if (typeof obj[key] === 'object' && obj[key] !== null) {
+                        if (!checkKeyValues(obj[key])) {
+                            return false;
                         }
-                    ]
-                );
+                    } else {
+                        if (!obj[key]) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            function checkArrayObjects(array) {
+                for (let obj of array) {
+                    if (!checkKeyValues(obj)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if (checkArrayObjects(childrenData) && parentData.email !== "" && parentData.password !== "" && parentData.parent_name !== "") {
+                const data = {
+                    email: parentData.email,
+                    password: parentData.password,
+                    roles: ['customer'],
+                    parent_name: parentData.parent_name,
+                    created_by: 'regionalmanager',
+                    created_by_name: state.authPage.auth_data?.regional_manager_name,
+                    created_by_user_id: state.authPage.auth_data?.user_id,
+                    children_data: childrenData
+                };
+                const result = await SignUpService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Customer Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Regional Manager Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -145,12 +169,6 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
                                 wristband_level: '',
                                 class_list: classes,
                                 class: '',
-                                // school_list: data,
-                                // school: '',
-                                // coach_list: [],
-                                // coach: '',
-                                // schedule_list: [],
-                                // schedule: '',
                                 handed: '',
                                 num_buddy_books_read: '',
                                 jersey_size: '',
@@ -231,60 +249,6 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
                                 {!item.class &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
-                                {/* <Text style={styles.label}>School</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].school = val;
-                                        const coach = newArr[index].school_list?.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
-                                        const coachData = coach.filter(v => { return (v._id == val); });
-                                        const result = coachData[0].coaches?.map(v => Object.assign(v, { key: v._id, value: v.coach_name }));
-                                        newArr[index].coach_list = result;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.school_list}
-                                    save="key"
-                                    label="Selected School"
-                                />
-                                {!item.school &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
-                                }
-                                <Text style={styles.label}>Coach</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].coach = val;
-                                        const coachData = newArr[index].coach_list.filter(v => { return (v._id == val); });
-                                        var schedules;
-                                        coachData?.map(v => {
-                                            schedules = v.schedules;
-                                        });
-                                        const scheduleData = schedules.filter(v => { return (v.school == item.school); });
-                                        const result = scheduleData?.map((v) => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` }));
-                                        newArr[index].schedule_list = result;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.coach_list}
-                                    save="key"
-                                    label="Selected Coach"
-                                />
-                                {!item.coach &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Coach is Required</Text>
-                                }
-                                <Text style={styles.label}>Schedule</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].schedule = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.schedule_list}
-                                    save="key"
-                                    label="Selected Schedule"
-                                />
-                                {!item.schedule &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Schedule is Required</Text>
-                                } */}
                                 <Text style={styles.label}>Handed</Text>
                                 <TextInput
                                     name="handed"
@@ -336,7 +300,6 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
                                 }}>
-                                    {/* <View style={styles.buttonText}><Text>Select the Award</Text></View> */}
                                     <View style={styles.buttonText}>{item.current_award.image ? <Image source={{ uri: item.current_award.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
                                 </TouchableOpacity>
                                 {item.visible &&
@@ -362,7 +325,6 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity
-                                    // style={[styles.agendaButton, styles.buttonClose]}
                                     onPress={() => {
                                         var array = [...childrenData];
                                         var indexData = array.indexOf(item);
@@ -371,7 +333,7 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
                                             setChildrenData(array);
                                         }
                                     }}>
-                                    <Text >Remove</Text>
+                                    <Text style={styles.removebtn}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
                         );
@@ -379,12 +341,9 @@ export default function RegionalManagerCustomerCreation({ navigation }) {
                     <TouchableOpacity onPress={handleAddCustomer}>
                         <Text style={styles.submit}>Submit</Text>
                     </TouchableOpacity>
-                    {/* </>
-                        )}
-                    </Formik> */}
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Coach Dashboard")}>
-                    <Text style={styles.backbtn}>Back</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Customers")}>
+                    <Text style={styles.submit}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </LinearGradient>
@@ -397,7 +356,7 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15,
         position: 'relative',
-        marginBottom: 56,
+        marginBottom: 10,
         marginTop: 60
     },
     submit: {
@@ -412,6 +371,22 @@ const styles = StyleSheet.create({
         marginTop: 5,
         display: 'flex',
         justifyContent: 'flex-end'
+    },
+    removebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10,
+        display: 'flex',
+        left: 0,
+        width: 100,
+        bottom: 0,
+        marginBottom: 10
     },
     backbtn: {
         borderColor: "#fff",

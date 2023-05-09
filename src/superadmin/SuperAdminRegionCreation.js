@@ -15,24 +15,60 @@ export default function SuperAdminRegionCreation({ navigation }) {
             .required('Region Name is Required')
     });
 
+    function checkKeyValues(obj) {
+        for (let key in obj) {
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                if (!checkKeyValues(obj[key])) {
+                    return false;
+                }
+            } else {
+                if (!obj[key]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function checkArrayObjects(array) {
+        for (let obj of array) {
+            if (!checkKeyValues(obj)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     const handleAddRegion = async (values) => {
         try {
-            const data = {
-                region_name: values.region_name,
-                cities: cities
-            };
-            const result = await CreateRegionService(data);
-            if (result) {
+            if (!checkArrayObjects(cities)) {
                 Alert.alert(
                     "Alert",
-                    "Region Added Successfully",
+                    "Please Add at least One City Name",
                     [
                         {
-                            text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Settings")
+                            text: "OK"
                         }
                     ]
                 );
+            } else {
+                const data = {
+                    region_name: values.region_name,
+                    cities: cities
+                };
+                const result = await CreateRegionService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Region Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("SuperAdmin Settings")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -73,13 +109,15 @@ export default function SuperAdminRegionCreation({ navigation }) {
                                 {errors.region_name &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>{errors.region_name}</Text>
                                 }
-                                <Text style={styles.label}>Cities</Text>
-                                <TouchableOpacity onPress={() => setCities([...cities, { name: '' }])}>
-                                    <Text style={styles.label}>+</Text>
-                                </TouchableOpacity>
+                                <View style={styles.cities}>
+                                    <Text style={styles.label}>Cities</Text>
+                                    <TouchableOpacity onPress={() => setCities([...cities, { name: '' }])}>
+                                        <Text style={styles.label}>+</Text>
+                                    </TouchableOpacity>
+                                </View>
                                 {cities.length > 0 && cities.map((item, index) => {
                                     return (
-                                        <View key={index}>
+                                        <View key={index} style={styles.cities}>
                                             <TextInput
                                                 onChangeText={(e) => {
                                                     let newArr = [...cities];
@@ -87,7 +125,7 @@ export default function SuperAdminRegionCreation({ navigation }) {
                                                     setCities(newArr);
                                                 }}
                                                 value={item.name}
-                                                style={styles.input}
+                                                style={styles.cityInput}
                                             />
                                             <Pressable
                                                 style={[styles.agendaButton, styles.buttonClose]}
@@ -104,9 +142,6 @@ export default function SuperAdminRegionCreation({ navigation }) {
                                         </View>
                                     );
                                 })}
-                                {errors.cities &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>{errors.cities}</Text>
-                                }
                                 <TouchableOpacity onPress={handleSubmit}>
                                     <Text style={styles.btnWrapper}>Submit</Text>
                                 </TouchableOpacity>
@@ -114,8 +149,8 @@ export default function SuperAdminRegionCreation({ navigation }) {
                         )}
                     </Formik>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
-                    <Text style={styles.backbtn}>Back</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regions")}>
+                    <Text style={styles.btnWrapper}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </LinearGradient>
@@ -192,5 +227,19 @@ const styles = StyleSheet.create({
     },
     agendaCrossBtn: {
         fontSize: 15,
+    },
+    cities: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    cityInput: {
+        borderWidth: 1,
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 5,
+        marginBottom: 10,
+        width: 270
     }
 });

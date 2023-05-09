@@ -66,26 +66,28 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
 
     const handleUpdateSchool = async () => {
         try {
-            const data = {
-                school_name: schoolData.school_name,
-                region: schoolData.region,
-                director_name: schoolData.director_name,
-                director_email: schoolData.director_email,
-                director_phone: schoolData.director_phone,
-                address: schoolData.address
-            };
-            const result = await SchoolUpdationService(schoolData.school_id, data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "School Updated Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
-                        }
-                    ]
-                );
+            if (schoolData.school_name && schoolData.region && schoolData.director_name && schoolData.director_email && schoolData.director_phone && schoolData.address) {
+                const data = {
+                    school_name: schoolData.school_name,
+                    region: schoolData.region,
+                    director_name: schoolData.director_name,
+                    director_email: schoolData.director_email,
+                    director_phone: schoolData.director_phone,
+                    address: schoolData.address
+                };
+                const result = await SchoolUpdationService(schoolData.school_id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "School Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -141,6 +143,9 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         onChangeText={(e) => setSchoolData({ ...schoolData, school_name: e })}
                         value={schoolData.school_name}
                     />
+                    {!schoolData.school_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>School Name is Required</Text>
+                    }
                     <Text style={styles.label}>Region</Text>
                     <SelectList
                         setSelected={(val) => setSchoolData({ ...schoolData, region: val })}
@@ -148,30 +153,45 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         save="key"
                         defaultOption={{ key: schoolData.region, value: schoolData.region }}
                     />
+                    {!schoolData.region &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Region is Required</Text>
+                    }
                     <Text style={styles.label}>Director Name</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setSchoolData({ ...schoolData, director_name: e })}
                         value={schoolData.director_name}
                     />
+                    {!schoolData.director_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Director Name is Required</Text>
+                    }
                     <Text style={styles.label}>Director Email</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setSchoolData({ ...schoolData, director_email: e })}
                         value={schoolData.director_email}
                     />
+                    {!schoolData.director_email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Director Email is Required</Text>
+                    }
                     <Text style={styles.label}>Director Phone</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setSchoolData({ ...schoolData, director_phone: e })}
                         value={schoolData.director_phone}
                     />
+                    {!schoolData.director_phone &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Director Phone is Required</Text>
+                    }
                     <Text style={styles.label}>Address</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setSchoolData({ ...schoolData, address: e })}
                         value={schoolData.address}
                     />
+                    {!schoolData.address &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Address is Required</Text>
+                    }
                     <Text style={styles.label}>Registered On</Text>
                     <TextInput
                         style={styles.input}

@@ -31,7 +31,7 @@ export default function SuperAdminDashboard({ navigation }) {
                             <Text style={{ ...styles.adminContainer, ...styles.adminBg6 }}>SCHOOLS</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Calendar")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg8 }}>CALENDAR</Text>
+                            <Text style={{ ...styles.adminContainer, ...styles.adminBg7 }}>CALENDAR</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
                             <Text style={{ ...styles.adminContainer, ...styles.adminBg8 }}>Regional Managers</Text>

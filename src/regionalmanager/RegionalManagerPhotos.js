@@ -50,29 +50,41 @@ export default function RegionalManagerPhotos({ navigation }) {
                         );
                     })}
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Dashboard")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Dashboard")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
-
         </LinearGradient>
-
     );
 }
 
 const styles = StyleSheet.create({
     linearGradient: {
         flex: 1,
+        position: 'relative',
+        justifyContent: 'flex-end'
     },
     wrapper: {
         flex: 2,
         paddingLeft: 15,
         paddingRight: 15,
         position: 'relative',
-        marginBottom: 56,
+        marginBottom: 10,
         marginTop: 60
     },
-
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10,
+    },
     backbtn: {
         borderColor: "#fff",
         paddingTop: 10,

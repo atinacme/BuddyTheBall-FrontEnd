@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import {
-    SafeAreaView, StyleSheet, Text, Alert, View, Button, TextInput, Platform
+    SafeAreaView, StyleSheet, Text, Alert, View, TextInput, Platform, Image, ScrollView, TouchableOpacity
 } from 'react-native';
 import moment from 'moment';
+import buddy from '../assets/buddy.png';
+import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { UpdateScheduleService } from '../services/ScheduleService';
+import { DeleteScheduleService, UpdateScheduleService } from '../services/ScheduleService';
 
 export default function RegionalManagerScheduleDescription({ navigation, route }) {
     const time = { start: route.params.scheduleData.start_time, end: route.params.scheduleData.end_time };
@@ -70,161 +72,199 @@ export default function RegionalManagerScheduleDescription({ navigation, route }
     };
 
     const handleUpdateSchedule = async () => {
-        const data = {
-            date: initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date,
-            start_time: initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start,
-            end_time: initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end,
-            topic: topic
-        };
-        const result = await UpdateScheduleService(route.params.scheduleData._id, data);
-        if (result) {
+        if (topic) {
+            const data = {
+                date: initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date,
+                start_time: initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start,
+                end_time: initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end,
+                topic: topic
+            };
+            const result = await UpdateScheduleService(route.params.scheduleData._id, data);
+            if (result) {
+                Alert.alert(
+                    "Alert",
+                    "Schedule Updated Successfully",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+                        }
+                    ]
+                );
+            }
+        }
+    };
+
+    const handleScheduleDelete = async () => {
+        try {
             Alert.alert(
                 "Alert",
-                "Schedule Updated Successfully",
+                "Do You Want to Delete the Schedule ?",
                 [
                     {
-                        text: "OK",
-                        onPress: () => navigation.navigate("Regional Manager Dashboard")
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: "YES",
+                        onPress: async () => {
+                            const data = { id: route.params.scheduleData._id }
+                            const result = await DeleteScheduleService(data)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Schedule Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
                     }
                 ]
+            );
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Schedule!"
             );
         }
     };
 
     return (
-        <SafeAreaView style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <Button onPress={showDatepicker} title="Update Date" />
-            <Button onPress={showStartTimepicker} title="Update Start Time" />
-            <Button onPress={showEndTimepicker} title="Update End Time" />
-            <Text style={styles.label}>Date : {initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date}</Text>
-            <Text style={styles.label}>Start Time : {initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start}</Text>
-            <Text style={styles.label}>End Time :{initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
-            {route.params.scheduleData.coaches.map((v, i) => {
-                return <Text style={styles.label}>Coach {i + 1}  : {v.coach_name}</Text>
-            })}
-            <View>
-                <Text style={styles.label}>Topic :</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={(val) => setTopic(val)}
-                    value={topic}
-                />
-            </View>
-            {show && (
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={scheduleData.date}
-                    mode={mode}
-                    onChange={onChange}
-                />
-            )}
-            <Button onPress={handleUpdateSchedule} title="Update Schedule" />
-        </SafeAreaView>
+
+        <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
+            <SafeAreaView style={styles.wrapper}>
+                <ScrollView style={styles.scrollView}>
+                    <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
+                    <TouchableOpacity onPress={showDatepicker}>
+                        <Text style={styles.btnWrapper}>Select Date</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={showStartTimepicker}>
+                        <Text style={styles.btnWrapper}>Select Start Time</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={showEndTimepicker}>
+                        <Text style={styles.btnWrapper}>Select End Time</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.label}>Date : {initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date}</Text>
+                    <Text style={styles.label}>Start Time : {initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start}</Text>
+                    <Text style={styles.label}>End Time :{initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
+                    <Text style={styles.label}>Coach Names:</Text>
+                    {route.params.scheduleData.coaches.map((v, i) => {
+                        return <Text style={styles.label}>{v.coach_name}</Text>
+                    })}
+                    <Text style={styles.label}>Topic :</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(val) => setTopic(val)}
+                        value={topic}
+                    />
+                    {!topic &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                    }
+                    {show && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={scheduleData.date}
+                            mode={mode}
+                            onChange={onChange}
+                        />
+                    )}
+                </ScrollView>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleUpdateSchedule}>
+                        <Text style={styles.btnWrapper}>Update</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 80 }}>
+                    <TouchableOpacity onPress={handleScheduleDelete}>
+                        <Text style={styles.deletebtn}>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Schedules")}>
+                        <Text style={styles.backbtn}>Back</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    wrapper: {
+        marginTop: 60,
         flex: 1,
-        justifyContent: 'center'
+        position: 'relative',
+        padding: 15
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    backbtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        right: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    linearGradient: {
+        flex: 1,
+        borderRadius: 5
     },
     scrollView: {
-        marginHorizontal: 20,
-        marginVertical: 20,
-        maxHeight: 190
+        marginHorizontal: 5,
     },
     input: {
         borderWidth: 1,
         padding: 10,
         borderRadius: 5,
         marginTop: 5,
-        marginBottom: 10,
-        width: 180
-    },
-    item: {
-        backgroundColor: '#fff',
-        flex: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginRight: 10,
-        marginTop: 17
-    },
-    itemText: {
-        color: '#888',
-        fontSize: 16,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-        margin: 5
-    },
-    agendaButton: {
-        borderRadius: 50,
-        elevation: 2,
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    agendaCrossBtn: {
-        fontSize: 15,
-    },
-    buttonOpen: {
-        backgroundColor: '#2196F3'
-    },
-    plusButton: {
-        borderRadius: 50,
-        elevation: 2,
-        width: 30,
-        height: 30,
-        alignItems: 'center'
-    },
-    mainText: {
-        marginRight: 40
-    },
-    textPlus: {
-        fontSize: 20,
-    },
-    buttonClose: {
-        backgroundColor: 'red'
-    },
-    textStyle: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center'
-    },
-    modalText: {
-        marginBottom: 15,
-        flexDirection: 'row'
-    },
-    schoolList: {
-        width: 225,
-        marginTop: 10,
         marginBottom: 10
     },
-    itemTextFirst: {
-        color: 'black'
+    label: {
+        fontSize: 16,
+        color: '#000',
+        paddingTop: 10,
+        paddingBottom: 5
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
     }
 });

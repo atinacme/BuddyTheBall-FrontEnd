@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView, View, Pressable, Modal } from "react-native";
+import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView, View, Pressable } from "react-native";
 import { MultipleSelectList } from 'react-native-dropdown-select-list';
 import { Dropdown } from 'react-native-element-dropdown';
 import LinearGradient from 'react-native-linear-gradient';
@@ -26,6 +26,7 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
     const [coachSchools, setCoachSchools] = useState([]);
     const [assignedSchools, setAssignedSchools] = useState([]);
     const [selected, setSelected] = useState([]);
+    const [schoolListVisible, setSchoolListVisible] = useState(false)
 
     useEffect(() => {
         try {
@@ -72,29 +73,31 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
 
     const handleCoachUpdate = async () => {
         try {
-            const data = {
-                email: coachData.email,
-                password: coachData.password,
-                coach_name: coachData.coach_name,
-                assigned_region: coachData.assigned_region,
-                assigned_schools: coachSchools.concat(selected),
-                tennis_club: coachData.tennis_club,
-                favorite_pro_player: coachData.favorite_pro_player,
-                handed: coachData.handed,
-                favorite_drill: coachData.favorite_drill
-            };
-            const result = await CoachUpdateService(coachData.user_id, coachData.coach_id, data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Coach Updated Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
-                        }
-                    ]
-                );
+            if (coachData.email && coachData.password && coachData.coach_name && coachData.assigned_region && coachSchools.concat(selected).length > 0 && coachData.tennis_club && coachData.favorite_pro_player && coachData.handed && coachData.favorite_drill) {
+                const data = {
+                    email: coachData.email,
+                    password: coachData.password,
+                    coach_name: coachData.coach_name,
+                    assigned_region: coachData.assigned_region,
+                    assigned_schools: coachSchools.concat(selected),
+                    tennis_club: coachData.tennis_club,
+                    favorite_pro_player: coachData.favorite_pro_player,
+                    handed: coachData.handed,
+                    favorite_drill: coachData.favorite_drill
+                };
+                const result = await CoachUpdateService(coachData.user_id, coachData.coach_id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Coach Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -150,18 +153,27 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                         onChangeText={(e) => setCoachData({ ...coachData, email: e })}
                         value={coachData.email}
                     />
+                    {!coachData.email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
+                    }
                     <Text style={styles.label}>Password</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, password: e })}
                         value={coachData.password}
                     />
+                    {!coachData.password &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Password is Required</Text>
+                    }
                     <Text style={styles.label}>Coach Name</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, coach_name: e })}
                         value={coachData.coach_name}
                     />
+                    {!coachData.coach_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Coach Name is Required</Text>
+                    }
                     <Text style={styles.label}>Assigned Region</Text>
                     <Dropdown
                         style={styles.dropdown}
@@ -191,73 +203,117 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                             setCoachSchools([])
                         }}
                     />
+                    {!coachData.assigned_region &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Assigned Region is Required</Text>
+                    }
                     <Text style={styles.label}>Assigned Schools</Text>
-                    {assignedSchools.length > 0 && assignedSchools.map((item) => {
-                        return (
-                            <>
-                                {item.region === coachData.assigned_region && (
-                                    <View key={item.key} style={{
-                                        alignItems: 'center',
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text>{item.value}</Text>
-                                        </View>
-                                        <Pressable
-                                            style={[styles.agendaButton, styles.buttonClose]}
-                                            onPress={() => {
-                                                setAssignedSchools(assignedSchools.filter((school) => school.key !== item.key));
-                                                setCoachSchools(coachSchools.filter((school) => school !== item.value));
-                                                setData(prevState => [...prevState, item])
+                    {assignedSchools.length === 0 ?
+                        <TouchableOpacity
+                            onPress={async () => {
+                                setSchoolListVisible(true)
+                                const data = { region: coachData.assigned_region }
+                                const result = await GetRegionWiseSchools(data);
+                                result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
+                                var c = result.filter(function (objFromA) {
+                                    return !assignedSchools.find(function (objFromB) {
+                                        return objFromA.key === objFromB.key
+                                    })
+                                })
+                                setData(c);
+                            }}>
+                            <Text>+</Text>
+                        </TouchableOpacity>
+                        :
+                        <>
+                            {assignedSchools.length > 0 && assignedSchools.map((item) => {
+                                return (
+                                    <>
+                                        {item.region === coachData.assigned_region && (
+                                            <View key={item.key} style={{
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                                justifyContent: 'space-between'
                                             }}>
-                                            <Text style={styles.agendaCrossBtn}>X</Text>
-                                        </Pressable>
-                                    </View>
-                                )}
-                            </>
-                        );
-                    })}
-                    <MultipleSelectList
-                        setSelected={(val) => setSelected(val)}
-                        data={data}
-                        save="value"
-                        label="Selected Schools"
-                    />
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text>{item.value}</Text>
+                                                </View>
+                                                <Pressable
+                                                    style={[styles.agendaButton, styles.buttonClose]}
+                                                    onPress={() => {
+                                                        setAssignedSchools(assignedSchools.filter((school) => school.key !== item.key));
+                                                        setCoachSchools(coachSchools.filter((school) => school !== item.value));
+                                                        setData(prevState => [...prevState, item])
+                                                    }}>
+                                                    <Text style={styles.agendaCrossBtn}>X</Text>
+                                                </Pressable>
+                                            </View>
+                                        )}
+                                    </>
+                                );
+                            })}
+                        </>
+                    }
+                    {schoolListVisible && (
+                        <MultipleSelectList
+                            setSelected={(val) => setSelected(val)}
+                            data={data}
+                            save="value"
+                            label="Selected Schools"
+                        />
+                    )}
+                    {coachSchools.concat(selected).length === 0 &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Assigned Schools is Required</Text>
+                    }
                     <Text style={styles.label}>Tennis Club</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, tennis_club: e })}
                         value={coachData.tennis_club}
                     />
+                    {!coachData.tennis_club &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Tennis Club is Required</Text>
+                    }
                     <Text style={styles.label}>Favourite Pro Player</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, favorite_pro_player: e })}
                         value={coachData.favorite_pro_player}
                     />
+                    {!coachData.favorite_pro_player &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
+                    }
                     <Text style={styles.label}>Handed</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
                         value={coachData.handed}
                     />
+                    {!coachData.handed &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>
+                    }
                     <Text style={styles.label}>Favourite Drill</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, favorite_drill: e })}
                         value={coachData.favorite_drill}
                     />
+                    {!coachData.favorite_drill &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Favorite Drill is Required</Text>
+                    }
+                </ScrollView>
+                <View style={{ marginTop: 20 }}>
                     <TouchableOpacity onPress={handleCoachUpdate}>
                         <Text style={styles.submit}>Update</Text>
                     </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 80 }}>
                     <TouchableOpacity onPress={handleCoachDelete}>
-                        <Text style={styles.submit}>Delete</Text>
+                        <Text style={styles.deletebtn}>Delete</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Coaches")}>
-                        <Text style={styles.submit}>Back</Text>
+                        <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
-                </ScrollView>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -265,7 +321,11 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
 
 const styles = StyleSheet.create({
     wrapper: {
-        padding: 20,
+        marginTop: 60,
+        flex: 1,
+        position: 'relative',
+        padding: 15,
+        justifyContent: 'flex-end'
     },
     scrollView: {
         marginHorizontal: 20,
@@ -283,6 +343,24 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'flex-end'
     },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
     backbtn: {
         borderColor: "#fff",
         paddingTop: 10,
@@ -297,7 +375,20 @@ const styles = StyleSheet.create({
         display: 'flex',
         right: 0,
         width: 100,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
     },
     linearGradient: {
         flex: 1,

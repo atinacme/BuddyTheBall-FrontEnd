@@ -140,8 +140,8 @@ export default function SuperAdminRegionalManagerCreation({ navigation }) {
                         )}
                     </Formik>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin RM")}>
-                    <Text style={styles.backbtn}>Back</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
+                    <Text style={styles.btnWrapper}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </LinearGradient>

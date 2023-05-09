@@ -11,12 +11,12 @@ export default function SuperAdminSettings({ navigation }) {
                         <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>REGIONS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Messages")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>MESSAGES</Text>
+                        <Text style={{ ...styles.adminContainer, ...styles.adminBg4 }}>MESSAGES</Text>
                     </TouchableOpacity>
                 </Text>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
-                        <Text style={styles.backbtn}>Back</Text>
+                        <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         width: '100%'
-
     },
     backbtn: {
         borderColor: "#fff",
@@ -49,7 +48,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "700",
         marginTop: 25,
-        width: 120,
     },
     btnWrapper: {
         borderColor: "#fff",
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "700",
         marginTop: 25,
-        width: 120,
+        width: 330,
     },
     linearGradient: {
         flex: 1,

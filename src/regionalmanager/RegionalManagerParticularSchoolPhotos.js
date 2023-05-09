@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Image, TouchableOpacity, StyleSheet, SafeAreaView, Button, ScrollView } from 'react-native';
+import { Text, View, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetParticularSchoolPhotosService } from '../services/SchoolService';
 
@@ -9,7 +9,6 @@ export default function RegionalManagerParticularSchoolPhotos({ navigation, rout
         try {
             const getCustomers = async () => {
                 const result = await GetParticularSchoolPhotosService(route.params.schoolItem._id);
-                console.log("dsgfr---->", result);
                 if (result) {
                     setSchoolPhotosData(result);
                 }
@@ -34,7 +33,7 @@ export default function RegionalManagerParticularSchoolPhotos({ navigation, rout
                     </View>
                 </ScrollView>
                 <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Photos")}>
-                    <Text style={styles.backbtn}>Back</Text>
+                    <Text style={styles.btnWrapper}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </LinearGradient>
@@ -52,6 +51,16 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         textAlign: 'center',
         // fontFamily: 'LemonJuice'
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
     },
     imgWrap: {
         display: 'flex',

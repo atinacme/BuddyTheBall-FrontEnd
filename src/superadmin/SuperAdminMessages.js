@@ -59,7 +59,7 @@ export default function SuperAdminMessages({ navigation }) {
                     </View>
                 </TouchableOpacity>
                 <View style={styles.bckcta}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Settings")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

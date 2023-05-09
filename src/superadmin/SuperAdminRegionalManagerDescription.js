@@ -45,24 +45,26 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
 
     const handleUpdateRegionalManager = async () => {
         try {
-            const data = {
-                email: regionalManagerData.email,
-                password: regionalManagerData.password,
-                regional_manager_name: regionalManagerData.regional_manager_name,
-                assigned_region: regionalManagerData.assigned_region
-            };
-            const result = await RegionalManagerUpdateService(regionalManagerData.regional_manager_user_id, route.params.regional_manager._id, data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Regional Manager Updated Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
-                        }
-                    ]
-                );
+            if (regionalManagerData.email && regionalManagerData.password && regionalManagerData.regional_manager_name && regionalManagerData.assigned_region) {
+                const data = {
+                    email: regionalManagerData.email,
+                    password: regionalManagerData.password,
+                    regional_manager_name: regionalManagerData.regional_manager_name,
+                    assigned_region: regionalManagerData.assigned_region
+                };
+                const result = await RegionalManagerUpdateService(regionalManagerData.regional_manager_user_id, route.params.regional_manager._id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Regional Manager Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
         } catch (e) {
             Alert.alert(
@@ -118,18 +120,27 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                         onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, email: e })}
                         value={regionalManagerData.email}
                     />
+                    {!regionalManagerData.email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
+                    }
                     <Text style={styles.label}>Password</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, password: e })}
                         value={regionalManagerData.password}
                     />
+                    {!regionalManagerData.password &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Password is Required</Text>
+                    }
                     <Text style={styles.label}>Regional Manager Name</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, regional_manager_name: e })}
                         value={regionalManagerData.regional_manager_name}
                     />
+                    {!regionalManagerData.regional_manager_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Regional Manager Name is Required</Text>
+                    }
                     <Text style={styles.label}>Assigned Region</Text>
                     <SelectList
                         setSelected={(val) => setRegionalManagerData({ ...regionalManagerData, assigned_region: val })}
@@ -137,18 +148,23 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                         save="key"
                         defaultOption={{ key: regionalManagerData.assigned_region, value: regionalManagerData.assigned_region }}
                     />
-                    <View style={{ marginTop: 20 }}>
-                        <TouchableOpacity onPress={handleUpdateRegionalManager}>
-                            <Text style={styles.btnWrapper}>Upload</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleRegionalManagerDelete}>
-                            <Text style={styles.btnWrapper}>Delete</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
-                            <Text style={styles.btnWrapper}>Back</Text>
-                        </TouchableOpacity>
-                    </View>
+                    {!regionalManagerData.assigned_region &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Region is Required</Text>
+                    }
                 </ScrollView>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleUpdateRegionalManager}>
+                        <Text style={styles.btnWrapper}>Update</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 80 }}>
+                    <TouchableOpacity onPress={handleRegionalManagerDelete}>
+                        <Text style={styles.deletebtn}>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
+                        <Text style={styles.backbtn}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -161,6 +177,24 @@ const styles = StyleSheet.create({
         position: 'relative',
         padding: 15,
         justifyContent: 'flex-end'
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
     },
     backbtn: {
         borderColor: "#fff",

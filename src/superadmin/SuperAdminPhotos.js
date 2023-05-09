@@ -47,9 +47,11 @@ export default function SuperAdminPhotos({ navigation }) {
                         );
                     })}
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -57,7 +59,7 @@ export default function SuperAdminPhotos({ navigation }) {
 
 const styles = StyleSheet.create({
     scrollView: {
-        // marginHorizontal: 5,
+        marginHorizontal: 5,
     },
     label: {
         fontSize: 19,
@@ -82,33 +84,25 @@ const styles = StyleSheet.create({
     },
     linearGradient: {
         flex: 1,
-
+        borderRadius: 5
     },
     wrapper: {
         marginTop: 60,
-        paddingLeft: 10,
-        paddingRight: 10,
         flex: 1,
+        position: 'relative',
+        padding: 15,
+        justifyContent: 'flex-end'
     },
-    backbtn: {
+    btnWrapper: {
         borderColor: "#fff",
-        paddingTop: 10,
-        paddingBottom: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
         backgroundColor: "#ff8400",
         borderWidth: 3,
         borderRadius: 10,
         textAlign: "center",
         fontWeight: "700",
-        marginTop: 25,
-        display: 'flex',
-        right: 0,
-        width: 150,
-        position: 'absolute',
-        bottom: 0,
-        display: 'flex',
-        justifyContent: 'flex-end',
-        flex: 1,
-        marginBottom: 10
+        marginTop: 10,
     },
     cardimg: {
         display: 'flex'

@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
-import { GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
+import { DeleteCustomerService, GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { GetRegionWiseSchools } from '../services/SchoolService';
 import { Dropdown } from 'react-native-element-dropdown';
 import { GetScheduleByRegionalManagerAndSchoolService } from '../services/ScheduleService';
-import { GetClassCreatedByUserIdService } from '../services/ClassService';
+import { GetClassCreatedByUserIdService, GetClassesService } from '../services/ClassService';
 import { SelectList } from 'react-native-dropdown-select-list';
 
 export default function RegionalManagerCustomerDescription({ navigation, route }) {
     const state = useSelector((state) => state);
-    const [schoolData, setSchoolData] = useState([]);
     const [classList, setClassList] = useState([])
     const [customerData, setCustomerData] = useState({
         user_id: '',
@@ -35,78 +34,38 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
             };
             getAwardsList();
 
-            // const getRegionSchools = async () => {
-            //     const data = { region: state.authPage.auth_data?.assigned_region };
-            //     const result = await GetRegionWiseSchools(data);
-            //     if (result) {
-            //         const school_data = result.map(v => Object.assign(v, { value: v._id, label: v.school_name }));
-            //         setSchoolData(school_data);
-            //         const result1 = await GetParticularCustomerService(route.params.customerData._id);
-            //         if (result1 && result1.children_data.length > 0) {
-            //             for (let element of result1.children_data) {
-            //                 const data = {
-            //                     created_by_user_id: state.authPage.auth_data?.user_id,
-            //                     school_id: element.school._id
-            //                 };
-            //                 const result2 = await GetScheduleByRegionalManagerAndSchoolService(data);
-            //                 const scheduleData = result2.map(v => Object.assign(v, { value: v._id, label: `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coach.coach_name}` }));
-            //                 setChildrenData(prevState => [...prevState, {
-            //                     player_name: element.player_name,
-            //                     calendar_visible: false,
-            //                     player_age: element.player_age,
-            //                     wristband_level: element.wristband_level,
-            //                     school_list: school_data,
-            //                     school: element.school._id,
-            //                     schedule_list: scheduleData,
-            //                     schedule: element.schedule._id,
-            //                     handed: element.handed,
-            //                     num_buddy_books_read: element.num_buddy_books_read,
-            //                     jersey_size: element.jersey_size,
-            //                     visible: false,
-            //                     current_award: { name: element.current_award.name, image: element.current_award.image }
-            //                 }]);
-            //             }
-            //             setCustomerData({
-            //                 user_id: result1.user_id,
-            //                 email: result1.email,
-            //                 password: result1.password,
-            //                 parent_name: result1.parent_name,
-            //                 created_by: result1.created_by
-            //             });
-            //         }
-            //     }
-            // };
-            // getRegionSchools();
-
             const getClasses = async () => {
-                const data = { created_by_user_id: state.authPage.auth_data?.user_id }
-                const result = await GetClassCreatedByUserIdService(data);
+                const result = await GetClassesService();
                 if (result) {
                     result.map(v => {
-                        v.schedules.map(u => {
-                            Object.assign(v, { value: v._id, label: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${v.school.school_name}` })
-                        })
+                        if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                            v.schedules?.map(u => {
+                                Object.assign(v, { key: v._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${v.school.school_name}` })
+                            })
+                        }
                     })
                     setClassList(result)
                     const result1 = await GetParticularCustomerService(route.params.customerData._id);
                     if (result1 && result1.children_data.length > 0) {
                         for (let element of result1.children_data) {
                             setTimeout(() => {
-                                element.class.schedules.map(u => {
-                                    Object.assign(element.class, { value: element.class._id, label: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${element.class.school.school_name}` })
-                                })
+                                if (element.class !== null) {
+                                    element.class?.schedules?.map(u => {
+                                        Object.assign(element.class, { key: element.class._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${element.class.school.school_name}` })
+                                    })
+                                }
                                 console.log("aws===>", element.class)
                                 setChildrenData(prevState => [...prevState, {
                                     player_name: element.player_name,
                                     calendar_visible: false,
                                     player_age: element.player_age,
                                     wristband_level: element.wristband_level,
+                                    class_check: element.class === null ? null : element.class,
                                     class_list: result,
-                                    class: element.class,
-                                    // school_list: school_data,
-                                    // school: element.school._id,
-                                    // schedule_list: scheduleData,
-                                    // schedule: element.schedule._id,
+                                    class: element.class?._id,
+                                    class_visible: false,
+                                    class_default_show: element.class,
+                                    class_default_removed: false,
                                     handed: element.handed,
                                     num_buddy_books_read: element.num_buddy_books_read,
                                     jersey_size: element.jersey_size,
@@ -129,33 +88,114 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
         } catch (e) { }
     }, []);
 
-    // console.log("sg--->", childrenData.map(v => v.class[0]))
+    function checkKeyValues(obj) {
+        for (let key in obj) {
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                if (!checkKeyValues(obj[key])) {
+                    return false;
+                }
+            } else {
+                if (!obj[key]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function checkArrayObjects(array) {
+        for (let obj of array) {
+            if (!checkKeyValues(obj)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     const handleCustomerUpdate = async () => {
         try {
             childrenData.forEach(v => delete v.calendar_visible);
+            childrenData.forEach(v => delete v.class_check);
             childrenData.forEach(v => delete v.class_list);
-            // childrenData.forEach(v => delete v.school_list);
-            // childrenData.forEach(v => delete v.schedule_list);
+            childrenData.forEach(v => delete v.class_default_show);
+            childrenData.forEach(v => delete v.class_default_removed);
+            childrenData.forEach(v => delete v.class_visible);
             childrenData.forEach(v => delete v.visible);
-            const data = {
-                email: customerData.email,
-                password: customerData.password,
-                parent_name: customerData.parent_name,
-                children_data: childrenData
-            };
-            const result = await UpdateCustomerService(customerData.user_id, route.params.customerData._id, data);
-            if (result) {
+
+            const trueValue = checkArrayObjects(childrenData)
+
+            if (trueValue && customerData.email !== "" && customerData.password !== "" && customerData.parent_name !== "") {
+                const data = {
+                    email: customerData.email,
+                    password: customerData.password,
+                    parent_name: customerData.parent_name,
+                    children_data: childrenData
+                };
+                const result = await UpdateCustomerService(customerData.user_id, route.params.customerData._id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Customer Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Regional Manager Customers")
+                            }
+                        ]
+                    );
+                }
+            } else {
                 Alert.alert(
                     "Alert",
-                    "Customer Updated Successfully",
+                    "Fill all",
                     [
                         {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Regional Manager Customers")
+                            text: "OK"
                         }
                     ]
                 );
             }
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Customer!"
+            );
+        }
+    };
+
+    const handleCustomerDelete = async () => {
+        try {
+            Alert.alert(
+                "Alert",
+                "Do You Want to Delete the Customer ?",
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: "OK",
+                        onPress: async () => {
+                            const data = { id: route.params.customerData._id, user_id: customerData.user_id }
+                            const result = await DeleteCustomerService(data)
+                            console.log("aswtg--->", result)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Customer Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("Regional Manager Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
+                    }
+                ]
+            );
         } catch (e) {
             Alert.alert(
                 "Alert",
@@ -177,6 +217,9 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                         value={customerData.email}
                         style={styles.input}
                     />
+                    {!customerData.email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
+                    }
                     <Text style={styles.label}>Password</Text>
                     <TextInput
                         name="password"
@@ -185,6 +228,9 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                         value={customerData.password}
                         style={styles.input}
                     />
+                    {!customerData.password &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Password is Required</Text>
+                    }
                     <Text style={styles.label}>Parent Name</Text>
                     <TextInput
                         name="parent_name"
@@ -193,6 +239,9 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                         value={customerData.parent_name}
                         style={styles.input}
                     />
+                    {!customerData.parent_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Parent Name is Required</Text>
+                    }
                     <View>
                         <Text style={styles.label}>Child</Text><TouchableOpacity onPress={() => {
                             setChildrenData(prevState => [...prevState, {
@@ -202,10 +251,6 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                 wristband_level: '',
                                 class_list: classList,
                                 class: '',
-                                // school_list: schoolData,
-                                // school: '',
-                                // schedule_list: [],
-                                // schedule: '',
                                 handed: '',
                                 num_buddy_books_read: '',
                                 jersey_size: '',
@@ -215,7 +260,6 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                         }}><Text>+</Text></TouchableOpacity>
                     </View>
                     {childrenData.length > 0 && childrenData.map((item, index) => {
-                        { console.log("aswde---->", item.class, item?.class?.key, item?.class?.value) }
                         return (
                             <View key={index}>
                                 <Text style={styles.label}>Player Name</Text>
@@ -274,86 +318,62 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
                                 }
                                 <Text style={styles.label}>Class</Text>
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={item.class_list}
-                                    search
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    searchPlaceholder="Search..."
-                                    value={item.class}
-                                    onChange={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].class = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                />
-                                {/* <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].class = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.class_list}
-                                    save="key"
-                                    label="Selected Class"
-                                    defaultOption={{ key: item?.class?.key, value: item?.class?.value }}
-                                /> */}
+                                {item.class_check === null ?
+                                    <>
+                                        {!item.class_visible ?
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    let newArr = [...childrenData];
+                                                    newArr[index].class_visible = true;
+                                                    setChildrenData(newArr);
+                                                }}>
+                                                <Text>+</Text>
+                                            </TouchableOpacity>
+                                            :
+                                            <SelectList
+                                                setSelected={(val) => {
+                                                    let newArr = [...childrenData];
+                                                    newArr[index].class = val;
+                                                    setChildrenData(newArr);
+                                                }}
+                                                data={item.class_list}
+                                                save="key"
+                                                label="Selected School"
+                                            />
+                                        }
+                                    </>
+                                    :
+                                    <>
+                                        {!item.class_default_removed ?
+                                            <>
+                                                <Text>{item.class_default_show?.value}</Text>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        let newArr = [...childrenData];
+                                                        newArr[index].class = '';
+                                                        newArr[index].class_default_removed = true;
+                                                        setChildrenData(newArr);
+                                                    }}>
+                                                    <Text>X</Text>
+                                                </TouchableOpacity>
+                                            </>
+                                            :
+                                            <SelectList
+                                                setSelected={(val) => {
+                                                    let newArr = [...childrenData];
+                                                    newArr[index].class = val;
+                                                    setChildrenData(newArr);
+                                                }}
+                                                data={item.class_list}
+                                                save="key"
+                                                label="Selected School"
+                                            />
+                                        }
+                                    </>
+                                }
                                 {!item.class &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
-                                {/* <Text style={styles.label}>School</Text>
-                                <Dropdown
-                                    data={item.school_list}
-                                    search
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    searchPlaceholder="Search..."
-                                    value={item.school}
-                                    onChange={async (itemNew) => {
-                                        let newArr = [...childrenData];
-                                        var school = newArr[index].school_list?.filter(v => {
-                                            return (v._id === itemNew._id);
-                                        });
-                                        var school_id = school[0]._id;
-                                        newArr[index].school = school_id;
-                                        const data = {
-                                            created_by_user_id: state.authPage.auth_data?.user_id,
-                                            school_id: school_id
-                                        };
-                                        const result = await GetScheduleByRegionalManagerAndSchoolService(data);
-                                        const scheduleData = result.map(v => Object.assign(v, { value: v._id, label: `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coach.coach_name}` }));
-                                        newArr[index].schedule_list = scheduleData;
-                                        setChildrenData(newArr);
-                                    }}
-                                />
-                                {!item.school &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
-                                }
-                                <Text style={styles.label}>Schedule</Text>
-                                <Dropdown
-                                    data={item.schedule_list}
-                                    search
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    searchPlaceholder="Search..."
-                                    value={item.schedule}
-                                    onChange={async (itemNew) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].schedule = itemNew;
-                                        setChildrenData(newArr);
-                                    }}
-                                />
-                                {!item.schedule &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Schedule is Required</Text>
-                                } */}
                                 <Text style={styles.label}>Handed</Text>
                                 <TextInput
                                     name="handed"
@@ -405,7 +425,6 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
                                 }}>
-                                    {/* <View style={styles.buttonText}><Text>Select the Award</Text></View> */}
                                     <View style={styles.buttonText}>{item.current_award.image ? <Image source={{ uri: item.current_award.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
                                 </TouchableOpacity>
                                 {item.visible &&
@@ -431,7 +450,6 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity
-                                    // style={[styles.agendaButton, styles.buttonClose]}
                                     onPress={() => {
                                         var array = [...childrenData];
                                         var indexData = array.indexOf(item);
@@ -440,18 +458,25 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                             setChildrenData(array);
                                         }
                                     }}>
-                                    <Text >Remove</Text>
+                                    <Text style={styles.removebtn}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
                         );
                     })}
+                </ScrollView>
+                <View style={{ marginTop: 20 }}>
                     <TouchableOpacity onPress={handleCustomerUpdate}>
                         <Text style={styles.submit}>Update</Text>
                     </TouchableOpacity>
-                </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Customers")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 80 }}>
+                    <TouchableOpacity onPress={handleCustomerDelete}>
+                        <Text style={styles.deletebtn}>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Customers")}>
+                        <Text style={styles.backbtn}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -463,7 +488,6 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15,
         position: 'relative',
-        marginBottom: 56,
         marginTop: 60
     },
     submit: {
@@ -479,6 +503,40 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'flex-end'
     },
+    removebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10,
+        display: 'flex',
+        left: 0,
+        width: 100,
+        bottom: 0,
+        marginBottom: 10
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
     backbtn: {
         borderColor: "#fff",
         paddingTop: 10,
@@ -493,7 +551,9 @@ const styles = StyleSheet.create({
         display: 'flex',
         right: 0,
         width: 100,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
     },
     linearGradient: {
         flex: 1,
