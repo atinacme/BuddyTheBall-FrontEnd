@@ -51,7 +51,7 @@ export default function CoachDashboard({ navigation }) {
         try {
             const res = await axios({
                 method: 'post',
-                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                url: `${process.env.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
                 data: formData,
                 headers: {
                     Accept: 'application/json',
@@ -126,10 +126,10 @@ export default function CoachDashboard({ navigation }) {
                         <Text style={{ ...styles.adminContainer, ...styles.adminBg4 }}>SCHOOLS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Customers")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg5 }}>CUSTOMERS</Text>
+                        <Text style={{ ...styles.adminContainer, ...styles.adminBg5 }}>PARENTS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Classes")} >
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>CLASSES</Text>
+                        <Text style={{ ...styles.adminContainer, ...styles.adminBg7 }}>CLASSES</Text>
                     </TouchableOpacity>
                 </Text>
                 <View style={styles.adminbtn}>
@@ -224,6 +224,15 @@ const styles = StyleSheet.create({
     },
     adminBg5: {
         backgroundColor: '#ff0000'
+    },
+    adminBg6: {
+        backgroundColor: '#ff0000'
+    },
+    adminBg7: {
+        backgroundColor: '#ffff00'
+    },
+    adminBg8: {
+        backgroundColor: 'blue'
     },
     txt: {
         fontFamily: 'LemonJuice',

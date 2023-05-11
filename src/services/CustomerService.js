@@ -1,7 +1,7 @@
 import HttpRequest from "./HttpRequest";
 import Config from "../../Config";
 
-const baseUrl = Config.REACT_APP_BASE_URL;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const GetCustomersService = async () => {
     return await HttpRequest("GET", `${baseUrl}/getCustomers`, null);

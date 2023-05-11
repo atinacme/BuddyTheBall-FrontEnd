@@ -3,7 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView, Ale
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetCoachClassesService } from '../services/ClassService';
+import { GetClassesService } from '../services/ClassService';
 
 export default function CoachClasses({ navigation }) {
     const state = useSelector((state) => state);
@@ -12,10 +12,17 @@ export default function CoachClasses({ navigation }) {
     useEffect(() => {
         try {
             const getClasses = async () => {
-                const data = { coach_id: state.authPage.auth_data?.user_id, regional_manager_id: state.authPage.auth_data?.assigned_by_user_id }
-                const result = await GetCoachClassesService(data);
+                const result = await GetClassesService();
                 if (result) {
-                    setClasses(result);
+                    result.map(v => {
+                        if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                            v?.schedules?.map(u => {
+                                if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                                    setClasses(result);
+                                }
+                            })
+                        }
+                    })
                 }
             };
             getClasses();
@@ -51,7 +58,7 @@ export default function CoachClasses({ navigation }) {
                                             {item.schedules.map(v => {
                                                 return <DataTable.Cell>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</DataTable.Cell>
                                             })}
-                                            <DataTable.Cell>{item.school?.school_name}</DataTable.Cell>
+                                            <DataTable.Cell>{item?.school?.school_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );

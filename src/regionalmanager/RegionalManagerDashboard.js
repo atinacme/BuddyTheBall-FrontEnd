@@ -51,7 +51,7 @@ export default function RegionalManagerDashboard({ navigation }) {
         try {
             const res = await axios({
                 method: 'post',
-                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                url: `${process.env.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
                 data: formData,
                 headers: {
                     Accept: 'application/json',

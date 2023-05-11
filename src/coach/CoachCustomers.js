@@ -29,7 +29,7 @@ export default function CoachCustomers({ navigation }) {
                     <View>
                         <DataTable style={styles.container}>
                             <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title>CUSTOMER</DataTable.Title>
+                                <DataTable.Title>PARENT</DataTable.Title>
                                 <DataTable.Title>CREATED BY</DataTable.Title>
                                 <DataTable.Title>EMAIL</DataTable.Title>
                             </DataTable.Header>
@@ -59,7 +59,7 @@ export default function CoachCustomers({ navigation }) {
                 </ScrollView>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Customer Creation")}>
-                        <Text style={styles.coach_cta}>Customer Creation</Text>
+                        <Text style={styles.coach_cta}>Parent Creation</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>

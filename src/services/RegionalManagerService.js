@@ -1,7 +1,7 @@
 import Config from "../../Config";
 import HttpRequest from "./HttpRequest";
 
-const baseUrl = Config.REACT_APP_BASE_URL;
+const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const GetAllRegionalManagersService = async () => {
     return await HttpRequest("GET", `${baseUrl}/getRegionalManagers`, null);

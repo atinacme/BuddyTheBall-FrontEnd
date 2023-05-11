@@ -3,7 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView, Ale
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetScheduleByCoachService } from '../services/ScheduleService';
+import { GetSchedulesService } from '../services/ScheduleService';
 
 export default function CoachSchedules({ navigation }) {
     const state = useSelector((state) => state);
@@ -12,10 +12,15 @@ export default function CoachSchedules({ navigation }) {
     useEffect(() => {
         try {
             const getSchedules = async () => {
-                const data = { coach_id: state.authPage.auth_data?.user_id, regional_manager_id: state.authPage.auth_data?.assigned_by_user_id }
-                const result = await GetScheduleByCoachService(data);
+                const result = await GetSchedulesService();
                 if (result) {
-                    setSchedules(result);
+                    result.map(v => {
+                        v.coaches.map(u => {
+                            if (u._id === state.authPage.auth_data?._id) {
+                                setSchedules(result);
+                            }
+                        })
+                    })
                 }
             };
             getSchedules();

@@ -5,10 +5,7 @@ import { DeleteCustomerService, GetAwardPhotosService, GetParticularCustomerServ
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { GetRegionWiseSchools } from '../services/SchoolService';
-import { Dropdown } from 'react-native-element-dropdown';
-import { GetScheduleByRegionalManagerAndSchoolService } from '../services/ScheduleService';
-import { GetClassCreatedByUserIdService, GetClassesService } from '../services/ClassService';
+import { GetClassesService } from '../services/ClassService';
 import { SelectList } from 'react-native-dropdown-select-list';
 
 export default function RegionalManagerCustomerDescription({ navigation, route }) {
@@ -54,7 +51,6 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                         Object.assign(element.class, { key: element.class._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${element.class.school.school_name}` })
                                     })
                                 }
-                                console.log("aws===>", element.class)
                                 setChildrenData(prevState => [...prevState, {
                                     player_name: element.player_name,
                                     calendar_visible: false,
@@ -179,7 +175,6 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                         onPress: async () => {
                             const data = { id: route.params.customerData._id, user_id: customerData.user_id }
                             const result = await DeleteCustomerService(data)
-                            console.log("aswtg--->", result)
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -277,7 +272,8 @@ export default function RegionalManagerCustomerDescription({ navigation, route }
                                 {!item.player_name &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Player Name is Required</Text>
                                 }
-                                <Text style={styles.label}>Player Age</Text><Text onPress={() => {
+                                <Text style={styles.label}>Player Age</Text>
+                                <Text onPress={() => {
                                     let newArr = [...childrenData];
                                     newArr[index].calendar_visible = !newArr[index].calendar_visible;
                                     setChildrenData(newArr);

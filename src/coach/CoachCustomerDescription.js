@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
-import { GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
-import { Dropdown } from 'react-native-element-dropdown';
+import { DeleteCustomerService, GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/CustomerService';
+import { SelectList } from 'react-native-dropdown-select-list';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { GetClassCreatedByUserIdService } from '../services/ClassService';
+import { GetClassesService } from '../services/ClassService';
 
 export default function CoachCustomerDescription({ navigation, route }) {
     const state = useSelector((state) => state);
@@ -30,28 +30,37 @@ export default function CoachCustomerDescription({ navigation, route }) {
             getAwardsList();
 
             const getClasses = async () => {
-                const data = { created_by_user_id: state.authPage.auth_data?.user_id }
-                const result = await GetClassCreatedByUserIdService(data);
+                const result = await GetClassesService();
                 if (result) {
                     result.map(v => {
-                        v.schedules.map(u => {
-                            Object.assign(v, { value: v._id, label: `Class from ${u.date} (${u.start_time} to ${u.end_time})` })
-                        })
+                        if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                            v?.schedules?.map(u => {
+                                if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                                    Object.assign(v, { key: v._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time})` })
+                                }
+                            })
+                        }
                     })
                     setClassList(result)
                     const result1 = await GetParticularCustomerService(route.params.customerData._id);
                     if (result1) {
                         var childrenData = [];
                         result1.children_data.length > 0 && result1.children_data.forEach(element => {
-                            element.class.schedules.map(u => {
-                                Object.assign(element.class, { value: element.class._id, label: `Class from ${u.date} (${u.start_time} to ${u.end_time}) in ${element.class.school.school_name}` })
-                            })
+                            if (element.class !== null) {
+                                element.class?.schedules?.map(u => {
+                                    Object.assign(element.class, { key: element.class._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time}) in ${element.class.school.school_name}` })
+                                })
+                            }
                             childrenData.push({
                                 player_name: element.player_name,
                                 player_age: element.player_age,
                                 wristband_level: element.wristband_level,
+                                class_check: element.class === null ? null : element.class,
                                 class_list: result,
-                                class: element.class,
+                                class: element.class?._id,
+                                class_visible: false,
+                                class_default_show: element.class,
+                                class_default_removed: false,
                                 handed: element.handed,
                                 num_buddy_books_read: element.num_buddy_books_read,
                                 jersey_size: element.jersey_size,
@@ -74,30 +83,103 @@ export default function CoachCustomerDescription({ navigation, route }) {
         } catch (e) { }
     }, []);
 
+    function checkKeyValues(obj) {
+        for (let key in obj) {
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                if (!checkKeyValues(obj[key])) {
+                    return false;
+                }
+            } else {
+                if (!obj[key]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function checkArrayObjects(array) {
+        for (let obj of array) {
+            if (!checkKeyValues(obj)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     const handleCustomerUpdate = async () => {
         try {
             customerData.children_data.forEach(v => delete v.calendar_visible);
+            customerData.children_data.forEach(v => delete v.class_check);
             customerData.children_data.forEach(v => delete v.class_list);
+            customerData.children_data.forEach(v => delete v.class_default_show);
+            customerData.children_data.forEach(v => delete v.class_default_removed);
+            customerData.children_data.forEach(v => delete v.class_visible);
             customerData.children_data.forEach(v => delete v.visible);
-            const data = {
-                email: customerData.email,
-                password: customerData.password,
-                parent_name: customerData.parent_name,
-                children_data: customerData.children_data
-            };
-            const result = await UpdateCustomerService(customerData.user_id, route.params.customerData._id, data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Customer Updated Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Coach Customers")
-                        }
-                    ]
-                );
+
+            const trueValue = checkArrayObjects(customerData.children_data)
+
+            if (trueValue && customerData.email !== "" && customerData.password !== "" && customerData.parent_name !== "") {
+                const data = {
+                    email: customerData.email,
+                    password: customerData.password,
+                    parent_name: customerData.parent_name,
+                    children_data: customerData.children_data
+                };
+                const result = await UpdateCustomerService(customerData.user_id, route.params.customerData._id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Customer Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Coach Customers")
+                            }
+                        ]
+                    );
+                }
             }
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Customer!"
+            );
+        }
+    };
+
+    const handleCustomerDelete = async () => {
+        try {
+            Alert.alert(
+                "Alert",
+                "Do You Want to Delete the Customer ?",
+                [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: "OK",
+                        onPress: async () => {
+                            const data = { id: route.params.customerData._id, user_id: customerData.user_id }
+                            const result = await DeleteCustomerService(data)
+                            if (result) {
+                                Alert.alert(
+                                    "Alert",
+                                    "Customer Deleted Successfully",
+                                    [
+                                        {
+                                            text: "OK",
+                                            onPress: () => navigation.navigate("Coach Dashboard")
+                                        }
+                                    ]
+                                );
+                            }
+                        }
+                    }
+                ]
+            );
         } catch (e) {
             Alert.alert(
                 "Alert",
@@ -119,6 +201,9 @@ export default function CoachCustomerDescription({ navigation, route }) {
                         value={customerData.email}
                         style={styles.input}
                     />
+                    {!customerData.email &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
+                    }
                     <Text style={styles.label}>Password</Text>
                     <TextInput
                         name="password"
@@ -127,6 +212,9 @@ export default function CoachCustomerDescription({ navigation, route }) {
                         value={customerData.password}
                         style={styles.input}
                     />
+                    {!customerData.password &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Password is Required</Text>
+                    }
                     <Text style={styles.label}>Parent Name</Text>
                     <TextInput
                         name="parent_name"
@@ -135,7 +223,10 @@ export default function CoachCustomerDescription({ navigation, route }) {
                         value={customerData.parent_name}
                         style={styles.input}
                     />
-                    <View>
+                    {!customerData.parent_name &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Parent Name is Required</Text>
+                    }
+                    <View style={styles.labelBtn}>
                         <Text style={styles.label}>Child</Text><TouchableOpacity onPress={() => {
                             setCustomerData({
                                 ...customerData,
@@ -153,9 +244,10 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                     current_award: { name: '', image: '' }
                                 }]
                             });
-                        }}><Text>+</Text></TouchableOpacity>
+                        }}><Text style={styles.plusBtn}>+</Text>
+                        </TouchableOpacity>
                     </View>
-                    {customerData.children_data.length > 0 && customerData.children_data.map((item, index) => {
+                    {customerData.children_data?.length > 0 && customerData.children_data.map((item, index) => {
                         return (
                             <View key={index}>
                                 <Text style={styles.label}>Player Name</Text>
@@ -173,11 +265,14 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                 {!item.player_name &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Player Name is Required</Text>
                                 }
-                                <Text style={styles.label}>Player Age</Text><Text onPress={() => {
-                                    let newArr = [...customerData.children_data];
-                                    newArr[index].calendar_visible = !newArr[index].calendar_visible;
-                                    setCustomerData({ ...customerData, children_data: newArr });
-                                }}>+</Text>
+                                <View style={styles.labelBtn}>
+                                    <Text style={styles.label}>Player Age</Text>
+                                    <Text style={styles.plusBtn} onPress={() => {
+                                        let newArr = [...customerData.children_data];
+                                        newArr[index].calendar_visible = !newArr[index].calendar_visible;
+                                        setCustomerData({ ...customerData, children_data: newArr });
+                                    }}>+</Text>
+                                </View>
                                 {item.calendar_visible && (
                                     <DateTimePicker
                                         testID="dateTimePicker"
@@ -214,25 +309,59 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
                                 }
                                 <Text style={styles.label}>Class</Text>
-                                <Dropdown
-                                    style={styles.dropdown}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={item.class_list}
-                                    search
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    searchPlaceholder="Search..."
-                                    value={item.class}
-                                    onChange={(val) => {
-                                        let newArr = [...customerData.children_data];
-                                        newArr[index].class = val;
-                                        setCustomerData({ ...customerData, children_data: newArr });
-                                    }}
-                                />
+                                {item.class_check === null ?
+                                    <>
+                                        {!item.class_visible ?
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    let newArr = [...customerData.children_data];
+                                                    newArr[index].class_visible = true;
+                                                    setCustomerData({ ...customerData, children_data: newArr });
+                                                }}>
+                                                <Text style={styles.plusBtn}>+</Text>
+                                            </TouchableOpacity>
+                                            :
+                                            <SelectList
+                                                setSelected={(val) => {
+                                                    let newArr = [...customerData.children_data];
+                                                    newArr[index].class = val;
+                                                    setCustomerData({ ...customerData, children_data: newArr });
+                                                }}
+                                                data={item.class_list}
+                                                save="key"
+                                                label="Selected School"
+                                            />
+                                        }
+                                    </>
+                                    :
+                                    <>
+                                        {!item.class_default_removed ?
+                                            <>
+                                                <Text>{item.class_default_show?.value}</Text>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        let newArr = [...customerData.children_data];
+                                                        newArr[index].class = '';
+                                                        newArr[index].class_default_removed = true;
+                                                        setCustomerData({ ...customerData, children_data: newArr });
+                                                    }}>
+                                                    <Text>X</Text>
+                                                </TouchableOpacity>
+                                            </>
+                                            :
+                                            <SelectList
+                                                setSelected={(val) => {
+                                                    let newArr = [...customerData.children_data];
+                                                    newArr[index].class = val;
+                                                    setCustomerData({ ...customerData, children_data: newArr });
+                                                }}
+                                                data={item.class_list}
+                                                save="key"
+                                                label="Selected School"
+                                            />
+                                        }
+                                    </>
+                                }
                                 {!item.class &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
@@ -320,18 +449,25 @@ export default function CoachCustomerDescription({ navigation, route }) {
                                             setCustomerData({ ...customerData, children_data: array });
                                         }
                                     }}>
-                                    <Text >Remove</Text>
+                                    <Text style={styles.removebtn}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
                         );
                     })}
+                </ScrollView>
+                <View style={{ marginTop: 20 }}>
                     <TouchableOpacity onPress={handleCustomerUpdate}>
                         <Text style={styles.submit}>Update</Text>
                     </TouchableOpacity>
-                </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Coach Customers")}>
-                    <Text style={styles.backbtn}>Back</Text>
-                </TouchableOpacity>
+                </View>
+                <View style={{ marginTop: 80 }}>
+                    <TouchableOpacity onPress={handleCustomerDelete}>
+                        <Text style={styles.deletebtn}>Delete</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Coach Customers")}>
+                        <Text style={styles.backbtn}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -343,8 +479,23 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15,
         position: 'relative',
-        marginBottom: 56,
         marginTop: 60
+    },
+    labelBtn: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    plusBtn: {
+        borderColor: "#fff",
+        padding: 3,
+        textAlign: "center",
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 50,
+        width: 30,
+        height: 30
     },
     submit: {
         borderColor: "#fff",
@@ -358,6 +509,40 @@ const styles = StyleSheet.create({
         marginTop: 5,
         display: 'flex',
         justifyContent: 'flex-end'
+    },
+    removebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10,
+        display: 'flex',
+        left: 0,
+        width: 100,
+        bottom: 0,
+        marginBottom: 10
+    },
+    deletebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        left: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
     },
     backbtn: {
         borderColor: "#fff",
@@ -373,7 +558,9 @@ const styles = StyleSheet.create({
         display: 'flex',
         right: 0,
         width: 100,
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
     },
     linearGradient: {
         flex: 1,
@@ -407,7 +594,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         margin: 16,
-        height: 60,
+        height: 80,
         borderBottomColor: 'gray',
         borderBottomWidth: 0.5,
     },
@@ -419,7 +606,7 @@ const styles = StyleSheet.create({
     },
     selectedTextStyle: {
         fontSize: 16,
-        height: 60
+        height: 100
     },
     iconStyle: {
         width: 20,

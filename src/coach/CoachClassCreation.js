@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-    SafeAreaView, StyleSheet, Alert, Button, Text
+    SafeAreaView, StyleSheet, Alert, Text, Image, TouchableOpacity, View
 } from 'react-native';
+import buddy from '../assets/buddy.png';
+import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from "react-redux";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetScheduleByCoachService, GetScheduleCreatedByUserIdService } from '../services/ScheduleService';
+import { GetSchedulesService } from '../services/ScheduleService';
 import { CreateClassService } from '../services/ClassService';
-import { GetRegionWiseSchools } from '../services/SchoolService';
 
 export default function CoachClassCreation({ navigation }) {
     const state = useSelector((state) => state);
@@ -18,10 +19,14 @@ export default function CoachClassCreation({ navigation }) {
     useEffect(() => {
         try {
             const getSchedules = async () => {
-                const data = { coach_id: state.authPage.auth_data?.user_id, regional_manager_id: state.authPage.auth_data?.assigned_by_user_id }
-                const result = await GetScheduleByCoachService(data);
+                const result = await GetSchedulesService();
                 if (result) {
-                    setSessionsList(result.map(v => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` })));
+                    result.map(v => {
+                        if (v?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                            Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` })
+                        }
+                    });
+                    setSessionsList(result)
                 }
             };
             getSchedules();
@@ -29,150 +34,120 @@ export default function CoachClassCreation({ navigation }) {
     }, []);
 
     const handleCreateClass = async () => {
-        const data = {
-            created_by: "coach",
-            created_by_name: state.authPage.auth_data?.coach_name,
-            created_by_user_id: state.authPage.auth_data?.user_id,
-            schedules: sessions,
-            school: selectedSchool
-        }
-        const result = await CreateClassService(data)
-        if (result) {
-            Alert.alert(
-                "Alert",
-                "Class Added Successfully",
-                [
-                    {
-                        text: "OK",
-                        onPress: () => navigation.navigate("Coach Dashboard")
-                    }
-                ]
-            );
+        if (sessions !== undefined && sessions.length > 0 && selectedSchool) {
+            const data = {
+                created_by: "coach",
+                created_by_name: state.authPage.auth_data?.coach_name,
+                created_by_user_id: state.authPage.auth_data?.user_id,
+                schedules: sessions,
+                school: selectedSchool
+            }
+            const result = await CreateClassService(data)
+            if (result) {
+                Alert.alert(
+                    "Alert",
+                    "Class Added Successfully",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => navigation.navigate("Coach Dashboard")
+                        }
+                    ]
+                );
+            }
         }
     }
 
     return (
-        <SafeAreaView style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <Text style={styles.label}>Schedules :</Text>
-            <MultipleSelectList
-                setSelected={(val) => setSessions(val)}
-                data={sessionsList}
-                save="key"
-                label="Selected Sessions"
-            />
-            <Text style={styles.label}>School :</Text>
-            <SelectList
-                setSelected={(val) => setSelectedSchool(val)}
-                data={schoolsList}
-                save="key"
-            />
-            <Button onPress={handleCreateClass} title="Create Class" />
-        </SafeAreaView>
+        <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
+            <SafeAreaView style={styles.wrapper}>
+                <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
+                <Text style={styles.label}>Schedules :</Text>
+                <MultipleSelectList
+                    setSelected={(val) => setSessions(val)}
+                    data={sessionsList}
+                    save="key"
+                    label="Selected Sessions"
+                />
+                {(sessions == undefined || sessions?.length === 0) &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
+                }
+                <Text style={styles.label}>School :</Text>
+                <SelectList
+                    setSelected={(val) => setSelectedSchool(val)}
+                    data={schoolsList}
+                    save="key"
+                />
+                {!selectedSchool &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
+                }
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleCreateClass}>
+                        <Text style={styles.btnWrapper}>Submit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Coach Classes")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    wrapper: {
+        marginTop: 60,
         flex: 1,
-        justifyContent: 'center'
+        position: 'relative',
+        padding: 15
+    },
+    backbtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 5,
+        position: 'absolute',
+        display: 'flex',
+        right: 0,
+        width: 100,
+        justifyContent: 'flex-end',
+        bottom: 0,
+        marginBottom: 10
+    },
+    linearGradient: {
+        flex: 1,
+        borderRadius: 5
     },
     scrollView: {
-        marginHorizontal: 20,
-        marginVertical: 20,
-        maxHeight: 190
+        marginHorizontal: 5,
     },
     input: {
         borderWidth: 1,
         padding: 10,
         borderRadius: 5,
         marginTop: 5,
-        marginBottom: 10,
-        width: 180
-    },
-    item: {
-        backgroundColor: '#fff',
-        flex: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginRight: 10,
-        marginTop: 17
-    },
-    itemText: {
-        color: '#888',
-        fontSize: 16,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 20,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-        margin: 5
-    },
-    agendaButton: {
-        borderRadius: 50,
-        elevation: 2,
-        width: 30,
-        height: 30,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    agendaCrossBtn: {
-        fontSize: 15,
-    },
-    buttonOpen: {
-        backgroundColor: '#2196F3'
-    },
-    plusButton: {
-        borderRadius: 50,
-        elevation: 2,
-        width: 30,
-        height: 30,
-        alignItems: 'center'
-    },
-    mainText: {
-        marginRight: 40
-    },
-    textPlus: {
-        fontSize: 20,
-    },
-    buttonClose: {
-        backgroundColor: 'red'
-    },
-    textStyle: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center'
-    },
-    modalText: {
-        marginBottom: 15,
-        flexDirection: 'row'
-    },
-    schoolList: {
-        width: 225,
-        marginTop: 10,
         marginBottom: 10
     },
-    itemTextFirst: {
-        color: 'black'
+    label: {
+        fontSize: 16,
+        color: '#000',
+        paddingTop: 10,
+        paddingBottom: 5
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
     }
 });

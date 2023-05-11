@@ -57,7 +57,6 @@ export default function CoachSchoolList({ navigation }) {
         }
         catch (e) { }
     }, []);
-    console.log('date--->', schedules);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
@@ -101,7 +100,6 @@ export default function CoachSchoolList({ navigation }) {
                                     } style={styles.cachpicWrap}
                                     >
                                         <DataTable.Row>
-                                            {/* <DataTable.Cell>{item.school.assigned_day}</DataTable.Cell> */}
                                             <DataTable.Cell>{item.school?.school_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
@@ -143,12 +141,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         textAlign: "center",
         fontWeight: "700",
-        marginTop: 5,
+        // marginTop: 10,
+        marginBottom: 10,
         position: 'absolute',
         display: 'flex',
-        right: 0,
-        width: 100,
-        justifyContent: 'flex-end'
+        width: 325,
     },
     linearGradient: {
         flex: 1,
