@@ -63,7 +63,7 @@ export default function SuperAdminSchoolCreation({ navigation }) {
                     [
                         {
                             text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            onPress: () => navigation.navigate("Super Admin Dashboard")
                         }
                     ]
                 );
@@ -172,7 +172,7 @@ export default function SuperAdminSchoolCreation({ navigation }) {
                     </Formik>
                 </ScrollView>
                 <View style={{ marginTop: 20 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Schools")}>
                         <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>

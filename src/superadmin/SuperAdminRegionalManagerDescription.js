@@ -60,7 +60,7 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                onPress: () => navigation.navigate("Super Admin Dashboard")
                             }
                         ]
                     );
@@ -92,7 +92,7 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                                     [
                                         {
                                             text: "OK",
-                                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                            onPress: () => navigation.navigate("Super Admin Dashboard")
                                         }
                                     ]
                                 );
@@ -161,7 +161,7 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                     <TouchableOpacity onPress={handleRegionalManagerDelete}>
                         <Text style={styles.deletebtn}>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regional Manager")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

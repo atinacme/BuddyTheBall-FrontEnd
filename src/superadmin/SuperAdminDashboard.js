@@ -1,7 +1,15 @@
 import React from 'react';
-import { SafeAreaView, Text, TouchableOpacity, StyleSheet, View, ScrollView } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, StyleSheet, View, Image, ScrollView, } from 'react-native';
 import { useDispatch } from "react-redux";
 import { AuthPageAction } from '../redux/Actions';
+import billing from '../assets/BILLING_INVOICING_REV1.png';
+import coaches from '../assets/COACHES_REV1.png';
+import photos from '../assets/PHOTOS_REV1.png';
+import parents from '../assets/PARENTS_REV1.png';
+import settings from '../assets/SETTING-_REV1.png';
+import schools from '../assets/SCHOOLS_REV1.png';
+import calendar from '../assets/CALENDAR_REV1.png';
+import regional_managers from '../assets/REGIONAL_MANAGERS_REV1.png';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function SuperAdminDashboard({ navigation }) {
@@ -12,29 +20,29 @@ export default function SuperAdminDashboard({ navigation }) {
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView>
                     <Text style={styles.adminWrapper}>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Billing")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>BILLING / INVOICING</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Billing")}>
+                            <Image source={billing} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Coaches")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>COACHES</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Coaches")}>
+                            <Image source={coaches} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Photos")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg3 }}>PHOTOS</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Photos")}>
+                            <Image source={photos} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Customers")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg4 }}>PARENTS</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Parents")}>
+                            <Image source={parents} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Settings")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg5 }}>SETTINGS</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Settings")}>
+                            <Image source={settings} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg6 }}>SCHOOLS</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Schools")}>
+                            <Image source={schools} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Calendar")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg7 }}>CALENDAR</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Calendar")}>
+                            <Image source={calendar} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg8 }}>Regional Managers</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regional Manager")}>
+                            <Image source={regional_managers} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
                     </Text>
                 </ScrollView>
@@ -98,8 +106,9 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         marginTop: 80,
+        marginBottom: 60
     },
     adminContainer: {
         width: 155,

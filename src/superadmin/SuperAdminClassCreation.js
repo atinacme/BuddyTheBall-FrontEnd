@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Alert, TouchableOpacity, Text, View, Image } from 'react-native';
+import { SafeAreaView, StyleSheet, Alert, TouchableOpacity, Text, View, Image, TextInput } from 'react-native';
 import buddy from '../assets/buddy.png';
 import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetSchedulesService } from '../services/ScheduleService';
+import { GetSchedulesService } from '../services/SessionService';
 import { CreateClassService } from '../services/ClassService';
 import { GetSchoolsService } from '../services/SchoolService';
 
@@ -14,6 +14,7 @@ export default function SuperAdminClassCreation({ navigation }) {
     const [sessions, setSessions] = useState([])
     const [schoolsList, setSchoolsList] = useState([])
     const [selectedSchool, setSelectedSchool] = useState()
+    const [topic, setTopic] = useState();
 
     useEffect(() => {
         try {
@@ -37,13 +38,14 @@ export default function SuperAdminClassCreation({ navigation }) {
     }, []);
 
     const handleCreateClass = async () => {
-        if (sessions.length > 0 && selectedSchool) {
+        if (sessions.length > 0 && selectedSchool && topic) {
             const data = {
                 created_by: "superadmin",
                 created_by_name: "Super Admin",
                 created_by_user_id: state.authPage?._id,
                 schedules: sessions,
-                school: selectedSchool
+                school: selectedSchool,
+                topic: topic
             }
             const result = await CreateClassService(data)
             if (result) {
@@ -53,7 +55,7 @@ export default function SuperAdminClassCreation({ navigation }) {
                     [
                         {
                             text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            onPress: () => navigation.navigate("Super Admin Dashboard")
                         }
                     ]
                 );
@@ -65,7 +67,19 @@ export default function SuperAdminClassCreation({ navigation }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <Text style={styles.label}>Schedules :</Text>
+                <View>
+                    <Text style={styles.label}>Topic :</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(val) => setTopic(val)}
+                        value={topic}
+                        placeholder='Topic'
+                    />
+                </View>
+                {!topic &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                }
+                <Text style={styles.label}>Sessions :</Text>
                 <MultipleSelectList
                     setSelected={(val) => setSessions(val)}
                     data={sessionsList}
@@ -88,7 +102,7 @@ export default function SuperAdminClassCreation({ navigation }) {
                     <TouchableOpacity onPress={handleCreateClass}>
                         <Text style={styles.btnWrapper}>Submit</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Classes")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Classes")}>
                         <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -68,7 +68,7 @@ export default function CoachClasses({ navigation }) {
                 </ScrollView>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Class Creation")}>
-                        <Text style={styles.coach_cta}>Class Creation</Text>
+                        <Text style={styles.coach_cta}>Add New Class</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>

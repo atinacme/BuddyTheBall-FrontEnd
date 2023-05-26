@@ -62,7 +62,7 @@ export default function SuperAdminCoachCreation({ navigation }) {
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                onPress: () => navigation.navigate("Super Admin Dashboard")
                             }
                         ]
                     );
@@ -175,7 +175,7 @@ export default function SuperAdminCoachCreation({ navigation }) {
                     <TouchableOpacity onPress={handleSignUp}>
                         <Text style={styles.btnWrapper}>Submit</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Coaches")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Coaches")}>
                         <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>

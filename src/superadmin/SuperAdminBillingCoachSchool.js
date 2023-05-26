@@ -99,7 +99,7 @@ export default function SuperAdminBillingCoachSchool({ navigation, route }) {
                     <TouchableHighlight onPress={createPDF}>
                         <Text style={styles.topbtn}>Create PDF</Text>
                     </TouchableHighlight>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Invoice Coach School", { coach: route.params.coach, school: route.params.school })}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Invoice Coach School", { coach: route.params.coach, school: route.params.school })}>
                         <Text style={styles.topbtn}>Generate Invoice</Text>
                     </TouchableOpacity>
                 </View>
@@ -154,7 +154,7 @@ export default function SuperAdminBillingCoachSchool({ navigation, route }) {
                         <DataTable.Cell>Date:</DataTable.Cell>
                     </DataTable.Row>
                 </DataTable>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                     <Text style={styles.backbtn}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView >

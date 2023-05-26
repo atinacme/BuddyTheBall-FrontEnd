@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import rightArrow from '../assets/right-arrow.png';
 import message from '../assets/message.png';
 import { SafeAreaView, Text, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { GetMessagesBySenderIdService } from '../services/CustomerService';
+import { GetMessagesBySenderIdService } from '../services/ParentService';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -28,7 +28,7 @@ export default function SuperAdminMessages({ navigation }) {
             <SafeAreaView style={styles.wrapper}>
                 {senderMessages.map(item => {
                     return (
-                        <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin Particular Message", { messages: item })}>
+                        <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Particular Message", { messages: item })}>
                             {item.sender_role === "coach" ?
                                 <View key={item._id} style={styles.messagewrap}>
                                     <Image source={{ uri: item.sender_profile_url }} style={{ width: 40, height: 40, borderRadius: 60 }} />
@@ -53,13 +53,13 @@ export default function SuperAdminMessages({ navigation }) {
                         </TouchableOpacity>
                     );
                 })}
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Message Creation")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Message Creation")}>
                     <View style={styles.messageImageHolder}>
                         <Image resizeMode={"contain"} source={message} />
                     </View>
                 </TouchableOpacity>
                 <View style={styles.bckcta}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Settings")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Settings")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>
@@ -107,7 +107,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         justifyContent: 'flex-end'
-
     },
     msgWrap: {
         paddingTop: 0,

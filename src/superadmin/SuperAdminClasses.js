@@ -3,9 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } fr
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import moment from 'moment';
-import { GetClassCreatedByUserIdService, GetClassesService } from '../services/ClassService';
-// import { GetScheduleByCoachService, GetclassesService } from '../services/classeservice';
+import { GetClassesService } from '../services/ClassService';
 
 export default function SuperAdminClasses({ navigation }) {
     const state = useSelector((state) => state);
@@ -36,7 +34,7 @@ export default function SuperAdminClasses({ navigation }) {
                             </DataTable.Header>
                             {classes.length > 0 && classes.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin Class Description", { classData: item })}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Class Description", { classData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.regional_manager_name ? 'You' : item.created_by_name}</DataTable.Cell>
                                             {item.schedules.map(v => {
@@ -51,10 +49,10 @@ export default function SuperAdminClasses({ navigation }) {
                     </View>
                 </ScrollView>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Class Creation")}>
-                        <Text style={styles.coach_cta}>Class Creation</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Class Creation")}>
+                        <Text style={styles.coach_cta}>Add New Class</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Calendar")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -64,7 +64,7 @@ export default function SuperAdminRegionCreation({ navigation }) {
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.navigate("SuperAdmin Settings")
+                                onPress: () => navigation.navigate("Super Admin Settings")
                             }
                         ]
                     );
@@ -149,7 +149,7 @@ export default function SuperAdminRegionCreation({ navigation }) {
                         )}
                     </Formik>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regions")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regions")}>
                     <Text style={styles.btnWrapper}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>

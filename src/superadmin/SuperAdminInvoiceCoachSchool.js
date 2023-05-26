@@ -232,7 +232,7 @@ export default function SuperAdminInvoiceCoachSchool({ navigation, route }) {
                             <DataTable.Cell>${customerData.total_due}</DataTable.Cell>
                         </DataTable.Row>
                     </DataTable>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </SafeAreaView>

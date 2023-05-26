@@ -8,7 +8,7 @@ import moment from 'moment';
 import { GetCustomersOfParticularCoachOfParticularSchool } from '../services/CoachService';
 import { CreateAndUpdateAttendanceService, GetAttendanceByDateService, GetAttendanceBySessionService } from '../services/AttendanceService';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetCustomerWithSlot } from '../services/CustomerService';
+import { GetCustomerWithSlot } from '../services/ParentService';
 
 export default function CoachParticularSchoolStudents({ route }) {
     const state = useSelector((state) => state);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, Image, TouchableOpacity, StyleSheet, SafeAreaView, Button, ScrollView } from 'react-native';
+import { Text, View, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { GetParticularSchoolPhotosService } from '../services/SchoolService';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -29,7 +29,7 @@ export default function CoachParticularSchoolPhotos({ navigation, route }) {
                     <View style={styles.imgWrap}>
                         {customerData.length > 0 && customerData.map((item) => {
                             return (
-                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Customer Particular Photo", { photo: item })}>
+                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
                                     <Image key={item._id} source={{ uri: item.url }} style={{ height: 300, width: 300, marginBottom: 10 }} />
                                 </TouchableOpacity>
                             );

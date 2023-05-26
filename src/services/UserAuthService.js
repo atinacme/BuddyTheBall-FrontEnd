@@ -1,8 +1,8 @@
 import HttpRequest from "./HttpRequest";
 import Config from "../../Config";
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
-console.log("baseurl--->", process.env.REACT_APP_BASE_URL, baseUrl);
+const baseUrl = Config.REACT_APP_BASE_URL;
+console.log("baseurl--->", Config.REACT_APP_BASE_URL, baseUrl);
 
 const SignInService = async (data) => {
     return await HttpRequest("POST", `${baseUrl}/auth/signin`, data);

@@ -31,7 +31,7 @@ export default function SuperAdminRegions({ navigation }) {
                             </DataTable.Header>
                             {regions.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin Region Description", { regionData: item })}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Region Description", { regionData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.region_name}</DataTable.Cell>
                                             {item.cities.map(items => {
@@ -45,10 +45,10 @@ export default function SuperAdminRegions({ navigation }) {
                     </View>
                 </ScrollView>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Region Creation")}>
-                        <Text style={styles.coach_cta}>Region Creation</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Region Creation")}>
+                        <Text style={styles.coach_cta}>Add New Region</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Settings")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Settings")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -13,22 +13,22 @@ import store from "./store";
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from "react-native";
 import SignIn from './src/auth/SignIn.js';
-import CustomerDashboard from './src/customer/CustomerDashboard.js';
-import CustomerPhotos from './src/customer/CustomerPhotos.js';
-import CustomerParticularPhoto from './src/customer/CustomerParticularPhoto.js';
-import CustomerMessages from './src/customer/CustomerMessages';
-import CustomerMessageCreation from './src/customer/CustomerMessageCreation';
-import CustomerParticularMessage from './src/customer/CustomerParticularMessage';
+import ParentDashboard from './src/parent/ParentDashboard.js';
+import ParentPhotos from './src/parent/ParentPhotos.js';
+import ParentParticularPhoto from './src/parent/ParentParticularPhoto.js';
+import ParentMessages from './src/parent/ParentMessages';
+import ParentMessageCreation from './src/parent/ParentMessageCreation';
+import ParentParticularMessage from './src/parent/ParentParticularMessage';
 import CoachDashboard from './src/coach/CoachDashboard.js';
-import CoachCustomers from './src/coach/CoachCustomers';
-import CoachCustomerCreation from './src/coach/CoachCustomerCreation';
-import CoachCustomerDescription from './src/coach/CoachCustomerDescription';
+import CoachParents from './src/coach/CoachParents';
+import CoachParentCreation from './src/coach/CoachParentCreation';
+import CoachParentDescription from './src/coach/CoachParentDescription';
 import CoachSchoolsPhotos from './src/coach/CoachSchoolsPhotos.js';
 import CoachPhotoCreation from './src/coach/CoachPhotoCreation.js';
 import CoachParticularSchoolPhotos from './src/coach/CoachParticularSchoolPhotos.js';
-import CoachSchedules from './src/coach/CoachSchedules';
-import CoachScheduleCreation from './src/coach/CoachScheduleCreation';
-import CoachScheduleDescription from './src/coach/CoachScheduleDescription';
+import CoachSessions from './src/coach/CoachSessions';
+import CoachSessionCreation from './src/coach/CoachSessionCreation';
+import CoachSessionDescription from './src/coach/CoachSessionDescription';
 import CoachClasses from './src/coach/CoachClasses';
 import CoachClassCreation from './src/coach/CoachClassCreation';
 import CoachClassDescription from './src/coach/CoachClassDescription';
@@ -52,9 +52,9 @@ import SuperAdminPhotos from './src/superadmin/SuperAdminPhotos.js';
 import SuperAdminParticularSchoolPhotos from './src/superadmin/SuperAdminParticularSchoolPhotos';
 import SuperAdminParticularPhoto from './src/superadmin/SuperAdminParticularPhoto';
 import SuperAdminStudents from './src/superadmin/SuperAdminStudents.js';
-import SuperAdminCustomers from './src/superadmin/SuperAdminCustomers';
-import SuperAdminCustomerCreation from './src/superadmin/SuperAdminCustomerCreation';
-import SuperAdminCustomerDescription from './src/superadmin/SuperAdminCustomerDescription';
+import SuperAdminParents from './src/superadmin/SuperAdminParents';
+import SuperAdminParentCreation from './src/superadmin/SuperAdminParentCreation';
+import SuperAdminParentDescription from './src/superadmin/SuperAdminParentDescription';
 import SuperAdminSettings from './src/superadmin/SuperAdminSettings.js';
 import SuperAdminMessages from './src/superadmin/SuperAdminMessages';
 import SuperAdminCalendar from './src/superadmin/SuperAdminCalendar';
@@ -66,16 +66,19 @@ import SuperAdminRegionalManagerCreation from './src/superadmin/SuperAdminRegion
 import SuperAdminRegions from './src/superadmin/SuperAdminRegions';
 import SuperAdminRegionCreation from './src/superadmin/SuperAdminRegionCreation';
 import SuperAdminRegionDescription from './src/superadmin/SuperAdminRegionDescription';
-import SuperAdminSchedules from './src/superadmin/SuperAdminSchedules';
-import SuperAdminScheduleCreation from './src/superadmin/SuperAdminScheduleCreation';
-import SuperAdminScheduleDescription from './src/superadmin/SuperAdminScheduleDescription';
+import SuperAdmins from './src/superadmin/SuperAdmins';
+import SuperAdminCreation from './src/superadmin/SuperAdminCreation';
+import SuperAdminDescription from './src/superadmin/SuperAdminDescription';
+import SuperAdminSessions from './src/superadmin/SuperAdminSessions';
+import SuperAdminSessionCreation from './src/superadmin/SuperAdminSessionCreation';
+import SuperAdminSessionDescription from './src/superadmin/SuperAdminSessionDescription';
 import SuperAdminClasses from './src/superadmin/SuperAdminClasses';
 import SuperAdminClassCreation from './src/superadmin/SuperAdminClassCreation';
 import SuperAdminClassDescription from './src/superadmin/SuperAdminClassDescription';
 import RegionalManagerDashboard from './src/regionalmanager/RegionalManagerDashboard';
-import RegionalManagerCustomers from './src/regionalmanager/RegionalManagerCustomers';
-import RegionalManagerCustomerCreation from './src/regionalmanager/RegionalManagerCustomerCreation';
-import RegionalManagerCustomerDescription from './src/regionalmanager/RegionalManagerCustomerDescription';
+import RegionalManagerParents from './src/regionalmanager/RegionalManagerParents';
+import RegionalManagerParentCreation from './src/regionalmanager/RegionalManagerParentCreation';
+import RegionalManagerParentDescription from './src/regionalmanager/RegionalManagerParentDescription';
 import RegionalManagerCoaches from './src/regionalmanager/RegionalManagerCoaches';
 import RegionalManagerCoachCreation from './src/regionalmanager/RegionalManagerCoachCreation';
 import RegionalManagerCoachDescription from './src/regionalmanager/RegionalManagerCoachDescription.js';
@@ -83,9 +86,9 @@ import RegionalManagerPhotos from './src/regionalmanager/RegionalManagerPhotos';
 import RegionalManagerParticularSchoolPhotos from './src/regionalmanager/RegionalManagerParticularSchoolPhotos';
 import RegionalManagerCalendar from './src/regionalmanager/RegionalManagerCalendar';
 import RegionalManagerCoachAgenda from './src/regionalmanager/RegionalManagerCoachAgenda';
-import RegionalManagerSchedules from './src/regionalmanager/RegionalManagerSchedules';
-import RegionalManagerScheduleCreation from './src/regionalmanager/RegionalManagerScheduleCreation';
-import RegionalManagerScheduleDescription from './src/regionalmanager/RegionalManagerScheduleDescription';
+import RegionalManagerSessions from './src/regionalmanager/RegionalManagerSessions';
+import RegionalManagerSessionCreation from './src/regionalmanager/RegionalManagerSessionCreation';
+import RegionalManagerSessionDescription from './src/regionalmanager/RegionalManagerSessionDescription';
 import RegionalManagerClasses from './src/regionalmanager/RegionalManagerClasses';
 import RegionalManagerClassCreation from './src/regionalmanager/RegionalManagerClassCreation';
 import RegionalManagerClassDescription from './src/regionalmanager/RegionalManagerClassDescription';
@@ -106,22 +109,22 @@ const App = () => {
             },
           }}>
             <Stack.Screen name="SignIn" component={SignIn} style={{ marginTop: 40 }} />
-            <Stack.Screen name="Customer Dashboard" options={{ headerBackVisible: false, headerTitleAlign: 'center' }} component={CustomerDashboard} />
-            <Stack.Screen name="Customer Photos" component={CustomerPhotos} />
-            <Stack.Screen name="Customer Particular Photo" component={CustomerParticularPhoto} />
-            <Stack.Screen name="Customer Messages" component={CustomerMessages} />
-            <Stack.Screen name="Customer Message Creation" component={CustomerMessageCreation} />
-            <Stack.Screen name="Customer Particular Message" component={CustomerParticularMessage} />
+            <Stack.Screen name="Parent Dashboard" options={{ headerBackVisible: false, headerTitleAlign: 'center' }} component={ParentDashboard} />
+            <Stack.Screen name="Parent Photos" component={ParentPhotos} />
+            <Stack.Screen name="Parent Particular Photo" component={ParentParticularPhoto} />
+            <Stack.Screen name="Parent Messages" component={ParentMessages} />
+            <Stack.Screen name="Parent Message Creation" component={ParentMessageCreation} />
+            <Stack.Screen name="Parent Particular Message" component={ParentParticularMessage} />
             <Stack.Screen name="Coach Dashboard" options={{ headerBackVisible: false, headerTitleAlign: 'center' }} component={CoachDashboard} />
-            <Stack.Screen name="Coach Customers" component={CoachCustomers} />
-            <Stack.Screen name="Coach Customer Creation" component={CoachCustomerCreation} />
-            <Stack.Screen name="Coach Customer Description" component={CoachCustomerDescription} />
+            <Stack.Screen name="Coach Parents" component={CoachParents} />
+            <Stack.Screen name="Coach Parent Creation" component={CoachParentCreation} />
+            <Stack.Screen name="Coach Parent Description" component={CoachParentDescription} />
             <Stack.Screen name="Coach Schools Photos" component={CoachSchoolsPhotos} />
             <Stack.Screen name="Coach Photo Creation" component={CoachPhotoCreation} />
             <Stack.Screen name="Coach Particular School Photos" component={CoachParticularSchoolPhotos} />
-            <Stack.Screen name="Coach Schedules" component={CoachSchedules} />
-            <Stack.Screen name="Coach Schedule Creation" component={CoachScheduleCreation} />
-            <Stack.Screen name="Coach Schedule Description" component={CoachScheduleDescription} />
+            <Stack.Screen name="Coach Sessions" component={CoachSessions} />
+            <Stack.Screen name="Coach Session Creation" component={CoachSessionCreation} />
+            <Stack.Screen name="Coach Session Description" component={CoachSessionDescription} />
             <Stack.Screen name="Coach Classes" component={CoachClasses} />
             <Stack.Screen name="Coach Class Creation" component={CoachClassCreation} />
             <Stack.Screen name="Coach Class Description" component={CoachClassDescription} />
@@ -131,52 +134,55 @@ const App = () => {
             <Stack.Screen name="Coach Particular Message" component={CoachParticularMessage} />
             <Stack.Screen name="Coach School List" component={CoachSchoolList} />
             <Stack.Screen name="Coach Particular School Students" component={CoachParticularSchoolStudents} />
-            <Stack.Screen name="SuperAdmin Dashboard" options={{ headerTitleAlign: 'center' }} component={SuperAdminDashboard} />
-            <Stack.Screen name="SuperAdmin Billing" component={SuperAdminBilling} />
-            <Stack.Screen name="SuperAdmin Billing Coach School" component={SuperAdminBillingCoachSchool} />
-            <Stack.Screen name="SuperAdmin Invoice Coach School" component={SuperAdminInvoiceCoachSchool} />
-            <Stack.Screen name="SuperAdmin Coaches" component={SuperAdminCoaches} />
-            <Stack.Screen name="SuperAdmin Coach Creation" component={SuperAdminCoachCreation} />
+            <Stack.Screen name="Super Admin Dashboard" options={{ headerTitleAlign: 'center' }} component={SuperAdminDashboard} />
+            <Stack.Screen name="Super Admin Billing" component={SuperAdminBilling} />
+            <Stack.Screen name="Super Admin Billing Coach School" component={SuperAdminBillingCoachSchool} />
+            <Stack.Screen name="Super Admin Invoice Coach School" component={SuperAdminInvoiceCoachSchool} />
+            <Stack.Screen name="Super Admin Coaches" component={SuperAdminCoaches} />
+            <Stack.Screen name="Super Admin Coach Creation" component={SuperAdminCoachCreation} />
             <Stack.Screen name="SuperAdmin Coach Description" component={SuperAdminCoachDescription} />
-            <Stack.Screen name="SuperAdmin Schools" component={SuperAdminSchools} />
-            <Stack.Screen name="SuperAdmin School Description" component={SuperAdminSchoolDescription} />
-            <Stack.Screen name="SuperAdmin School Creation" component={SuperAdminSchoolCreation} />
-            <Stack.Screen name="SuperAdmin Photos" component={SuperAdminPhotos} />
-            <Stack.Screen name="SuperAdmin Particular School Photos" component={SuperAdminParticularSchoolPhotos} />
-            <Stack.Screen name="SuperAdmin Particular Photo" component={SuperAdminParticularPhoto} />
-            <Stack.Screen name="SuperAdmin Students" component={SuperAdminStudents} />
-            <Stack.Screen name="SuperAdmin Customers" component={SuperAdminCustomers} />
-            <Stack.Screen name="SuperAdmin Customer Creation" component={SuperAdminCustomerCreation} />
-            <Stack.Screen name="SuperAdmin Customer Description" component={SuperAdminCustomerDescription} />
-            <Stack.Screen name="SuperAdmin Settings" options={{ headerBackVisible: false, headerTitleAlign: 'center' }} component={SuperAdminSettings} />
-            <Stack.Screen name="SuperAdmin Messages" component={SuperAdminMessages} />
-            <Stack.Screen name="SuperAdmin Calendar" component={SuperAdminCalendar} />
-            <Stack.Screen name="SuperAdmin Message Creation" component={SuperAdminMessageCreation} />
-            <Stack.Screen name="SuperAdmin Particular Message" component={SuperAdminParticularMessage} />
-            <Stack.Screen name="SuperAdmin Regional Manager" component={SuperAdminRegionalManagers} />
-            <Stack.Screen name="SuperAdmin Regional Manager Description" component={SuperAdminRegionalManagerDescription} />
-            <Stack.Screen name="SuperAdmin Regional Manager Creation" component={SuperAdminRegionalManagerCreation} />
-            <Stack.Screen name="SuperAdmin Regions" component={SuperAdminRegions} />
-            <Stack.Screen name="SuperAdmin Region Creation" component={SuperAdminRegionCreation} />
-            <Stack.Screen name="SuperAdmin Region Description" component={SuperAdminRegionDescription} />
-            <Stack.Screen name="SuperAdmin Schedules" component={SuperAdminSchedules} />
-            <Stack.Screen name="SuperAdmin Schedule Creation" component={SuperAdminScheduleCreation} />
-            <Stack.Screen name="SuperAdmin Schedule Description" component={SuperAdminScheduleDescription} />
-            <Stack.Screen name="SuperAdmin Classes" component={SuperAdminClasses} />
-            <Stack.Screen name="SuperAdmin Class Creation" component={SuperAdminClassCreation} />
-            <Stack.Screen name="SuperAdmin Class Description" component={SuperAdminClassDescription} />
+            <Stack.Screen name="Super Admin Schools" component={SuperAdminSchools} />
+            <Stack.Screen name="Super Admin School Description" component={SuperAdminSchoolDescription} />
+            <Stack.Screen name="Super Admin School Creation" component={SuperAdminSchoolCreation} />
+            <Stack.Screen name="Super Admin Photos" component={SuperAdminPhotos} />
+            <Stack.Screen name="Super Admin Particular School Photos" component={SuperAdminParticularSchoolPhotos} />
+            <Stack.Screen name="Super Admin Particular Photo" component={SuperAdminParticularPhoto} />
+            <Stack.Screen name="Super Admin Students" component={SuperAdminStudents} />
+            <Stack.Screen name="Super Admin Parents" component={SuperAdminParents} />
+            <Stack.Screen name="Super Admin Parent Creation" component={SuperAdminParentCreation} />
+            <Stack.Screen name="Super Admin Parent Description" component={SuperAdminParentDescription} />
+            <Stack.Screen name="Super Admin Settings" options={{ headerBackVisible: false, headerTitleAlign: 'center' }} component={SuperAdminSettings} />
+            <Stack.Screen name="Super Admin Messages" component={SuperAdminMessages} />
+            <Stack.Screen name="Super Admin Calendar" component={SuperAdminCalendar} />
+            <Stack.Screen name="Super Admin Message Creation" component={SuperAdminMessageCreation} />
+            <Stack.Screen name="Super Admin Particular Message" component={SuperAdminParticularMessage} />
+            <Stack.Screen name="Super Admin Regional Manager" component={SuperAdminRegionalManagers} />
+            <Stack.Screen name="Super Admin Regional Manager Description" component={SuperAdminRegionalManagerDescription} />
+            <Stack.Screen name="Super Admin Regional Manager Creation" component={SuperAdminRegionalManagerCreation} />
+            <Stack.Screen name="Super Admin Regions" component={SuperAdminRegions} />
+            <Stack.Screen name="Super Admin Region Creation" component={SuperAdminRegionCreation} />
+            <Stack.Screen name="Super Admin Region Description" component={SuperAdminRegionDescription} />
+            <Stack.Screen name="Super Admins" component={SuperAdmins} />
+            <Stack.Screen name="Super Admin Creation" component={SuperAdminCreation} />
+            <Stack.Screen name="Super Admin Description" component={SuperAdminDescription} />
+            <Stack.Screen name="Super Admin Sessions" component={SuperAdminSessions} />
+            <Stack.Screen name="Super Admin Session Creation" component={SuperAdminSessionCreation} />
+            <Stack.Screen name="Super Admin Session Description" component={SuperAdminSessionDescription} />
+            <Stack.Screen name="Super Admin Classes" component={SuperAdminClasses} />
+            <Stack.Screen name="Super Admin Class Creation" component={SuperAdminClassCreation} />
+            <Stack.Screen name="Super Admin Class Description" component={SuperAdminClassDescription} />
             <Stack.Screen name="Regional Manager Dashboard" component={RegionalManagerDashboard} />
-            <Stack.Screen name="Regional Manager Customers" component={RegionalManagerCustomers} />
-            <Stack.Screen name="Regional Manager Customer Creation" component={RegionalManagerCustomerCreation} />
-            <Stack.Screen name="Regional Manager Customer Description" component={RegionalManagerCustomerDescription} />
+            <Stack.Screen name="Regional Manager Parents" component={RegionalManagerParents} />
+            <Stack.Screen name="Regional Manager Parent Creation" component={RegionalManagerParentCreation} />
+            <Stack.Screen name="Regional Manager Parent Description" component={RegionalManagerParentDescription} />
             <Stack.Screen name="Regional Manager Coaches" component={RegionalManagerCoaches} />
             <Stack.Screen name="Regional Manager Coach Creation" component={RegionalManagerCoachCreation} />
             <Stack.Screen name="Regional Manager Coach Description" component={RegionalManagerCoachDescription} />
             <Stack.Screen name="Regional Manager Photos" component={RegionalManagerPhotos} />
             <Stack.Screen name="Regional Manager Particular School Photos" component={RegionalManagerParticularSchoolPhotos} />
-            <Stack.Screen name="Regional Manager Schedules" component={RegionalManagerSchedules} />
-            <Stack.Screen name="Regional Manager Schedule Creation" component={RegionalManagerScheduleCreation} />
-            <Stack.Screen name="Regional Manager Schedule Description" component={RegionalManagerScheduleDescription} />
+            <Stack.Screen name="Regional Manager Sessions" component={RegionalManagerSessions} />
+            <Stack.Screen name="Regional Manager Session Creation" component={RegionalManagerSessionCreation} />
+            <Stack.Screen name="Regional Manager Session Description" component={RegionalManagerSessionDescription} />
             <Stack.Screen name="Regional Manager Classes" component={RegionalManagerClasses} />
             <Stack.Screen name="Regional Manager Class Creation" component={RegionalManagerClassCreation} />
             <Stack.Screen name="Regional Manager Class Description" component={RegionalManagerClassDescription} />

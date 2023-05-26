@@ -29,7 +29,6 @@ export default function SuperAdminBilling({ navigation }) {
                     const e = q.schedules[w];
                     for (let y in e.coaches) {
                         const p = e.coaches[y];
-                        console.log("SDds--->", i, u, w, y)
                         t = t +
 
                             `
@@ -128,7 +127,7 @@ export default function SuperAdminBilling({ navigation }) {
                                                                 <Text style={styles.content} key={scheduleIndex}>
                                                                     {u.coaches.map((d, coachIndex) => {
                                                                         return (
-                                                                            <TouchableOpacity key={coachIndex} onPress={() => navigation.navigate("SuperAdmin Billing Coach School", { school: school, class: v, schedule: u, coach: d })}>
+                                                                            <TouchableOpacity key={coachIndex} onPress={() => navigation.navigate("Super Admin Billing Coach School", { school: school, class: v, schedule: u, coach: d })}>
                                                                                 <Text>{d.coach_name}</Text>
                                                                             </TouchableOpacity>
                                                                         )

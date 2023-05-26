@@ -1,7 +1,7 @@
 import React from 'react';
-import {
-    SafeAreaView, TouchableOpacity, StyleSheet, Text, View
-} from 'react-native';
+import { SafeAreaView, TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
+import classes from '../assets/CLASSES_REV1.png';
+import sessions from '../assets/SESSIONS_REV1.png';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function RegionalManagerCalendar({ navigation }) {
@@ -9,11 +9,11 @@ export default function RegionalManagerCalendar({ navigation }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Text style={styles.adminWrapper}>
-                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Schedules")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>SCHEDULES</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Sessions")}>
+                        <Image source={sessions} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Classes")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>CLASSES</Text>
+                        <Image source={classes} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                     </TouchableOpacity>
                 </Text>
                 <View style={styles.adminbtn}>

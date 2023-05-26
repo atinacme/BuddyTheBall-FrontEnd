@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import buddy from '../assets/buddy.png';
-import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Image } from 'react-native';
+import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Image, TextInput } from 'react-native';
 import { useSelector } from "react-redux";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetScheduleCreatedByUserIdService } from '../services/ScheduleService';
+import { GetScheduleCreatedByUserIdService } from '../services/SessionService';
 import { DeleteClassService, UpdateClassService } from '../services/ClassService';
 import { GetRegionWiseSchools } from '../services/SchoolService';
 
@@ -15,6 +15,7 @@ export default function SuperAdminClassDescription({ navigation, route }) {
     const [selectedSessions, setSelectedSessions] = useState(route.params.classData.schedules)
     const [schoolsList, setSchoolsList] = useState([])
     const [selectedSchool, setSelectedSchool] = useState()
+    const [topic, setTopic] = useState(route.params.classData?.topic);
 
     useEffect(() => {
         try {
@@ -46,22 +47,25 @@ export default function SuperAdminClassDescription({ navigation, route }) {
 
     const handleUpdateClass = async () => {
         const selectedSessionsId = selectedSessions.map(v => { return v._id })
-        const data = {
-            schedules: selectedSessionsId.concat(sessions),
-            school: selectedSchool
-        };
-        const result = await UpdateClassService(route.params.classData._id, data);
-        if (result) {
-            Alert.alert(
-                "Alert",
-                "Class Updated Successfully",
-                [
-                    {
-                        text: "OK",
-                        onPress: () => navigation.navigate("SuperAdmin Dashboard")
-                    }
-                ]
-            );
+        if (selectedSessionsId.concat(sessions).length > 0 && selectedSchool && topic) {
+            const data = {
+                schedules: selectedSessionsId.concat(sessions),
+                school: selectedSchool,
+                topic: topic
+            };
+            const result = await UpdateClassService(route.params.classData._id, data);
+            if (result) {
+                Alert.alert(
+                    "Alert",
+                    "Class Updated Successfully",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => navigation.navigate("Super Admin Dashboard")
+                        }
+                    ]
+                );
+            }
         }
     };
 
@@ -83,7 +87,7 @@ export default function SuperAdminClassDescription({ navigation, route }) {
                                     [
                                         {
                                             text: "OK",
-                                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                            onPress: () => navigation.navigate("Super Admin Dashboard")
                                         }
                                     ]
                                 );
@@ -104,7 +108,19 @@ export default function SuperAdminClassDescription({ navigation, route }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <Text style={styles.label}>Schedules :</Text>
+                <View>
+                    <Text style={styles.label}>Topic :</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(val) => setTopic(val)}
+                        value={topic}
+                        placeholder='Topic'
+                    />
+                </View>
+                {!topic &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                }
+                <Text style={styles.label}>Sessions :</Text>
                 {selectedSessions.map(v => {
                     return (
                         <View>
@@ -147,7 +163,7 @@ export default function SuperAdminClassDescription({ navigation, route }) {
                     <TouchableOpacity onPress={handleClassDelete}>
                         <Text style={styles.deletebtn}>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Classes")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Classes")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

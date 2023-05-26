@@ -25,7 +25,7 @@ export default function RegionalManagerParticularSchoolPhotos({ navigation, rout
                     <View style={styles.imgWrap}>
                         {schoolPhotosData.length > 0 && schoolPhotosData.map((item) => {
                             return (
-                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Customer Particular Photo", { photo: item })}>
+                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
                                     <Image key={item._id} source={{ uri: item.url }} style={{ height: 300, width: 300, marginBottom: 10 }} />
                                 </TouchableOpacity>
                             );

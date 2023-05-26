@@ -48,7 +48,7 @@ export default function RegionalManagerCoaches({ navigation }) {
                 </ScrollView>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Coach Creation")}>
-                        <Text style={styles.coach_cta}>Coach Creation</Text>
+                        <Text style={styles.coach_cta}>Add New Coach</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>

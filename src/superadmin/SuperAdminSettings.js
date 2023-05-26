@@ -1,5 +1,8 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import regions from '../assets/REGIONS_REV1.png';
+import messages from '../assets/MESSAGES_REV1.png';
+import superadmin from '../assets/BUDDY_REV1.png';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function SuperAdminSettings({ navigation }) {
@@ -7,15 +10,24 @@ export default function SuperAdminSettings({ navigation }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Text style={styles.adminWrapper}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regions")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>REGIONS</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regions")}>
+                        <View style={{ textAlign: 'center' }}>
+                            <Image source={regions} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Messages")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg4 }}>MESSAGES</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Messages")}>
+                        <View style={{ textAlign: 'center' }}>
+                            <Image source={messages} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admins")}>
+                        <View style={{ textAlign: 'center' }}>
+                            <Image source={superadmin} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                     </TouchableOpacity>
                 </Text>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                         <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>

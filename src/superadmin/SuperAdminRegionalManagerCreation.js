@@ -56,7 +56,7 @@ export default function SuperAdminRegionalManagerCreation({ navigation }) {
                     [
                         {
                             text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                            onPress: () => navigation.navigate("Super Admin Dashboard")
                         }
                     ]
                 );
@@ -140,7 +140,7 @@ export default function SuperAdminRegionalManagerCreation({ navigation }) {
                         )}
                     </Formik>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regional Manager")}>
                     <Text style={styles.btnWrapper}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>

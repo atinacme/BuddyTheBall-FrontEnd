@@ -39,7 +39,7 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
                     [
                         {
                             text: "OK",
-                            onPress: () => navigation.navigate("SuperAdmin Settings")
+                            onPress: () => navigation.navigate("Super Admin Settings")
                         }
                     ]
                 );
@@ -70,7 +70,7 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
                                     [
                                         {
                                             text: "OK",
-                                            onPress: () => navigation.navigate("SuperAdmin Settings")
+                                            onPress: () => navigation.navigate("Super Admin Settings")
                                         }
                                     ]
                                 );
@@ -141,7 +141,7 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
                     <TouchableOpacity onPress={handleRegionDelete}>
                         <Text style={styles.deletebtn}>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regions")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regions")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

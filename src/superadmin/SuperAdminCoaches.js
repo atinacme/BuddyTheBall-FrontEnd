@@ -49,10 +49,10 @@ export default function SuperAdminCoaches({ navigation }) {
                     </View>
                 </ScrollView>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Coach Creation")}>
-                        <Text style={styles.coach_cta}>Coach Creation</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Coach Creation")}>
+                        <Text style={styles.coach_cta}>Add New Coach</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

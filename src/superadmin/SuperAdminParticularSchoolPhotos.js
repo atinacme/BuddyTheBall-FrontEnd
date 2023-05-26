@@ -26,7 +26,7 @@ export default function SuperAdminParticularSchoolPhotos({ navigation, route }) 
                     <View style={styles.imgWrap}>
                         {photos.length > 0 && photos.map((item) => {
                             return (
-                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin Particular Photo", { photo: item })}>
+                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Particular Photo", { photo: item })}>
                                     <Image key={item._id} source={{ uri: item.url }} style={{ height: 300, width: 300, marginBottom: 10 }} />
                                 </TouchableOpacity>
                             );
@@ -34,7 +34,7 @@ export default function SuperAdminParticularSchoolPhotos({ navigation, route }) 
                     </View>
                 </ScrollView>
                 <View style={{ marginTop: 20 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Photos")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Photos")}>
                         <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -5,7 +5,7 @@ import { SafeAreaView, Text, TextInput, StyleSheet, View, TouchableOpacity, Imag
 import { SelectList } from 'react-native-dropdown-select-list';
 import { GetCustomersOfParticularCoachService } from '../services/CoachService';
 import { RadioButton } from 'react-native-paper';
-import { CreateAndUpdateMessageService } from '../services/CustomerService';
+import { CreateAndUpdateMessageService } from '../services/ParentService';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function CoachMessageCreation({ navigation, route }) {
@@ -52,15 +52,6 @@ export default function CoachMessageCreation({ navigation, route }) {
                 <ScrollView style={styles.scrollView}>
                     <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row' }}>
                         <RadioButton.Group onValueChange={newValue => setReceiverRole(newValue)} value={receiverRole}>
-                            {/* <View>
-                            <Text>Customer</Text>
-                            <RadioButton value="customer" />
-                        </View>
-                        <View>
-                            <Text>Super Admin</Text>
-                            <RadioButton value="superadmin" />
-                        </View> */}
-
                             <RadioButton.Item label="Customer" value="customer" style={styles.radioLabel} />
                             <RadioButton.Item label="Super Admin" value="Super Admin" style={styles.radioLabel} />
                         </RadioButton.Group>

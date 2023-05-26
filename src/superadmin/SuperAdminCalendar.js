@@ -1,7 +1,7 @@
 import React from 'react';
-import {
-    SafeAreaView, TouchableOpacity, StyleSheet, Text, View
-} from 'react-native';
+import { SafeAreaView, TouchableOpacity, StyleSheet, Text, View, Image } from 'react-native';
+import classes from '../assets/CLASSES_REV1.png';
+import sessions from '../assets/SESSIONS_REV1.png';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function SuperAdminCalendar({ navigation }) {
@@ -10,16 +10,20 @@ export default function SuperAdminCalendar({ navigation }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Text style={styles.adminWrapper}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schedules")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>SCHEDULES</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Sessions")}>
+                        <View style={{ textAlign: 'center' }}>
+                            <Image source={sessions} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Classes")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>CLASSES</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Classes")}>
+                        <View style={{ textAlign: 'center' }}>
+                            <Image source={classes} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                     </TouchableOpacity>
                 </Text>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
-                        <Text style={styles.backbtn}>Back</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -40,7 +44,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         width: '100%'
-
     },
     backbtn: {
         borderColor: "#fff",
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "700",
         marginTop: 25,
-        width: 120,
+        width: 325,
     },
     linearGradient: {
         flex: 1,

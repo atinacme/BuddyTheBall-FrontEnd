@@ -3,6 +3,10 @@ import { Text, Image, SafeAreaView, View, StyleSheet, Button, Alert, TouchableOp
 import { useSelector, useDispatch } from "react-redux";
 import ImagePicker from 'react-native-image-crop-picker';
 import buddyBoy from '../assets/buddyGirl.png';
+import coaches from '../assets/COACHES_REV1.png';
+import photos from '../assets/PHOTOS_REV1.png';
+import parents from '../assets/PARENTS_REV1.png';
+import calendar from '../assets/CALENDAR_REV1.png';
 import axios from 'axios';
 import Config from '../../Config';
 import { AuthPageAction } from '../redux/Actions';
@@ -51,7 +55,7 @@ export default function RegionalManagerDashboard({ navigation }) {
         try {
             const res = await axios({
                 method: 'post',
-                url: `${process.env.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
                 data: formData,
                 headers: {
                     Accept: 'application/json',
@@ -79,60 +83,63 @@ export default function RegionalManagerDashboard({ navigation }) {
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
-                <ScrollView showsVerticalScrollIndicator>
-                    <Text style={styles.dashimgWrap}>
-                        <TouchableOpacity onPress={openGallery} style={styles.profileImgContainer}>
-                            {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url ?
-                                <Image source={{ uri: state.authPage.auth_data?.profile_data.url }} style={styles.profileImg} />
-                                :
-                                <>
-                                    {selectedFile !== null ?
-                                        <Image source={{ uri: selectedFile[0].path }} style={{ width: 200, height: 150, marginLeft: 'auto', marginRight: 'auto', marginTop: 10, marginBottom: 10 }} />
-                                        :
-                                        <Image source={buddyBoy} style={{ width: 200, height: 150, marginLeft: 'auto', marginRight: 'auto', marginTop: 10, marginBottom: 10 }} />
-                                    }
-                                </>
-                            }
-                        </TouchableOpacity>
-                    </Text>
-                    {selectedFile !== null && (
-                        <Button
-                            title="Upload"
-                            color="#000"
-                            style={{ marginTop: 40, marginBottom: 40 }}
-                            onPress={handleUpload}
-                        />
-                    )}
-                    {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url === undefined ? <Text style={styles.playPara}>Upload Player Picture</Text> : null}
-                    {state.authPage.auth_data && (
-                        <>
-                            <Text style={styles.heading}>Regional Manager {state.authPage.auth_data?.regional_manager_name}</Text>
-                            <Text style={styles.txt}>Region: {state.authPage.auth_data?.assigned_region}</Text>
-                        </>
-                    )}
+                <Text style={styles.dashimgWrap}>
+                    <TouchableOpacity onPress={openGallery} style={styles.profileImgContainer}>
+                        {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url ?
+                            <Image source={{ uri: state.authPage.auth_data?.profile_data.url }} style={styles.profileImg} />
+                            :
+                            <>
+                                {selectedFile !== null ?
+                                    <Image source={{ uri: selectedFile[0].path }} style={{ width: 200, height: 150, marginLeft: 'auto', marginRight: 'auto', marginTop: 10, marginBottom: 10 }} />
+                                    :
+                                    <Image source={buddyBoy} style={{ width: 200, height: 150, marginLeft: 'auto', marginRight: 'auto', marginTop: 10, marginBottom: 10 }} />
+                                }
+                            </>
+                        }
+                    </TouchableOpacity>
+                </Text>
+                {selectedFile !== null && (
+                    <Button
+                        title="Upload"
+                        color="#000"
+                        style={{ marginTop: 40, marginBottom: 40 }}
+                        onPress={handleUpload}
+                    />
+                )}
+                {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url === undefined ? <Text style={styles.playPara}>Upload Player Picture</Text> : null}
+                {state.authPage.auth_data && (
+                    <>
+                        <Text style={styles.heading}>Regional Manager {state.authPage.auth_data?.regional_manager_name}</Text>
+                        <Text style={styles.txt}>Region: {state.authPage.auth_data?.assigned_region}</Text>
+                    </>
+                )}
+                <ScrollView showsVerticalScrollIndicator style={{ height: 430 }}>
                     <Text style={styles.adminWrapper}>
                         <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Photos")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>PHOTOS</Text>
+                            <Image source={photos} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Customers")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>PARENTS</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Parents")}><View style={{ textAlign: 'center' }}>
+                            <Image source={parents} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Calendar")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg3 }}>CALENDAR</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Calendar")}><View style={{ textAlign: 'center' }}>
+                            <Image source={calendar} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Coaches")}>
-                            <Text style={{ ...styles.adminContainer, ...styles.adminBg4 }}>COACHES</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Coaches")}><View style={{ textAlign: 'center' }}>
+                            <Image source={coaches} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </View>
                         </TouchableOpacity>
                     </Text>
-                    <View style={styles.adminbtn}>
-                        <TouchableOpacity onPress={() => {
-                            navigation.navigate("SignIn");
-                            dispatch(AuthPageAction('', '', '', '', ''));
-                        }}>
-                            <Text style={styles.btnWrapper}>Logout</Text>
-                        </TouchableOpacity>
-                    </View>
                 </ScrollView>
+                <View style={styles.adminbtn}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate("SignIn");
+                        dispatch(AuthPageAction('', '', '', '', ''));
+                    }}>
+                        <Text style={styles.btnWrapper}>Logout</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );

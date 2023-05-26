@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import send_button from '../assets/send_button.png';
 import profile from '../assets/profile.png';
 import { SafeAreaView, Text, TextInput, StyleSheet, View, TouchableOpacity, Image, ScrollView, StatusBar } from 'react-native';
-import { CreateAndUpdateMessageService, GetMessagesBySenderIdReceiverIdService } from '../services/CustomerService';
+import { CreateAndUpdateMessageService, GetMessagesBySenderIdReceiverIdService } from '../services/ParentService';
 
 export default function SuperAdminParticularMessage({ navigation, route }) {
     const state = useSelector((state) => state);
@@ -44,7 +44,7 @@ export default function SuperAdminParticularMessage({ navigation, route }) {
             if (result) {
                 setMsgResult(result);
                 setMessage();
-                // navigation.navigate("SuperAdmin Dashboard");
+                // navigation.navigate("Super Admin Dashboard");
             }
         } catch (e) { }
     };

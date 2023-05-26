@@ -3,10 +3,9 @@ import { useSelector } from "react-redux";
 import send_button from '../assets/send_button.png';
 import { SafeAreaView, Text, TextInput, StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { CreateAndUpdateMessageService } from '../services/CustomerService';
+import { CreateAndUpdateMessageService } from '../services/ParentService';
 import { GetAllCoachesService } from '../services/CoachService';
 import LinearGradient from 'react-native-linear-gradient';
-
 
 export default function SuperAdminMessageCreation({ navigation, route }) {
     const state = useSelector((state) => state);
@@ -40,7 +39,7 @@ export default function SuperAdminMessageCreation({ navigation, route }) {
             const result = await CreateAndUpdateMessageService(data);
             if (result) {
                 setMessage();
-                navigation.navigate("SuperAdmin Dashboard");
+                navigation.navigate("Super Admin Dashboard");
             }
         } catch (e) { }
     };

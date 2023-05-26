@@ -3,10 +3,9 @@ import { useSelector } from "react-redux";
 import rightArrow from '../assets/right-arrow.png';
 import message from '../assets/message.png';
 import { SafeAreaView, Text, Image, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { GetMessagesBySenderIdService } from '../services/CustomerService';
+import { GetMessagesBySenderIdService } from '../services/ParentService';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
-
 
 export default function CoachMessages({ navigation }) {
     const state = useSelector((state) => state);
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         justifyContent: 'flex-end'
-
     },
     linearGradient: {
         flex: 1,

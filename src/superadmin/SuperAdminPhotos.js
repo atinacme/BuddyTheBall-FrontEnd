@@ -26,7 +26,7 @@ export default function SuperAdminPhotos({ navigation }) {
                 <ScrollView showsVerticalScrollIndicator>
                     {schools.map((item) => {
                         return (
-                            <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Particular School Photos", { schoolItem: item })}>
+                            <TouchableOpacity onPress={() => navigation.navigate("Super Admin Particular School Photos", { schoolItem: item })}>
                                 <ImageBackground source={kids} style={styles.cardBackground}>
                                     <View style={styles.cardContent}>
                                         <View style={styles.carddes}>
@@ -48,7 +48,7 @@ export default function SuperAdminPhotos({ navigation }) {
                     })}
                 </ScrollView>
                 <View style={{ marginTop: 20 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                         <Text style={styles.btnWrapper}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -93,7 +93,7 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                onPress: () => navigation.navigate("Super Admin Dashboard")
                             }
                         ]
                     );
@@ -125,7 +125,7 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                                     [
                                         {
                                             text: "OK",
-                                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                            onPress: () => navigation.navigate("Super Admin Dashboard")
                                         }
                                     ]
                                 );
@@ -310,7 +310,7 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                     <TouchableOpacity onPress={handleCoachDelete}>
                         <Text style={styles.deletebtn}>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Coaches")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Coaches")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

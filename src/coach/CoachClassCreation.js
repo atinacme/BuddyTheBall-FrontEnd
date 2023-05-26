@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-    SafeAreaView, StyleSheet, Alert, Text, Image, TouchableOpacity, View
-} from 'react-native';
+import { SafeAreaView, StyleSheet, Alert, Text, Image, TouchableOpacity, View, TextInput } from 'react-native';
 import buddy from '../assets/buddy.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from "react-redux";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetSchedulesService } from '../services/ScheduleService';
+import { GetSchedulesService } from '../services/SessionService';
 import { CreateClassService } from '../services/ClassService';
 
 export default function CoachClassCreation({ navigation }) {
@@ -15,6 +13,7 @@ export default function CoachClassCreation({ navigation }) {
     const [sessions, setSessions] = useState([])
     const schoolsList = state.authPage.auth_data?.assigned_schools.map(v => Object.assign(v, { key: v._id, value: v.school_name }))
     const [selectedSchool, setSelectedSchool] = useState()
+    const [topic, setTopic] = useState();
 
     useEffect(() => {
         try {
@@ -34,13 +33,14 @@ export default function CoachClassCreation({ navigation }) {
     }, []);
 
     const handleCreateClass = async () => {
-        if (sessions !== undefined && sessions.length > 0 && selectedSchool) {
+        if (sessions !== undefined && sessions.length > 0 && selectedSchool && topic) {
             const data = {
                 created_by: "coach",
                 created_by_name: state.authPage.auth_data?.coach_name,
                 created_by_user_id: state.authPage.auth_data?.user_id,
                 schedules: sessions,
-                school: selectedSchool
+                school: selectedSchool,
+                topic: topic
             }
             const result = await CreateClassService(data)
             if (result) {
@@ -62,7 +62,19 @@ export default function CoachClassCreation({ navigation }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <Text style={styles.label}>Schedules :</Text>
+                <View>
+                    <Text style={styles.label}>Topic :</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(val) => setTopic(val)}
+                        value={topic}
+                        placeholder='Topic'
+                    />
+                </View>
+                {!topic &&
+                    <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                }
+                <Text style={styles.label}>Sessions :</Text>
                 <MultipleSelectList
                     setSelected={(val) => setSessions(val)}
                     data={sessionsList}

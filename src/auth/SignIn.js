@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, TextInput, StyleSheet, Button, Image, TouchableOpacity, Alert, View } from "react-native";
+import React, { useState } from 'react';
+import { Text, SafeAreaView, TextInput, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 import buddy from '../assets/buddy.png';
 import { useDispatch } from "react-redux";
 import { AuthPageAction } from '../redux/Actions';
 import { SignInService } from '../services/UserAuthService';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default function SignIn({ navigation, route }) {
+export default function SignIn({ navigation }) {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const dispatch = useDispatch();
-    useEffect(() => {
-        //
-    }, [navigation, route]);
     const handleSignIn = async () => {
         try {
             const data = {
@@ -21,7 +18,7 @@ export default function SignIn({ navigation, route }) {
             };
             const result = await SignInService(data);
             if (result.roles[0] === "ROLE_CUSTOMER") {
-                navigation.navigate("Customer Dashboard");
+                navigation.navigate("Parent Dashboard");
                 dispatch(AuthPageAction(result.id, result.email, result.roles, result.customer_data, result.accessToken));
             } else if (result.roles[0] === "ROLE_COACH") {
                 navigation.navigate("Coach Dashboard");
@@ -30,7 +27,7 @@ export default function SignIn({ navigation, route }) {
                 navigation.navigate("Regional Manager Dashboard");
                 dispatch(AuthPageAction(result.id, result.email, result.roles, result.regionalmanager_data, result.accessToken));
             } else {
-                navigation.navigate("SuperAdmin Dashboard");
+                navigation.navigate("Super Admin Dashboard");
                 dispatch(AuthPageAction(result.id, result.email, result.roles, null, result.accessToken));
             }
         } catch (e) {
@@ -75,12 +72,9 @@ export default function SignIn({ navigation, route }) {
                     onChangeText={(e) => setPassword(e)}
                     value={password}
                 />
-
                 <TouchableOpacity onPress={handleSignIn}>
                     <Text style={styles.btnWrapper}>Login</Text>
                 </TouchableOpacity>
-
-                {/* <Text style={styles.labeLink}>Forgot Password?</Text> */}
             </SafeAreaView>
         </LinearGradient>
     );

@@ -54,7 +54,7 @@ export default function RegionalManagerClasses({ navigation }) {
                 </ScrollView>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Class Creation")}>
-                        <Text style={styles.coach_cta}>Class Creation</Text>
+                        <Text style={styles.coach_cta}>Add New Class</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate("Regional Manager Calendar")}>
                         <Text style={styles.backbtn}>Back</Text>

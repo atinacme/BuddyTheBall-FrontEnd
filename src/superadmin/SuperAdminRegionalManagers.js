@@ -31,7 +31,7 @@ export default function SuperAdminRegionalManagers({ navigation }) {
                             </DataTable.Header>
                             {regionalManagers.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin Regional Manager Description", { regional_manager: item })}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Regional Manager Description", { regional_manager: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.regional_manager_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.assigned_region}</DataTable.Cell>
@@ -44,10 +44,10 @@ export default function SuperAdminRegionalManagers({ navigation }) {
 
                 </ScrollView>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Regional Manager Creation")}>
-                        <Text style={styles.coach_cta}>Regional Manager Creation</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Regional Manager Creation")}>
+                        <Text style={styles.coach_cta}>Add New Regional Manager</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

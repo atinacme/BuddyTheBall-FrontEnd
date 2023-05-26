@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import send_button from '../assets/send_button.png';
 import profile from '../assets/profile.png';
 import { SafeAreaView, Text, TextInput, StyleSheet, View, TouchableOpacity, Image, StatusBar, ScrollView } from 'react-native';
-import { CreateAndUpdateMessageService, GetMessagesBySenderIdReceiverIdService } from '../services/CustomerService';
+import { CreateAndUpdateMessageService, GetMessagesBySenderIdReceiverIdService } from '../services/ParentService';
 
 export default function CoachParticularMessage({ navigation, route }) {
     const state = useSelector((state) => state);

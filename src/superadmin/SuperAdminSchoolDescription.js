@@ -83,7 +83,7 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         [
                             {
                                 text: "OK",
-                                onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                onPress: () => navigation.navigate("Super Admin Dashboard")
                             }
                         ]
                     );
@@ -115,7 +115,7 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                                     [
                                         {
                                             text: "OK",
-                                            onPress: () => navigation.navigate("SuperAdmin Dashboard")
+                                            onPress: () => navigation.navigate("Super Admin Dashboard")
                                         }
                                     ]
                                 );
@@ -206,7 +206,7 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         <TouchableOpacity onPress={handleSchoolDelete}>
                             <Text style={styles.deletebtn}>Delete</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Schools")}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Super Admin Schools")}>
                             <Text style={styles.backbtn}>Back</Text>
                         </TouchableOpacity>
                     </View>

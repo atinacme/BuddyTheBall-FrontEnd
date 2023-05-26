@@ -4,7 +4,7 @@ import profile from '../assets/profile.png';
 import send_button from '../assets/send_button.png';
 import moment from 'moment';
 import { useSelector } from "react-redux";
-import { GetCustomerParticularPhotoService, UpdateCustomerPhotosOnMessageService } from '../services/CustomerService';
+import { GetCustomerParticularPhotoService, UpdateCustomerPhotosOnMessageService } from '../services/ParentService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 

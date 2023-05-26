@@ -3,7 +3,7 @@ import { Text, SafeAreaView, StyleSheet, ScrollView, Image, Alert, View, Button,
 import { SelectList } from 'react-native-dropdown-select-list';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useSelector } from "react-redux";
-import { GetCustomerWithSchoolIdService } from '../services/CustomerService';
+import { GetCustomerWithSchoolIdService } from '../services/ParentService';
 import axios from 'axios';
 import Config from '../../Config';
 import LinearGradient from 'react-native-linear-gradient';
@@ -49,7 +49,7 @@ export default function CoachPhotoCreation({ navigation, route }) {
         });
         const res = await axios({
             method: 'post',
-            url: `${process.env.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+            url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
             data: formData,
             headers: {
                 Accept: 'application/json',

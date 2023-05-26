@@ -52,15 +52,6 @@ export default function RegionalManagerMessageCreation({ navigation, route }) {
                 <ScrollView style={styles.scrollView}>
                     <View style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'row' }}>
                         <RadioButton.Group onValueChange={newValue => setReceiverRole(newValue)} value={receiverRole}>
-                            {/* <View>
-                            <Text>Customer</Text>
-                            <RadioButton value="customer" />
-                        </View>
-                        <View>
-                            <Text>Super Admin</Text>
-                            <RadioButton value="superadmin" />
-                        </View> */}
-
                             <RadioButton.Item label="Customer" value="customer" style={styles.radioLabel} />
                             <RadioButton.Item label="Super Admin" value="Super Admin" style={styles.radioLabel} />
                         </RadioButton.Group>

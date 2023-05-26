@@ -3,6 +3,12 @@ import { Text, Image, SafeAreaView, View, StyleSheet, Button, Alert, TouchableOp
 import { useSelector, useDispatch } from "react-redux";
 import ImagePicker from 'react-native-image-crop-picker';
 import buddyBoy from '../assets/buddyGirl.png';
+import photos from '../assets/PHOTOS_REV1.png';
+import sessions from '../assets/SESSIONS_REV1.png';
+import messages from '../assets/MESSAGES_REV1.png';
+import parents from '../assets/PARENTS_REV1.png';
+import classes from '../assets/CLASSES_REV1.png';
+import schools from '../assets/SCHOOLS_REV1.png';
 import axios from 'axios';
 import Config from '../../Config';
 import { GetParticularCoachService } from '../services/CoachService';
@@ -51,7 +57,7 @@ export default function CoachDashboard({ navigation }) {
         try {
             const res = await axios({
                 method: 'post',
-                url: `${process.env.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
                 data: formData,
                 headers: {
                     Accept: 'application/json',
@@ -112,26 +118,28 @@ export default function CoachDashboard({ navigation }) {
                         <Text style={styles.txt}>Favorite Drill: {state.authPage.auth_data?.favorite_drill}</Text>
                     </>
                 )}
-                <Text style={styles.adminWrapper}>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Schools Photos")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg1 }}>PHOTOS</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Schedules")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg2 }}>SCHEDULES</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Messages")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg3 }}>MESSAGES</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach School List")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg4 }}>SCHOOLS</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Customers")}>
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg5 }}>PARENTS</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Classes")} >
-                        <Text style={{ ...styles.adminContainer, ...styles.adminBg7 }}>CLASSES</Text>
-                    </TouchableOpacity>
-                </Text>
+                <ScrollView showsVerticalScrollIndicator style={{ height: 390 }}>
+                    <Text style={styles.adminWrapper}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Schools Photos")}>
+                            <Image source={photos} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Messages")}>
+                            <Image source={messages} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach School List")}>
+                            <Image source={schools} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Sessions")}>
+                            <Image source={sessions} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Parents")}>
+                            <Image source={parents} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Classes")} >
+                            <Image source={classes} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        </TouchableOpacity>
+                    </Text>
+                </ScrollView>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate("SignIn");

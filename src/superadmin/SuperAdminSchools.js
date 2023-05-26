@@ -33,7 +33,7 @@ export default function SuperAdminSchools({ navigation }) {
                             </DataTable.Header>
                             {schools.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin School Description", { school: item })}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin School Description", { school: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.school_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.region}</DataTable.Cell>
@@ -47,10 +47,10 @@ export default function SuperAdminSchools({ navigation }) {
 
                 </ScrollView>
                 <View style={styles.adminbtn}>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin School Creation")}>
-                        <Text style={styles.coach_cta}>School Creation</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin School Creation")}>
+                        <Text style={styles.coach_cta}>Add New School</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

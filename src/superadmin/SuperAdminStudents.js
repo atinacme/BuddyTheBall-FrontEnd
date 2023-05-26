@@ -61,10 +61,10 @@ export default function SuperAdminStudents({ navigation }) {
                         );
                     })}
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Customer Creation")}>
-                    <Text style={styles.cust_btn}>Customer Creation</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Parent Creation")}>
+                    <Text style={styles.cust_btn}>Add New Parent</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                     <Text style={styles.backbtn}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>

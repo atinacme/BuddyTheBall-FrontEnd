@@ -49,7 +49,7 @@ export default function RegionalManagerPhotoCreation({ navigation, route }) {
         });
         const res = await axios({
             method: 'post',
-            url: `${process.env.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+            url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
             data: formData,
             headers: {
                 Accept: 'application/json',
