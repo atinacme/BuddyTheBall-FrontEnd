@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
-import { DeleteCustomerService, GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/ParentService';
+import { DeleteParentService, GetAwardPhotosService, GetParticularParentService, UpdateParentService } from '../services/ParentService';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -37,18 +37,18 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                     result.map(v => {
                         if (v.school.region === state.authPage.auth_data?.assigned_region) {
                             v.schedules?.map(u => {
-                                Object.assign(v, { key: v._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${v.school.school_name}` })
+                                Object.assign(v, { key: v._id, value: `${v.topic}in ${v.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)}` })
                             })
                         }
                     })
                     setClassList(result)
-                    const result1 = await GetParticularCustomerService(route.params.customerData._id);
+                    const result1 = await GetParticularParentService(route.params.customerData._id);
                     if (result1 && result1.children_data.length > 0) {
                         for (let element of result1.children_data) {
                             setTimeout(() => {
                                 if (element.class !== null) {
                                     element.class?.schedules?.map(u => {
-                                        Object.assign(element.class, { key: element.class._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} in ${element.class.school.school_name}` })
+                                        Object.assign(element.class, { key: element.class._id, value: `${element.class.topic}  in ${element.class.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)}` })
                                     })
                                 }
                                 setChildrenData(prevState => [...prevState, {
@@ -62,11 +62,12 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                     class_visible: false,
                                     class_default_show: element.class,
                                     class_default_removed: false,
+                                    handed_list: ["Left", "Right"],
                                     handed: element.handed,
                                     num_buddy_books_read: element.num_buddy_books_read,
                                     jersey_size: element.jersey_size,
                                     visible: false,
-                                    current_award: { name: element.current_award.name, image: element.current_award.image }
+                                    current_award: { name: element?.current_award?.name, image: element?.current_award?.image }
                                 }]);
                             }, 1000)
                         }
@@ -117,6 +118,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
             childrenData.forEach(v => delete v.class_default_removed);
             childrenData.forEach(v => delete v.class_visible);
             childrenData.forEach(v => delete v.visible);
+            childrenData.forEach(v => delete v.current_award);
 
             const trueValue = checkArrayObjects(childrenData)
 
@@ -127,11 +129,11 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                     parent_name: customerData.parent_name,
                     children_data: childrenData
                 };
-                const result = await UpdateCustomerService(customerData.user_id, route.params.customerData._id, data);
+                const result = await UpdateParentService(customerData.user_id, route.params.customerData._id, data);
                 if (result) {
                     Alert.alert(
                         "Alert",
-                        "Customer Updated Successfully",
+                        "Parent Updated Successfully",
                         [
                             {
                                 text: "OK",
@@ -154,7 +156,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update Customer!"
+                "Failed! Can't Update Parent!"
             );
         }
     };
@@ -163,7 +165,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
         try {
             Alert.alert(
                 "Alert",
-                "Do You Want to Delete the Customer ?",
+                "Do You Want to Delete the Parent ?",
                 [
                     {
                         text: 'Cancel',
@@ -174,11 +176,11 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                         text: "OK",
                         onPress: async () => {
                             const data = { id: route.params.customerData._id, user_id: customerData.user_id }
-                            const result = await DeleteCustomerService(data)
+                            const result = await DeleteParentService(data)
                             if (result) {
                                 Alert.alert(
                                     "Alert",
-                                    "Customer Deleted Successfully",
+                                    "Parent Deleted Successfully",
                                     [
                                         {
                                             text: "OK",
@@ -194,7 +196,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update Customer!"
+                "Failed! Can't Update Parent!"
             );
         }
     };
@@ -237,7 +239,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                     {!customerData.parent_name &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Parent Name is Required</Text>
                     }
-                    <View>
+                    <View style={styles.labelBtn}>
                         <Text style={styles.label}>Child</Text>
                         <TouchableOpacity onPress={() => {
                             setChildrenData(prevState => [...prevState, {
@@ -247,6 +249,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                 wristband_level: '',
                                 class_list: classList,
                                 class: '',
+                                handed_list: ["Left", "Right"],
                                 handed: '',
                                 num_buddy_books_read: '',
                                 jersey_size: '',
@@ -254,16 +257,16 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                 current_award: { name: '', image: '' }
                             }]);
                         }}>
-                            <Text>+</Text>
+                            <Text style={styles.plusBtn}>+</Text>
                         </TouchableOpacity>
                     </View>
                     {childrenData.length > 0 && childrenData.map((item, index) => {
                         return (
                             <View key={index}>
-                                <Text style={styles.label}>Player Name</Text>
+                                <Text style={styles.label}>Child Name</Text>
                                 <TextInput
                                     name="player_name"
-                                    placeholder="Player Name"
+                                    placeholder="Child Name"
                                     onChangeText={(val) => {
                                         let newArr = [...childrenData];
                                         newArr[index].player_name = val;
@@ -273,14 +276,16 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                     style={styles.input}
                                 />
                                 {!item.player_name &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Player Name is Required</Text>
+                                    <Text style={{ fontSize: 10, color: 'red' }}>Child Name is Required</Text>
                                 }
-                                <Text style={styles.label}>Player Age</Text>
-                                <Text onPress={() => {
-                                    let newArr = [...childrenData];
-                                    newArr[index].calendar_visible = !newArr[index].calendar_visible;
-                                    setChildrenData(newArr);
-                                }}>+</Text>
+                                <View style={styles.labelBtn}>
+                                    <Text style={styles.label}>Child Age</Text>
+                                    <Text style={styles.plusBtn} onPress={() => {
+                                        let newArr = [...childrenData];
+                                        newArr[index].calendar_visible = !newArr[index].calendar_visible;
+                                        setChildrenData(newArr);
+                                    }}>+</Text>
+                                </View>
                                 {item.calendar_visible && (
                                     <DateTimePicker
                                         testID="dateTimePicker"
@@ -299,7 +304,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                 )}
                                 <Text>Age: {item.player_age}</Text>
                                 {!item.player_age &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Player Age is Required</Text>
+                                    <Text style={{ fontSize: 10, color: 'red' }}>Child Age is Required</Text>
                                 }
                                 <Text style={styles.label}>WristBand Level</Text>
                                 <TextInput
@@ -374,16 +379,15 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
                                 <Text style={styles.label}>Handed</Text>
-                                <TextInput
-                                    name="handed"
-                                    placeholder="Handed"
-                                    onChangeText={(val) => {
+                                <SelectList
+                                    setSelected={(val) => {
                                         let newArr = [...childrenData];
                                         newArr[index].handed = val;
                                         setChildrenData(newArr);
                                     }}
-                                    value={item.handed}
-                                    style={styles.input}
+                                    data={item?.handed_list?.length > 0 ? item?.handed_list : []}
+                                    defaultOption={{ "key": item.handed, "value": item.handed }}
+                                    label="Selected Handed"
                                 />
                                 {!item.handed &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>
@@ -424,7 +428,7 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
                                 }}>
-                                    <View style={styles.buttonText}>{item.current_award.image ? <Image source={{ uri: item.current_award.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
+                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
                                 </TouchableOpacity>
                                 {item.visible &&
                                     (<View style={styles.award}>
@@ -445,9 +449,9 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                         })}
                                     </View>
                                     )}
-                                {!item.current_award.name &&
+                                {/* {!item.current_award.name &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
-                                }
+                                } */}
                                 <TouchableOpacity
                                     onPress={() => {
                                         var array = [...childrenData];
@@ -488,6 +492,22 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         position: 'relative',
         marginTop: 60
+    },
+    labelBtn: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    plusBtn: {
+        borderColor: "#fff",
+        padding: 3,
+        textAlign: "center",
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 50,
+        width: 30,
+        height: 30
     },
     submit: {
         borderColor: "#fff",

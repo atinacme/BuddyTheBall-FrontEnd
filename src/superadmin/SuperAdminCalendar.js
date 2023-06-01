@@ -5,7 +5,6 @@ import sessions from '../assets/SESSIONS_REV1.png';
 import LinearGradient from 'react-native-linear-gradient';
 
 export default function SuperAdminCalendar({ navigation }) {
-
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>

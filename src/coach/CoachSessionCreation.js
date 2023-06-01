@@ -5,7 +5,7 @@ import buddy from '../assets/buddy.png';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { CreateScheduleService } from '../services/SessionService';
+import { CreateSessionService } from '../services/SessionService';
 
 export default function CoachSessionCreation({ navigation }) {
     const state = useSelector((state) => state);
@@ -70,7 +70,7 @@ export default function CoachSessionCreation({ navigation }) {
                 end_time: moment(time.end).format('h:mm A'),
                 topic: topic
             };
-            const result = await CreateScheduleService(data);
+            const result = await CreateSessionService(data);
             if (result) {
                 Alert.alert(
                     "Alert",

@@ -4,7 +4,7 @@ import profile from '../assets/profile.png';
 import send_button from '../assets/send_button.png';
 import moment from 'moment';
 import { useSelector } from "react-redux";
-import { GetCustomerParticularPhotoService, UpdateCustomerPhotosOnMessageService } from '../services/ParentService';
+import { GetParentParticularPhotoService, UpdateParentPhotosOnMessageService } from '../services/ParentService';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -19,7 +19,7 @@ export default function SuperAdminParticularPhoto({ navigation, route }) {
     useEffect(() => {
         try {
             const getCustomers = async () => {
-                const result = await GetCustomerParticularPhotoService(route.params.photo._id);
+                const result = await GetParentParticularPhotoService(route.params.photo._id);
                 if (result) {
                     setOnloadMessages(result.messages);
                 }
@@ -36,7 +36,7 @@ export default function SuperAdminParticularPhoto({ navigation, route }) {
                 messanger_name: messanger,
                 url: state.authPage.auth_data?.profile_data.url
             };
-            const result = await UpdateCustomerPhotosOnMessageService(route.params.photo._id, data);
+            const result = await UpdateParentPhotosOnMessageService(route.params.photo._id, data);
             if (result) {
                 setMsgResult(result);
                 setMessage();

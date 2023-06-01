@@ -163,7 +163,7 @@ export default function RegionalManagerParticularSchoolStudents({ route }) {
                                             <Text style={styles.itemTextFirst}>Password:</Text><Text style={styles.itemText}>evgfregev</Text>
                                         </View>
                                         <View style={styles.item}>
-                                            <Text style={styles.itemTextFirst}>Player Age:</Text><Text style={styles.itemText}>fwedfewcfew</Text>
+                                            <Text style={styles.itemTextFirst}>Child Age:</Text><Text style={styles.itemText}>fwedfewcfew</Text>
                                         </View>
                                         <View style={styles.item}>
                                             <Text style={styles.itemTextFirst}>Wristband Level:</Text><Text style={styles.itemText}>evgfregev</Text>

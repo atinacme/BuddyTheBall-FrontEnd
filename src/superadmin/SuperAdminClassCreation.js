@@ -4,7 +4,7 @@ import buddy from '../assets/buddy.png';
 import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetSchedulesService } from '../services/SessionService';
+import { GetSessionsService } from '../services/SessionService';
 import { CreateClassService } from '../services/ClassService';
 import { GetSchoolsService } from '../services/SchoolService';
 
@@ -19,7 +19,7 @@ export default function SuperAdminClassCreation({ navigation }) {
     useEffect(() => {
         try {
             const getSessions = async () => {
-                const result = await GetSchedulesService();
+                const result = await GetSessionsService();
                 if (result) {
                     setSessionsList(result.map(v => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coaches.map(u => u.coach_name)}` })));
                 }

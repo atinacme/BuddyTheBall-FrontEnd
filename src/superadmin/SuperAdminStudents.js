@@ -38,8 +38,8 @@ export default function SuperAdminStudents({ navigation }) {
                                                     {customer.customers.length > 0 && v.children_data.map(u => {
                                                         return (
                                                             <View style={styles.content}>
-                                                                <Text>Player Name: {u.player_name}</Text>
-                                                                <Text>Player Age: {u.player_age}</Text>
+                                                                <Text>Child Name: {u.player_name}</Text>
+                                                                <Text>Child Age: {u.player_age}</Text>
                                                                 <Text>Wristband Level: {u.wristband_level}</Text>
                                                                 <Text>Handed: {u.handed}</Text>
                                                                 <Text>Number of Buddy Books Read: {u.num_buddy_books_read}</Text>

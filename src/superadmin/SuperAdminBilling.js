@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StyleSheet, ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetSchoolsService } from '../services/SchoolService';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import moment from 'moment';
+import { EmailingService } from '../services/EmailService';
 
 export default function SuperAdminBilling({ navigation }) {
     const [schools, setSchools] = useState([]);
@@ -40,9 +42,13 @@ export default function SuperAdminBilling({ navigation }) {
 
                                 <h4>Number of Couches:</h4> <p>${v.coaches.length}</p>
 
-                                <h4>Name of Director:</h4> <p>NAME, E-MAIL, PHONE NUMBER</p>
+                                <h4>Name of Director:</h4> <p>${v.director_name}</p>
 
-                                <h4>Established Date:</h4> <p>(First Date School Added to system, always stays the same date, timestamped on initial creation)</p>
+                                <h4>Email of Director:</h4> <p>${v.director_email}</p>
+
+                                <h4>Phone of Director:</h4> <p>${v.director_phone}</p>
+
+                                <h4>Established Date:</h4> <p>${moment(v.time).format("YYYY-MM-DD h:mm A")}</p>
 
                                 <h4>Total Revenue for the Month:</h4> <p></p>
 
@@ -98,8 +104,18 @@ export default function SuperAdminBilling({ navigation }) {
         };
 
         let file = await RNHTMLtoPDF.convert(options);
-        // console.log(file.filePath);
-        alert(file.filePath);
+        const result = await EmailingService()
+        if (result) {
+            Alert.alert(
+                "Alert",
+                file.filePath,
+                [
+                    {
+                        text: "OK",
+                    }
+                ]
+            );
+        }
     }
 
     return (
@@ -149,7 +165,7 @@ export default function SuperAdminBilling({ navigation }) {
                         );
                     })}
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("SuperAdmin Dashboard")}>
+                <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>
                     <Text style={styles.backbtn}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
@@ -168,6 +184,21 @@ const styles = StyleSheet.create({
     stdWrapper: {
         flex: 1,
     },
+    topbtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        display: 'flex',
+        top: 0,
+        width: 150,
+        position: 'absolute',
+        marginBottom: 10
+    },
     backbtn: {
         borderColor: "#fff",
         paddingTop: 10,
@@ -179,8 +210,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         marginTop: 25,
         display: 'flex',
-        right: 0,
-        width: 150,
+        width: 335,
         position: 'absolute',
         bottom: 0,
         marginBottom: 10

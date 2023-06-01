@@ -35,7 +35,7 @@ export default function CoachParentCreation({ navigation }) {
             if (result) {
                 result.map(v => {
                     v.schedules.map(u => {
-                        Object.assign(v, { key: v._id, value: `Class from ${u.date} (${u.start_time} to ${u.end_time})` })
+                        Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` })
                     })
                 })
                 setClasses(result);
@@ -49,6 +49,7 @@ export default function CoachParentCreation({ navigation }) {
             childrenData.forEach(v => delete v.calendar_visible);
             childrenData.forEach(v => delete v.class_list);
             childrenData.forEach(v => delete v.visible);
+            childrenData.forEach(v => delete v.current_award);
 
             function checkKeyValues(obj) {
                 for (let key in obj) {
@@ -90,7 +91,7 @@ export default function CoachParentCreation({ navigation }) {
                 if (result) {
                     Alert.alert(
                         "Alert",
-                        "Customer Added Successfully",
+                        "Parent Added Successfully",
                         [
                             {
                                 text: "OK",
@@ -156,22 +157,24 @@ export default function CoachParentCreation({ navigation }) {
                                 wristband_level: '',
                                 class_list: classes,
                                 class: '',
+                                handed_list: ["Left", "Right"],
                                 handed: '',
                                 num_buddy_books_read: '',
                                 jersey_size: '',
                                 visible: false,
                                 current_award: { name: '', image: '' }
                             }]);
-                        }}><Text style={styles.plusBtn}>+</Text>
+                        }}>
+                            <Text style={styles.plusBtn}>+</Text>
                         </TouchableOpacity>
                     </View>
                     {childrenData.length > 0 && childrenData.map((item, index) => {
                         return (
                             <View key={index}>
-                                <Text style={styles.label}>Player Name</Text>
+                                <Text style={styles.label}>Child Name</Text>
                                 <TextInput
                                     name="player_name"
-                                    placeholder="Player Name"
+                                    placeholder="Child Name"
                                     onChangeText={(val) => {
                                         let newArr = [...childrenData];
                                         newArr[index].player_name = val;
@@ -181,10 +184,10 @@ export default function CoachParentCreation({ navigation }) {
                                     style={styles.input}
                                 />
                                 {!item.player_name &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Player Name is Required</Text>
+                                    <Text style={{ fontSize: 10, color: 'red' }}>Child Name is Required</Text>
                                 }
                                 <View style={styles.labelBtn}>
-                                    <Text style={styles.label}>Player Age</Text>
+                                    <Text style={styles.label}>Child Age</Text>
                                     <Text style={styles.plusBtn} onPress={() => {
                                         let newArr = [...childrenData];
                                         newArr[index].calendar_visible = !newArr[index].calendar_visible;
@@ -209,7 +212,7 @@ export default function CoachParentCreation({ navigation }) {
                                 )}
                                 <Text>Age: {item.player_age}</Text>
                                 {!item.player_age &&
-                                    <Text style={{ fontSize: 10, color: 'red' }}>Player Age is Required</Text>
+                                    <Text style={{ fontSize: 10, color: 'red' }}>Child Age is Required</Text>
                                 }
                                 <Text style={styles.label}>WristBand Level</Text>
                                 <TextInput
@@ -241,16 +244,14 @@ export default function CoachParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
                                 }
                                 <Text style={styles.label}>Handed</Text>
-                                <TextInput
-                                    name="handed"
-                                    placeholder="Handed"
-                                    onChangeText={(val) => {
+                                <SelectList
+                                    setSelected={(val) => {
                                         let newArr = [...childrenData];
                                         newArr[index].handed = val;
                                         setChildrenData(newArr);
                                     }}
-                                    value={item.handed}
-                                    style={styles.input}
+                                    data={item?.handed_list?.length > 0 ? item?.handed_list : []}
+                                    label="Selected Handed"
                                 />
                                 {!item.handed &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>
@@ -291,7 +292,7 @@ export default function CoachParentCreation({ navigation }) {
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
                                 }}>
-                                    <View style={styles.buttonText}>{item.current_award.image ? <Image source={{ uri: item.current_award.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
+                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
                                 </TouchableOpacity>
                                 {item.visible &&
                                     (<View style={styles.award}>
@@ -312,9 +313,9 @@ export default function CoachParentCreation({ navigation }) {
                                         })}
                                     </View>
                                     )}
-                                {!item.current_award.name &&
+                                {/* {!item.current_award.name &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
-                                }
+                                } */}
                                 <TouchableOpacity
                                     onPress={() => {
                                         var array = [...childrenData];

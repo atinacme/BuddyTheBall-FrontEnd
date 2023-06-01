@@ -4,7 +4,7 @@ import buddy from '../assets/buddy.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from "react-redux";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetSchedulesService } from '../services/SessionService';
+import { GetSessionsService } from '../services/SessionService';
 import { CreateClassService } from '../services/ClassService';
 
 export default function CoachClassCreation({ navigation }) {
@@ -18,7 +18,7 @@ export default function CoachClassCreation({ navigation }) {
     useEffect(() => {
         try {
             const getSchedules = async () => {
-                const result = await GetSchedulesService();
+                const result = await GetSessionsService();
                 if (result) {
                     result.map(v => {
                         if (v?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {

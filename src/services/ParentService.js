@@ -43,6 +43,10 @@ const GetMessagesBySenderIdReceiverIdService = async (sender_id, receiver_id) =>
     return await HttpRequest("GET", `${baseUrl}/getMessagesBySenderIdReceiverId/${sender_id}/${receiver_id}`, null);
 };
 
+const GetAwardsService = async () => {
+    return await HttpRequest("GET", `${baseUrl}/getAwards`, null);
+};
+
 const GetAwardPhotosService = async () => {
     return await HttpRequest("GET", `${baseUrl}/getAwardPhotos`, null);
 };
@@ -58,5 +62,6 @@ const DeleteParentService = async (data) => {
 export {
     GetParentsService, GetParentWithSchoolIdService, GetParticularParentPhotosService, GetParticularParentService,
     UpdateParentService, GetParentParticularPhotoService, UpdateParentPhotosOnMessageService, CreateAndUpdateMessageService,
-    GetMessagesBySenderIdService, GetMessagesBySenderIdReceiverIdService, GetAwardPhotosService, GetParentWithSlot, DeleteParentService
+    GetMessagesBySenderIdService, GetMessagesBySenderIdReceiverIdService, GetAwardsService, GetAwardPhotosService,
+    GetParentWithSlot, DeleteParentService
 };

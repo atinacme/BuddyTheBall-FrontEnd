@@ -3,7 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } fr
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetSchedulesService } from '../services/SessionService';
+import { GetSessionsService } from '../services/SessionService';
 
 export default function RegionalManagerSessions({ navigation }) {
     const state = useSelector((state) => state);
@@ -12,7 +12,7 @@ export default function RegionalManagerSessions({ navigation }) {
     useEffect(() => {
         try {
             const getSchedules = async () => {
-                const result = await GetSchedulesService();
+                const result = await GetSessionsService();
                 if (result) {
                     setSchedules(result);
                 }

@@ -3,7 +3,7 @@ import { Text, SafeAreaView, StyleSheet, ScrollView, Image, Alert, View, Button,
 import { SelectList } from 'react-native-dropdown-select-list';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useSelector } from "react-redux";
-import { GetCustomerWithSchoolIdService } from '../services/ParentService';
+import { GetParentWithSchoolIdService } from '../services/ParentService';
 import axios from 'axios';
 import Config from '../../Config';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,7 +17,7 @@ export default function CoachPhotoCreation({ navigation, route }) {
     useEffect(() => {
         try {
             const handleStudentList = async () => {
-                const result = await GetCustomerWithSchoolIdService(route.params.schoolId);
+                const result = await GetParentWithSchoolIdService(route.params.schoolId);
                 if (result) {
                     setCustomerData(result.map(v => Object.assign(v, { key: v._id, value: v.parent_name })));
                 }

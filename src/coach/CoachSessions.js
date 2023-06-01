@@ -3,7 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView, Ale
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetSchedulesService } from '../services/SessionService';
+import { GetSessionsService } from '../services/SessionService';
 
 export default function CoachSessions({ navigation }) {
     const state = useSelector((state) => state);
@@ -12,7 +12,7 @@ export default function CoachSessions({ navigation }) {
     useEffect(() => {
         try {
             const getSchedules = async () => {
-                const result = await GetSchedulesService();
+                const result = await GetSessionsService();
                 if (result) {
                     result.map(v => {
                         v.coaches.map(u => {
@@ -41,17 +41,7 @@ export default function CoachSessions({ navigation }) {
                             </DataTable.Header>
                             {schedules.length > 0 && schedules.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => item.created_by === 'coach' ?
-                                        navigation.navigate("Coach Session Description", { scheduleData: item })
-                                        : Alert.alert(
-                                            "Alert",
-                                            "You can't Edit this!",
-                                            [
-                                                {
-                                                    text: "OK"
-                                                }
-                                            ]
-                                        )}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Coach Session Description", { scheduleData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.status}</DataTable.Cell>
                                             <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.coach_name ? 'You' : item.created_by_name}</DataTable.Cell>
@@ -68,7 +58,7 @@ export default function CoachSessions({ navigation }) {
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Session Creation")}>
                         <Text style={styles.coach_cta}>Add New Session</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Coach Calendar")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -4,10 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import ImagePicker from 'react-native-image-crop-picker';
 import buddyBoy from '../assets/buddyGirl.png';
 import photos from '../assets/PHOTOS_REV1.png';
-import sessions from '../assets/SESSIONS_REV1.png';
+import calendar from '../assets/CALENDAR_REV1.png';
 import messages from '../assets/MESSAGES_REV1.png';
 import parents from '../assets/PARENTS_REV1.png';
-import classes from '../assets/CLASSES_REV1.png';
 import schools from '../assets/SCHOOLS_REV1.png';
 import axios from 'axios';
 import Config from '../../Config';
@@ -129,14 +128,11 @@ export default function CoachDashboard({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.navigate("Coach School List")}>
                             <Image source={schools} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("Coach Sessions")}>
-                            <Image source={sessions} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Calendar")}>
+                            <Image source={calendar} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate("Coach Parents")}>
                             <Image source={parents} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate("Coach Classes")} >
-                            <Image source={classes} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </TouchableOpacity>
                     </Text>
                 </ScrollView>

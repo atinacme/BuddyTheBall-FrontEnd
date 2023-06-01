@@ -112,8 +112,8 @@ export default function ParentDashboard({ navigation }) {
                             {state.authPage?.auth_data?.children_data?.map(v => {
                                 return (
                                     <>
-                                        <Text>Player Name: {v.player_name}</Text>
-                                        <Text>Player Age: {v.player_age}</Text>
+                                        <Text>Child Name: {v.player_name}</Text>
+                                        <Text>Child Age: {v.player_age}</Text>
                                         <Text>Wristband Level: {v.wristband_level}</Text>
                                         <Text>Handed: {v.handed}</Text>
                                         <Text>Number of Buddy Books Read: {v.num_buddy_books_read}</Text>

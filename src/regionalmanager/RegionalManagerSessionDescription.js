@@ -4,7 +4,7 @@ import moment from 'moment';
 import buddy from '../assets/buddy.png';
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { DeleteScheduleService, UpdateScheduleService } from '../services/SessionService';
+import { DeleteSessionService, UpdateSessionService } from '../services/SessionService';
 
 export default function RegionalManagerSessionDescription({ navigation, route }) {
     const time = { start: route.params.scheduleData.start_time, end: route.params.scheduleData.end_time };
@@ -77,7 +77,7 @@ export default function RegionalManagerSessionDescription({ navigation, route })
                 end_time: initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end,
                 topic: topic
             };
-            const result = await UpdateScheduleService(route.params.scheduleData._id, data);
+            const result = await UpdateSessionService(route.params.scheduleData._id, data);
             if (result) {
                 Alert.alert(
                     "Alert",
@@ -108,7 +108,7 @@ export default function RegionalManagerSessionDescription({ navigation, route })
                         text: "YES",
                         onPress: async () => {
                             const data = { id: route.params.scheduleData._id }
-                            const result = await DeleteScheduleService(data)
+                            const result = await DeleteSessionService(data)
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -149,7 +149,7 @@ export default function RegionalManagerSessionDescription({ navigation, route })
                     </TouchableOpacity>
                     <Text style={styles.label}>Date : {initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date}</Text>
                     <Text style={styles.label}>Start Time : {initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start}</Text>
-                    <Text style={styles.label}>End Time :{initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
+                    <Text style={styles.label}>End Time : {initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
                     <Text style={styles.label}>Coach Names:</Text>
                     {route.params.scheduleData.coaches.map((v, i) => {
                         return <Text style={styles.label}>{v.coach_name}</Text>

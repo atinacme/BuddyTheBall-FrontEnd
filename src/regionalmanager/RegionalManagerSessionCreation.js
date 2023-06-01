@@ -6,7 +6,7 @@ import moment from 'moment';
 import buddy from '../assets/buddy.png';
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { CreateScheduleService } from '../services/SessionService';
+import { CreateSessionService } from '../services/SessionService';
 import { GetCoachesOfParticularRegionalManager } from '../services/RegionalManagerService';
 
 export default function RegionalManagerSessionCreation({ navigation }) {
@@ -86,7 +86,8 @@ export default function RegionalManagerSessionCreation({ navigation }) {
                 end_time: moment(time.end).format('h:mm A'),
                 topic: topic
             };
-            const result = await CreateScheduleService(data);
+            console.log("dje--->", data)
+            const result = await CreateSessionService(data);
             if (result) {
                 Alert.alert(
                     "Alert",

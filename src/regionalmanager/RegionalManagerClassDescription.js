@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
 import buddy from '../assets/buddy.png';
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
-import { GetScheduleCreatedByUserIdService } from '../services/SessionService';
+import { GetSessionCreatedByUserIdService } from '../services/SessionService';
 import { DeleteClassService, UpdateClassService } from '../services/ClassService';
 import { GetRegionWiseSchools } from '../services/SchoolService';
 
@@ -20,7 +20,7 @@ export default function RegionalManagerClassDescription({ navigation, route }) {
     useEffect(() => {
         try {
             const getRegionalManagerSessions = async () => {
-                const result = await GetScheduleCreatedByUserIdService(state.authPage.auth_data?.user_id);
+                const result = await GetSessionCreatedByUserIdService(state.authPage.auth_data?.user_id);
                 if (result) {
                     const arr = result.map(v => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coaches.map(u => u.coach_name)}` }));
                     var newArr = arr.filter(function (objFromA) {

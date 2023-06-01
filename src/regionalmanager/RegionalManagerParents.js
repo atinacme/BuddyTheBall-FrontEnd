@@ -3,7 +3,7 @@ import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } fr
 import { DataTable } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetCustomersService } from '../services/ParentService';
+import { GetParentsService } from '../services/ParentService';
 
 export default function RegionalManagerParents({ navigation }) {
     const state = useSelector((state) => state);
@@ -12,7 +12,7 @@ export default function RegionalManagerParents({ navigation }) {
     useEffect(() => {
         try {
             const getCustomers = async () => {
-                const result = await GetCustomersService();
+                const result = await GetParentsService();
                 if (result) {
                     setCustomers(result);
                 }

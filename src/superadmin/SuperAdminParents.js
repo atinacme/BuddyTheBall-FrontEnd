@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetCustomersService } from '../services/ParentService';
+import { GetParentsService } from '../services/ParentService';
 import { useSelector } from "react-redux";
 
 export default function SuperAdminParents({ navigation }) {
@@ -12,7 +12,7 @@ export default function SuperAdminParents({ navigation }) {
     useEffect(() => {
         try {
             const getCustomers = async () => {
-                const result = await GetCustomersService();
+                const result = await GetParentsService();
                 if (result) {
                     setCustomers(result);
                 }

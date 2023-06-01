@@ -42,17 +42,7 @@ export default function CoachClasses({ navigation }) {
                             </DataTable.Header>
                             {classes.length > 0 && classes.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => item.created_by === 'coach' ?
-                                        navigation.navigate("Coach Class Description", { classData: item })
-                                        : Alert.alert(
-                                            "Alert",
-                                            "You can't Edit this!",
-                                            [
-                                                {
-                                                    text: "OK"
-                                                }
-                                            ]
-                                        )}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Coach Class Description", { classData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.coach_name ? 'You' : item.created_by_name}</DataTable.Cell>
                                             {item.schedules.map(v => {
@@ -70,7 +60,7 @@ export default function CoachClasses({ navigation }) {
                     <TouchableOpacity onPress={() => navigation.navigate("Coach Class Creation")}>
                         <Text style={styles.coach_cta}>Add New Class</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Dashboard")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Coach Calendar")}>
                         <Text style={styles.backbtn}>Back</Text>
                     </TouchableOpacity>
                 </View>

@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetClassCreatedByUserIdService } from '../services/ClassService';
+import { GetClassesService } from '../services/ClassService';
 
 export default function CoachSchoolList({ navigation }) {
     const state = useSelector((state) => state);
@@ -23,8 +23,10 @@ export default function CoachSchoolList({ navigation }) {
         try {
             const getClasses = async () => {
                 const data = { created_by_user_id: state.authPage.auth_data?.user_id }
-                const result = await GetClassCreatedByUserIdService(data)
+                const result = await GetClassesService(data)
                 if (result) {
+                    result.map(v => v.school.region === state.authPage.auth_data?.assigned_region)
+                    console.log("res--->", result)
                     result.forEach(u => {
                         u.schedules.forEach(v => {
                             var local = new Date(v.date).toLocaleDateString()
@@ -40,12 +42,14 @@ export default function CoachSchoolList({ navigation }) {
                             var parsedTimeEndString = Date.parse(dateTimeEndString)
                             var parsedCurrentDateTimeString = Date.parse(moment().utcOffset("+05:30").format())
                             if (parsedCurrentDateTimeString >= parsedTimeStartString && parsedCurrentDateTimeString <= parsedTimeEndString) {
+                                console.log("Hi")
                                 Object.assign(u, { session: 'current', date: v.date, start_time: v.start_time, end_time: v.end_time });
                                 setSchedules([u]);
                             } else if (parsedCurrentDateTimeString <= parsedTimeStartString) {
                                 Object.assign(u, { session: 'upcoming', date: v.date, start_time: v.start_time, end_time: v.end_time });
                                 setSchedules(prevState => [...prevState, u]);
                             } else {
+                                console.log("Bolloo")
                                 Object.assign(u, { session: 'completed', date: v.date, start_time: v.start_time, end_time: v.end_time });
                                 setSchedules(prevState => [...prevState, u]);
                             }
@@ -57,6 +61,7 @@ export default function CoachSchoolList({ navigation }) {
         }
         catch (e) { }
     }, []);
+    console.log("sdx-->", schedules)
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>

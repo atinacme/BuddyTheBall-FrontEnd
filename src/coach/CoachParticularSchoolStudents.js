@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { SafeAreaView, Text, StyleSheet, TextInput, View, Image, Modal, Pressable, TouchableOpacity, ScrollView } from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list';
+import { SafeAreaView, Text, StyleSheet, TextInput, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import buddy from '../assets/buddy.png';
 import moment from 'moment';
-import { GetCustomersOfParticularCoachOfParticularSchool } from '../services/CoachService';
-import { CreateAndUpdateAttendanceService, GetAttendanceByDateService, GetAttendanceBySessionService } from '../services/AttendanceService';
+import { CreateAndUpdateAttendanceService, GetAttendanceBySessionService } from '../services/AttendanceService';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetCustomerWithSlot } from '../services/ParentService';
+import { GetParentWithSlot } from '../services/ParentService';
 
 export default function CoachParticularSchoolStudents({ route }) {
     const state = useSelector((state) => state);
@@ -34,7 +32,7 @@ export default function CoachParticularSchoolStudents({ route }) {
         try {
             const getCustomers = async () => {
                 const data = { coach: state.authPage.auth_data?._id, slot: route.params.sessionItem._id };
-                const result = await GetCustomerWithSlot(data);
+                const result = await GetParentWithSlot(data);
                 if (result) {
                     // setCustomers(result);
                     var removeEmpty = result.filter(v => v.children_data.length !== 0);
@@ -232,7 +230,7 @@ export default function CoachParticularSchoolStudents({ route }) {
                                             <Text style={styles.itemTextFirst}>Password:</Text><Text style={styles.itemText}>evgfregev</Text>
                                         </View>
                                         <View style={styles.item}>
-                                            <Text style={styles.itemTextFirst}>Player Age:</Text><Text style={styles.itemText}>fwedfewcfew</Text>
+                                            <Text style={styles.itemTextFirst}>Child Age:</Text><Text style={styles.itemText}>fwedfewcfew</Text>
                                         </View>
                                         <View style={styles.item}>
                                             <Text style={styles.itemTextFirst}>Wristband Level:</Text><Text style={styles.itemText}>evgfregev</Text>

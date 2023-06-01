@@ -34,7 +34,8 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         director_name: result.director_name,
                         director_email: result.director_email,
                         director_phone: result.director_phone,
-                        address: result.address
+                        address: result.address,
+                        time: result.time
                     });
                 }
             };
