@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
-import { DeleteParentService, GetAwardPhotosService, GetParticularParentService, UpdateParentService } from '../services/ParentService';
+import { DeleteParentService, GetAwardsService, GetParticularParentService, UpdateParentService } from '../services/ParentService';
 import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -18,41 +18,19 @@ export default function SuperAdminParentDescription({ navigation, route }) {
     });
     const [childrenData, setChildrenData] = useState([]);
     const [awardList, setAwardList] = useState([]);
-
-    function checkKeyValues(obj) {
-        for (let key in obj) {
-            if (typeof obj[key] === 'object' && obj[key] !== null) {
-                if (!checkKeyValues(obj[key])) {
-                    return false;
-                }
-            } else {
-                if (!obj[key]) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    function checkArrayObjects(array) {
-        for (let obj of array) {
-            if (!checkKeyValues(obj)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    const wristbands = [
+        { key: "White", value: "White" },
+        { key: "Yellow", value: "Yellow" },
+        { key: "Orange", value: "Orange" },
+        { key: "Blue", value: "Blue" },
+        { key: "Green", value: "Green" },
+        { key: "Purple", value: "Purple" },
+        { key: "Red", value: "Red" },
+        { key: "Black", value: "Black" }
+    ]
 
     useEffect(() => {
         try {
-            const getAwardsList = async () => {
-                const result = await GetAwardPhotosService();
-                if (result) {
-                    setAwardList(result);
-                }
-            };
-            getAwardsList();
-
             const getClasses = async () => {
                 const result = await GetClassesService();
                 if (result) {
@@ -63,6 +41,13 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                     })
                     setClassList(result)
                     const result1 = await GetParticularParentService(route.params.customerData._id);
+                    const result2 = await GetAwardsService();
+                    if (result2) {
+                        result2.map(v => {
+                            Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` })
+                        })
+                        setAwardList(result2);
+                    }
                     if (result1 && result1.children_data.length > 0) {
                         for (let element of result1.children_data) {
                             setTimeout(() => {
@@ -71,10 +56,12 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                         Object.assign(element.class, { key: element.class._id, value: `${element.class.topic} in ${element.class.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} ` })
                                     })
                                 }
+                                console.log("shes--->", element.current_award)
                                 setChildrenData(prevState => [...prevState, {
                                     player_name: element.player_name,
                                     calendar_visible: false,
                                     player_age: element?.player_age,
+                                    wristband_level_list: wristbands,
                                     wristband_level: element?.wristband_level,
                                     class_check: element.class === null ? null : element?.class,
                                     class_list: result,
@@ -87,7 +74,8 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                     num_buddy_books_read: element?.num_buddy_books_read,
                                     jersey_size: element?.jersey_size,
                                     visible: false,
-                                    current_award: { name: element?.current_award?.name, image: element?.current_award?.image }
+                                    award_list: result2,
+                                    current_award: element?.current_award
                                 }]);
                             }, 1000)
                         }
@@ -105,6 +93,8 @@ export default function SuperAdminParentDescription({ navigation, route }) {
         } catch (e) { }
     }, []);
 
+    console.log("dcdcxd-->", childrenData)
+
     const handleCustomerUpdate = async () => {
         try {
             childrenData.forEach(v => delete v.calendar_visible);
@@ -114,11 +104,19 @@ export default function SuperAdminParentDescription({ navigation, route }) {
             childrenData.forEach(v => delete v.class_default_removed);
             childrenData.forEach(v => delete v.class_visible);
             childrenData.forEach(v => delete v.visible);
-            childrenData.forEach(v => delete v.current_award);
 
-            const trueValue = checkArrayObjects(childrenData)
+            function checkKeyValues(array) {
+                for (let obj of array) {
+                    for (let key in obj) {
+                        if (!obj[key]) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
 
-            if (trueValue && customerData.email !== "" && customerData.password !== "" && customerData.parent_name !== "") {
+            if (checkKeyValues(childrenData) && customerData.email !== "" && customerData.password !== "" && customerData.parent_name !== "") {
                 const data = {
                     email: customerData.email,
                     password: customerData.password,
@@ -236,7 +234,8 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                 num_buddy_books_read: '',
                                 jersey_size: '',
                                 visible: false,
-                                current_award: { name: '', image: '' }
+                                award_list: awardList,
+                                current_award: ''
                             }]);
                         }}>
                             <Text style={styles.plusBtn}>+</Text>
@@ -289,16 +288,15 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Child Age is Required</Text>
                                 }
                                 <Text style={styles.label}>WristBand Level</Text>
-                                <TextInput
-                                    name="wristband_level"
-                                    placeholder="WristBand Level"
-                                    onChangeText={(val) => {
+                                <SelectList
+                                    setSelected={(val) => {
                                         let newArr = [...childrenData];
                                         newArr[index].wristband_level = val;
                                         setChildrenData(newArr);
                                     }}
-                                    value={item.wristband_level}
-                                    style={styles.input}
+                                    data={item?.wristband_level_list?.length > 0 ? item?.wristband_level_list : []}
+                                    label="Selected WristBand"
+                                    defaultOption={{ "key": item.wristband_level, "value": item.wristband_level }}
                                 />
                                 {!item.wristband_level &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
@@ -405,7 +403,18 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <TouchableOpacity onPress={() => {
+                                <Text>{item?.current_award?.award_name} ({item?.current_award?.award_description})</Text>
+                                <SelectList
+                                    setSelected={(val) => {
+                                        let newArr = [...childrenData];
+                                        newArr[index].current_award = val;
+                                        setChildrenData(newArr);
+                                    }}
+                                    data={item.award_list}
+                                    save="key"
+                                    label="Selected Award"
+                                />
+                                {/* <TouchableOpacity onPress={() => {
                                     let newArr = [...childrenData];
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
@@ -430,10 +439,10 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                             );
                                         })}
                                     </View>
-                                    )}
-                                {/* {!item.current_award.name &&
+                                    )} */}
+                                {!item.current_award &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
-                                } */}
+                                }
                                 <TouchableOpacity
                                     onPress={() => {
                                         var array = [...childrenData];
@@ -443,7 +452,7 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                             setChildrenData(array);
                                         }
                                     }}>
-                                    <Text >Remove</Text>
+                                    <Text style={styles.removebtn}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
                         );
@@ -490,6 +499,22 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         width: 30,
         height: 30
+    },
+    removebtn: {
+        borderColor: "#fff",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10,
+        display: 'flex',
+        left: 0,
+        width: 100,
+        bottom: 0,
+        marginBottom: 10
     },
     submit: {
         borderColor: "#fff",

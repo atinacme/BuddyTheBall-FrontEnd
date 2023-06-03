@@ -19,6 +19,16 @@ export default function SuperAdminParentCreation({ navigation }) {
     });
     const [childrenData, setChildrenData] = useState([]);
     const [classes, setClasses] = useState([]);
+    const wristbands = [
+        { key: "White", value: "White" },
+        { key: "Yellow", value: "Yellow" },
+        { key: "Orange", value: "Orange" },
+        { key: "Blue", value: "Blue" },
+        { key: "Green", value: "Green" },
+        { key: "Purple", value: "Purple" },
+        { key: "Red", value: "Red" },
+        { key: "Black", value: "Black" }
+    ]
 
     useEffect(() => {
         try {
@@ -53,15 +63,34 @@ export default function SuperAdminParentCreation({ navigation }) {
             childrenData.forEach(v => delete v.calendar_visible);
             childrenData.forEach(v => delete v.class_list);
             childrenData.forEach(v => delete v.visible);
-            childrenData.forEach(v => delete v.current_award);
 
-            function checkKeyValues(obj) {
-                for (let key in obj) {
-                    if (typeof obj[key] === 'object' && obj[key] !== null) {
-                        if (!checkKeyValues(obj[key])) {
-                            return false;
-                        }
-                    } else {
+            // function checkKeyValues(obj) {
+            //     for (let key in obj) {
+            //         if (typeof obj[key] === 'object' && obj[key] !== null) {
+            //             if (!checkKeyValues(obj[key])) {
+            //                 return false;
+            //             }
+            //         } else {
+            //             if (!obj[key]) {
+            //                 return false;
+            //             }
+            //         }
+            //     }
+            //     return true;
+            // }
+
+            // function checkArrayObjects(array) {
+            //     for (let obj of array) {
+            //         if (!checkKeyValues(obj)) {
+            //             return false;
+            //         }
+            //     }
+            //     return true;
+            // }
+
+            function checkKeyValues(array) {
+                for (let obj of array) {
+                    for (let key in obj) {
                         if (!obj[key]) {
                             return false;
                         }
@@ -70,16 +99,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                 return true;
             }
 
-            function checkArrayObjects(array) {
-                for (let obj of array) {
-                    if (!checkKeyValues(obj)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            if (checkArrayObjects(childrenData) && parentData.email !== "" && parentData.password !== "" && parentData.parent_name !== "") {
+            if (checkKeyValues(childrenData) && parentData.email !== "" && parentData.password !== "" && parentData.parent_name !== "") {
                 const data = {
                     email: parentData.email,
                     password: parentData.password,
@@ -157,6 +177,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                                 player_name: '',
                                 calendar_visible: false,
                                 player_age: '',
+                                wristband_level_list: wristbands,
                                 wristband_level: '',
                                 class_list: classes,
                                 class: '',
@@ -173,7 +194,6 @@ export default function SuperAdminParentCreation({ navigation }) {
                         </TouchableOpacity>
                     </View>
                     {childrenData.length > 0 && childrenData.map((item, index) => {
-                        { console.log("sdch=-->", item.award_list) }
                         return (
                             <View key={index}>
                                 <Text style={styles.label}>Child Name</Text>
@@ -220,7 +240,16 @@ export default function SuperAdminParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Child Age is Required</Text>
                                 }
                                 <Text style={styles.label}>WristBand Level</Text>
-                                <TextInput
+                                <SelectList
+                                    setSelected={(val) => {
+                                        let newArr = [...childrenData];
+                                        newArr[index].wristband_level = val;
+                                        setChildrenData(newArr);
+                                    }}
+                                    data={item?.wristband_level_list?.length > 0 ? item?.wristband_level_list : []}
+                                    label="Selected WristBand"
+                                />
+                                {/* <TextInput
                                     name="wristband_level"
                                     placeholder="WristBand Level"
                                     onChangeText={(val) => {
@@ -230,7 +259,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                                     }}
                                     value={item.wristband_level}
                                     style={styles.input}
-                                />
+                                /> */}
                                 {!item.wristband_level &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
                                 }
@@ -328,9 +357,9 @@ export default function SuperAdminParentCreation({ navigation }) {
                                         })}
                                     </View>
                                     )} */}
-                                {/* {!item.current_award.name &&
+                                {!item.current_award &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
-                                } */}
+                                }
                                 <TouchableOpacity
                                     // style={[styles.agendaButton, styles.buttonClose]}
                                     onPress={() => {
@@ -470,5 +499,8 @@ const styles = StyleSheet.create({
     buttonImage: {
         height: 100,
         width: 100
+    },
+    wrist_yellow: {
+        color: 'yellow'
     }
 });
