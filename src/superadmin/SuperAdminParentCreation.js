@@ -63,30 +63,9 @@ export default function SuperAdminParentCreation({ navigation }) {
             childrenData.forEach(v => delete v.calendar_visible);
             childrenData.forEach(v => delete v.class_list);
             childrenData.forEach(v => delete v.visible);
-
-            // function checkKeyValues(obj) {
-            //     for (let key in obj) {
-            //         if (typeof obj[key] === 'object' && obj[key] !== null) {
-            //             if (!checkKeyValues(obj[key])) {
-            //                 return false;
-            //             }
-            //         } else {
-            //             if (!obj[key]) {
-            //                 return false;
-            //             }
-            //         }
-            //     }
-            //     return true;
-            // }
-
-            // function checkArrayObjects(array) {
-            //     for (let obj of array) {
-            //         if (!checkKeyValues(obj)) {
-            //             return false;
-            //         }
-            //     }
-            //     return true;
-            // }
+            childrenData.forEach(v => delete v.award_list);
+            childrenData.forEach(v => delete v.handed_list);
+            childrenData.forEach(v => delete v.wristband_level_list);
 
             function checkKeyValues(array) {
                 for (let obj of array) {

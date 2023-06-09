@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import buddy from '../assets/buddy.png';
-import { DeleteCustomerService, GetAwardPhotosService, GetParticularCustomerService, UpdateCustomerService } from '../services/ParentService';
+import { DeleteParentService, GetAwardsService, GetParticularParentService, UpdateParentService } from '../services/ParentService';
 import { SelectList } from 'react-native-dropdown-select-list';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -18,17 +18,19 @@ export default function CoachParentDescription({ navigation, route }) {
     });
     const [awardList, setAwardList] = useState([]);
     const [classList, setClassList] = useState([]);
+    const wristbands = [
+        { key: "White", value: "White" },
+        { key: "Yellow", value: "Yellow" },
+        { key: "Orange", value: "Orange" },
+        { key: "Blue", value: "Blue" },
+        { key: "Green", value: "Green" },
+        { key: "Purple", value: "Purple" },
+        { key: "Red", value: "Red" },
+        { key: "Black", value: "Black" }
+    ]
 
     useEffect(() => {
         try {
-            const getAwardsList = async () => {
-                const result = await GetAwardPhotosService();
-                if (result) {
-                    setAwardList(result);
-                }
-            };
-            getAwardsList();
-
             const getClasses = async () => {
                 const result = await GetClassesService();
                 if (result) {
@@ -42,18 +44,27 @@ export default function CoachParentDescription({ navigation, route }) {
                         }
                     })
                     setClassList(result)
-                    const result1 = await GetParticularCustomerService(route.params.customerData._id);
+                    const result1 = await GetParticularParentService(route.params.customerData._id);
+                    const result2 = await GetAwardsService();
+                    if (result2) {
+                        result2.map(v => {
+                            Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` })
+                        })
+                        setAwardList(result2);
+                    }
                     if (result1) {
                         var childrenData = [];
                         result1.children_data.length > 0 && result1.children_data.forEach(element => {
                             if (element.class !== null) {
                                 element.class?.schedules?.map(u => {
-                                    Object.assign(element.class, { key: element.class._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time}) in ${element.class.school.school_name}` })
+                                    Object.assign(element.class, { key: element.class._id, value: `${element.class?.topic} from ${u.date} (${u.start_time} to ${u.end_time}) in ${element.class.school.school_name}` })
                                 })
                             }
                             childrenData.push({
                                 player_name: element.player_name,
+                                calendar_visible: false,
                                 player_age: element.player_age,
+                                wristband_level_list: wristbands,
                                 wristband_level: element.wristband_level,
                                 class_check: element?.class === null ? null : element?.class,
                                 class_list: result,
@@ -66,7 +77,8 @@ export default function CoachParentDescription({ navigation, route }) {
                                 num_buddy_books_read: element.num_buddy_books_read,
                                 jersey_size: element.jersey_size,
                                 visible: false,
-                                current_award: { name: element?.current_award?.name, image: element?.current_award?.image }
+                                award_list: result2,
+                                current_award: element?.current_award
                             });
                         });
                         setCustomerData({
@@ -117,18 +129,29 @@ export default function CoachParentDescription({ navigation, route }) {
             customerData.children_data.forEach(v => delete v.class_default_removed);
             customerData.children_data.forEach(v => delete v.class_visible);
             customerData.children_data.forEach(v => delete v.visible);
-            customerData.children_data.forEach(v => delete v.current_award);
+            customerData.children_data.forEach(v => delete v.award_list);
+            customerData.children_data.forEach(v => delete v.handed_list);
+            customerData.children_data.forEach(v => delete v.wristband_level_list);
 
-            const trueValue = checkArrayObjects(customerData.children_data)
+            function checkKeyValues(array) {
+                for (let obj of array) {
+                    for (let key in obj) {
+                        if (!obj[key]) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
 
-            if (trueValue && customerData.email !== "" && customerData.password !== "" && customerData.parent_name !== "") {
+            if (checkKeyValues(customerData.children_data) && customerData.email !== "" && customerData.password !== "" && customerData.parent_name !== "") {
                 const data = {
                     email: customerData.email,
                     password: customerData.password,
                     parent_name: customerData.parent_name,
                     children_data: customerData.children_data
                 };
-                const result = await UpdateCustomerService(customerData.user_id, route.params.customerData._id, data);
+                const result = await UpdateParentService(customerData.user_id, route.params.customerData._id, data);
                 if (result) {
                     Alert.alert(
                         "Alert",
@@ -165,7 +188,7 @@ export default function CoachParentDescription({ navigation, route }) {
                         text: "OK",
                         onPress: async () => {
                             const data = { id: route.params.customerData._id, user_id: customerData.user_id }
-                            const result = await DeleteCustomerService(data)
+                            const result = await DeleteParentService(data)
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -237,6 +260,7 @@ export default function CoachParentDescription({ navigation, route }) {
                                     player_name: '',
                                     calendar_visible: false,
                                     player_age: '',
+                                    wristband_level_list: wristbands,
                                     wristband_level: '',
                                     class_list: classList,
                                     class: '',
@@ -245,7 +269,8 @@ export default function CoachParentDescription({ navigation, route }) {
                                     num_buddy_books_read: '',
                                     jersey_size: '',
                                     visible: false,
-                                    current_award: { name: '', image: '' }
+                                    award_list: awardList,
+                                    current_award: ''
                                 }]
                             });
                         }}>
@@ -299,16 +324,15 @@ export default function CoachParentDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Child Age is Required</Text>
                                 }
                                 <Text style={styles.label}>WristBand Level</Text>
-                                <TextInput
-                                    name="wristband_level"
-                                    placeholder="WristBand Level"
-                                    onChangeText={(val) => {
+                                <SelectList
+                                    setSelected={(val) => {
                                         let newArr = [...customerData.children_data];
                                         newArr[index].wristband_level = val;
                                         setCustomerData({ ...customerData, children_data: newArr });
                                     }}
-                                    value={item.wristband_level}
-                                    style={styles.input}
+                                    data={item?.wristband_level_list?.length > 0 ? item?.wristband_level_list : []}
+                                    label="Selected WristBand"
+                                    defaultOption={{ "key": item.wristband_level, "value": item.wristband_level }}
                                 />
                                 {!item.wristband_level &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
@@ -415,7 +439,18 @@ export default function CoachParentDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <TouchableOpacity onPress={() => {
+                                <Text>{item?.current_award?.award_name} ({item?.current_award?.award_description})</Text>
+                                <SelectList
+                                    setSelected={(val) => {
+                                        let newArr = [...customerData.children_data];
+                                        newArr[index].current_award = val;
+                                        setCustomerData({ ...customerData, children_data: newArr });
+                                    }}
+                                    data={item.award_list}
+                                    save="key"
+                                    label="Selected Award"
+                                />
+                                {/* <TouchableOpacity onPress={() => {
                                     let newArr = [...customerData.children_data];
                                     newArr[index].visible = !newArr[index].visible;
                                     setCustomerData({ ...customerData, children_data: newArr });
@@ -440,7 +475,7 @@ export default function CoachParentDescription({ navigation, route }) {
                                             );
                                         })}
                                     </View>
-                                    )}
+                                    )} */}
                                 {/* {!item.current_award.name &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 } */}

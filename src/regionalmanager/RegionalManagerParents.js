@@ -14,7 +14,19 @@ export default function RegionalManagerParents({ navigation }) {
             const getCustomers = async () => {
                 const result = await GetParentsService();
                 if (result) {
-                    setCustomers(result);
+                    var parents = [];
+                    result.forEach(element => {
+                        element.children_data.forEach(u => {
+                            u.class.schedules.forEach(w => {
+                                w.coaches.forEach(q => {
+                                    if (q.assigned_region === state.authPage.auth_data?.assigned_region) {
+                                        parents.push(element)
+                                    }
+                                })
+                            })
+                        })
+                    });
+                    setCustomers([...new Set(parents)])
                 }
             };
             getCustomers();

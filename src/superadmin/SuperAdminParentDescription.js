@@ -56,7 +56,6 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                         Object.assign(element.class, { key: element.class._id, value: `${element.class.topic} in ${element.class.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)} ` })
                                     })
                                 }
-                                console.log("shes--->", element.current_award)
                                 setChildrenData(prevState => [...prevState, {
                                     player_name: element.player_name,
                                     calendar_visible: false,
@@ -93,8 +92,6 @@ export default function SuperAdminParentDescription({ navigation, route }) {
         } catch (e) { }
     }, []);
 
-    console.log("dcdcxd-->", childrenData)
-
     const handleCustomerUpdate = async () => {
         try {
             childrenData.forEach(v => delete v.calendar_visible);
@@ -104,6 +101,9 @@ export default function SuperAdminParentDescription({ navigation, route }) {
             childrenData.forEach(v => delete v.class_default_removed);
             childrenData.forEach(v => delete v.class_visible);
             childrenData.forEach(v => delete v.visible);
+            childrenData.forEach(v => delete v.award_list);
+            childrenData.forEach(v => delete v.handed_list);
+            childrenData.forEach(v => delete v.wristband_level_list);
 
             function checkKeyValues(array) {
                 for (let obj of array) {
@@ -226,6 +226,7 @@ export default function SuperAdminParentDescription({ navigation, route }) {
                                 player_name: '',
                                 calendar_visible: false,
                                 player_age: '',
+                                wristband_level_list: wristbands,
                                 wristband_level: '',
                                 class_list: classList,
                                 class: '',

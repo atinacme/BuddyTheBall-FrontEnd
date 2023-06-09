@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Image, TextInput } from 'react-native';
+import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Image, TextInput, ScrollView } from 'react-native';
 import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
 import buddy from '../assets/buddy.png';
@@ -107,59 +107,61 @@ export default function CoachClassDescription({ navigation, route }) {
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
-                <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <View>
-                    <Text style={styles.label}>Topic :</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => setTopic(val)}
-                        value={topic}
-                        placeholder='Topic'
+                <ScrollView>
+                    <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
+                    <View>
+                        <Text style={styles.label}>Topic :</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(val) => setTopic(val)}
+                            value={topic}
+                            placeholder='Topic'
+                        />
+                    </View>
+                    {!topic &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                    }
+                    <Text style={styles.label}>Sessions :</Text>
+                    {selectedSessions.map(v => {
+                        return (
+                            <View>
+                                <Text>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</Text>
+                                <TouchableOpacity onPress={() => {
+                                    v.key = v._id;
+                                    v.value = `${v.date} (${v.start_time} to ${v.end_time})`
+                                    var array = [...selectedSessions];
+                                    var indexData = array.indexOf(v);
+                                    if (indexData !== -1) {
+                                        array.splice(indexData, 1);
+                                        setSelectedSessions(array);
+                                    }
+                                    setSessionsList(prevState => [...prevState, v]);
+                                }}>
+                                    <Text>X</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    })}
+                    <MultipleSelectList
+                        setSelected={(val) => setSessions(val)}
+                        data={sessionsList}
+                        save="key"
+                        label="Selected Sessions"
                     />
-                </View>
-                {!topic &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
-                }
-                <Text style={styles.label}>Sessions :</Text>
-                {selectedSessions.map(v => {
-                    return (
-                        <View>
-                            <Text>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</Text>
-                            <TouchableOpacity onPress={() => {
-                                v.key = v._id;
-                                v.value = `${v.date} (${v.start_time} to ${v.end_time})`
-                                var array = [...selectedSessions];
-                                var indexData = array.indexOf(v);
-                                if (indexData !== -1) {
-                                    array.splice(indexData, 1);
-                                    setSelectedSessions(array);
-                                }
-                                setSessionsList(prevState => [...prevState, v]);
-                            }}>
-                                <Text>X</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )
-                })}
-                <MultipleSelectList
-                    setSelected={(val) => setSessions(val)}
-                    data={sessionsList}
-                    save="key"
-                    label="Selected Sessions"
-                />
-                {selectedSessions.concat(sessions).length === 0 &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
-                }
-                <Text style={styles.label}>School :</Text>
-                <SelectList
-                    setSelected={(val) => setSelectedSchool(val)}
-                    data={schoolsList}
-                    save="key"
-                    defaultOption={{ key: route.params.classData?.school?._id, value: route.params.classData?.school?.school_name }}
-                />
-                {!selectedSchool &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Coach is Required</Text>
-                }
+                    {selectedSessions.concat(sessions).length === 0 &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
+                    }
+                    <Text style={styles.label}>School :</Text>
+                    <SelectList
+                        setSelected={(val) => setSelectedSchool(val)}
+                        data={schoolsList}
+                        save="key"
+                        defaultOption={{ key: route.params.classData?.school?._id, value: route.params.classData?.school?.school_name }}
+                    />
+                    {!selectedSchool &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Coach is Required</Text>
+                    }
+                </ScrollView>
                 <View style={{ marginTop: 20 }}>
                     <TouchableOpacity onPress={handleUpdateClass}>
                         <Text style={styles.btnWrapper}>Update</Text>

@@ -13,7 +13,7 @@ import store from "./store";
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from "react-native";
 import SignIn from './src/auth/SignIn.js';
-import ParentDashboard from './src/parent/ParentDashboard.js';
+import ParentDashboard from './src/parent/ParentDashboard';
 import ParentPhotos from './src/parent/ParentPhotos.js';
 import ParentParticularPhoto from './src/parent/ParentParticularPhoto.js';
 import ParentMessages from './src/parent/ParentMessages';

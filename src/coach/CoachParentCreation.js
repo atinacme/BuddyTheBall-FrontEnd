@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from "react-redux";
 import { SignUpService } from '../services/UserAuthService';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetAwardPhotosService } from '../services/ParentService';
+import { GetAwardsService } from '../services/ParentService';
 import { GetClassCreatedByUserIdService } from '../services/ClassService';
 
 export default function CoachParentCreation({ navigation }) {
@@ -19,11 +19,24 @@ export default function CoachParentCreation({ navigation }) {
     });
     const [childrenData, setChildrenData] = useState([]);
     const [classes, setClasses] = useState([]);
+    const wristbands = [
+        { key: "White", value: "White" },
+        { key: "Yellow", value: "Yellow" },
+        { key: "Orange", value: "Orange" },
+        { key: "Blue", value: "Blue" },
+        { key: "Green", value: "Green" },
+        { key: "Purple", value: "Purple" },
+        { key: "Red", value: "Red" },
+        { key: "Black", value: "Black" }
+    ]
 
     useEffect(() => {
         const getAwardsList = async () => {
-            const result = await GetAwardPhotosService();
+            const result = await GetAwardsService();
             if (result) {
+                result.map(v => {
+                    Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` })
+                })
                 setAwardList(result);
             }
         };
@@ -49,15 +62,13 @@ export default function CoachParentCreation({ navigation }) {
             childrenData.forEach(v => delete v.calendar_visible);
             childrenData.forEach(v => delete v.class_list);
             childrenData.forEach(v => delete v.visible);
-            childrenData.forEach(v => delete v.current_award);
+            childrenData.forEach(v => delete v.award_list);
+            childrenData.forEach(v => delete v.handed_list);
+            childrenData.forEach(v => delete v.wristband_level_list);
 
-            function checkKeyValues(obj) {
-                for (let key in obj) {
-                    if (typeof obj[key] === 'object' && obj[key] !== null) {
-                        if (!checkKeyValues(obj[key])) {
-                            return false;
-                        }
-                    } else {
+            function checkKeyValues(array) {
+                for (let obj of array) {
+                    for (let key in obj) {
                         if (!obj[key]) {
                             return false;
                         }
@@ -66,16 +77,7 @@ export default function CoachParentCreation({ navigation }) {
                 return true;
             }
 
-            function checkArrayObjects(array) {
-                for (let obj of array) {
-                    if (!checkKeyValues(obj)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            if (checkArrayObjects(childrenData) && parentData.email !== "" && parentData.password !== "" && parentData.parent_name !== "") {
+            if (checkKeyValues(childrenData) && parentData.email !== "" && parentData.password !== "" && parentData.parent_name !== "") {
                 const data = {
                     email: parentData.email,
                     password: parentData.password,
@@ -112,7 +114,7 @@ export default function CoachParentCreation({ navigation }) {
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
-                <ScrollView style={styles.scrollView}>
+                <ScrollView>
                     <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
                     <Text style={styles.label}>Email</Text>
                     <TextInput
@@ -154,6 +156,7 @@ export default function CoachParentCreation({ navigation }) {
                                 player_name: '',
                                 calendar_visible: false,
                                 player_age: '',
+                                wristband_level_list: wristbands,
                                 wristband_level: '',
                                 class_list: classes,
                                 class: '',
@@ -162,7 +165,8 @@ export default function CoachParentCreation({ navigation }) {
                                 num_buddy_books_read: '',
                                 jersey_size: '',
                                 visible: false,
-                                current_award: { name: '', image: '' }
+                                award_list: awardList,
+                                current_award: ''
                             }]);
                         }}>
                             <Text style={styles.plusBtn}>+</Text>
@@ -215,16 +219,14 @@ export default function CoachParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Child Age is Required</Text>
                                 }
                                 <Text style={styles.label}>WristBand Level</Text>
-                                <TextInput
-                                    name="wristband_level"
-                                    placeholder="WristBand Level"
-                                    onChangeText={(val) => {
+                                <SelectList
+                                    setSelected={(val) => {
                                         let newArr = [...childrenData];
                                         newArr[index].wristband_level = val;
                                         setChildrenData(newArr);
                                     }}
-                                    value={item.wristband_level}
-                                    style={styles.input}
+                                    data={item?.wristband_level_list?.length > 0 ? item?.wristband_level_list : []}
+                                    label="Selected WristBand"
                                 />
                                 {!item.wristband_level &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
@@ -287,7 +289,17 @@ export default function CoachParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <TouchableOpacity onPress={() => {
+                                <SelectList
+                                    setSelected={(val) => {
+                                        let newArr = [...childrenData];
+                                        newArr[index].current_award = val;
+                                        setChildrenData(newArr);
+                                    }}
+                                    data={item.award_list}
+                                    save="key"
+                                    label="Selected Award"
+                                />
+                                {/* <TouchableOpacity onPress={() => {
                                     let newArr = [...childrenData];
                                     newArr[index].visible = !newArr[index].visible;
                                     setChildrenData(newArr);
@@ -312,10 +324,10 @@ export default function CoachParentCreation({ navigation }) {
                                             );
                                         })}
                                     </View>
-                                    )}
-                                {/* {!item.current_award.name &&
+                                    )} */}
+                                {!item.current_award &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
-                                } */}
+                                }
                                 <TouchableOpacity
                                     onPress={() => {
                                         var array = [...childrenData];
@@ -330,13 +342,15 @@ export default function CoachParentCreation({ navigation }) {
                             </View>
                         );
                     })}
-                    <TouchableOpacity onPress={handleAddCustomer}>
-                        <Text style={styles.submit}>Submit</Text>
-                    </TouchableOpacity>
                 </ScrollView>
-                <TouchableOpacity onPress={() => navigation.navigate("Coach Parents")}>
-                    <Text style={styles.submit}>Back</Text>
-                </TouchableOpacity>
+                <View style={{ marginTop: 20 }}>
+                    <TouchableOpacity onPress={handleAddCustomer}>
+                        <Text style={styles.btnWrapper}>Submit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate("Coach Parents")}>
+                        <Text style={styles.btnWrapper}>Back</Text>
+                    </TouchableOpacity>
+                </View>
             </SafeAreaView>
         </LinearGradient>
     );
@@ -366,6 +380,17 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         width: 30,
         height: 30
+    },
+    btnWrapper: {
+        borderColor: "#fff",
+        paddingTop: 15,
+        paddingBottom: 15,
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 10,
+        textAlign: "center",
+        fontWeight: "700",
+        marginTop: 10
     },
     label: {
         fontSize: 16,

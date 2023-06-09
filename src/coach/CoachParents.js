@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView, Alert } from 'react-native';
+import { SafeAreaView, Text, StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
 import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetCustomersOfParticularCoachService } from '../services/CoachService';
+import { GetParentsService } from '../services/ParentService';
 
 export default function CoachParents({ navigation }) {
     const state = useSelector((state) => state);
@@ -12,10 +12,21 @@ export default function CoachParents({ navigation }) {
     useEffect(() => {
         try {
             const getCustomers = async () => {
-                const data = { coach_id: state.authPage.auth_data?.user_id, regional_manager_id: state.authPage.auth_data?.assigned_by_user_id }
-                const result = await GetCustomersOfParticularCoachService(data);
+                const result = await GetParentsService();
                 if (result) {
-                    setCustomers(result);
+                    var parents = [];
+                    result.forEach(element => {
+                        element.children_data.forEach(u => {
+                            u.class.schedules.forEach(w => {
+                                w.coaches.forEach(q => {
+                                    if (q._id === state.authPage.auth_data?._id) {
+                                        parents.push(element)
+                                    }
+                                })
+                            })
+                        })
+                    });
+                    setCustomers([...new Set(parents)])
                 }
             };
             getCustomers();
@@ -35,17 +46,7 @@ export default function CoachParents({ navigation }) {
                             </DataTable.Header>
                             {customers.map(item => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => item.created_by === 'coach' ?
-                                        navigation.navigate("Coach Parent Description", { customerData: item })
-                                        : Alert.alert(
-                                            "Alert",
-                                            "You can't Edit this!",
-                                            [
-                                                {
-                                                    text: "OK"
-                                                }
-                                            ]
-                                        )}>
+                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Coach Parent Description", { customerData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.parent_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.created_by_user_id === state.authPage.auth_data?.user_id ? 'You' : item.created_by_user_id === state.authPage.auth_data?.assigned_by_user_id ? item.created_by_name : 'Shopify'}</DataTable.Cell>
