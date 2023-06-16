@@ -15,6 +15,10 @@ const GetParticularSchoolService = async (id) => {
     return await HttpRequest("GET", `${baseUrl}/getParticularSchool/${id}`, null);
 };
 
+const GetAllSchoolPhotosService = async () => {
+    return await HttpRequest("GET", `${baseUrl}/getAllSchoolPhotos`, null);
+};
+
 const GetRegionWiseSchools = async (data) => {
     return await HttpRequest("POST", `${baseUrl}/findRegionWiseSchools`, data);
 };
@@ -32,6 +36,6 @@ const DeleteSchoolService = async (data) => {
 };
 
 export {
-    GetSchoolsService, SchoolCreationService, GetParticularSchoolService, GetRegionWiseSchools,
+    GetSchoolsService, SchoolCreationService, GetParticularSchoolService, GetAllSchoolPhotosService, GetRegionWiseSchools,
     GetParticularSchoolPhotosService, SchoolUpdationService, DeleteSchoolService
 };

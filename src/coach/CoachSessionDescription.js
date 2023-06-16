@@ -151,7 +151,7 @@ export default function CoachSessionDescription({ navigation, route }) {
                     </TouchableOpacity>
                     <Text style={styles.label}>Date : {initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date}</Text>
                     <Text style={styles.label}>Start Time : {initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start}</Text>
-                    <Text style={styles.label}>End Time :{initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
+                    <Text style={styles.label}>End Time : {initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
                     <Text style={styles.label}>Topic :</Text>
                     <TextInput
                         style={styles.input}

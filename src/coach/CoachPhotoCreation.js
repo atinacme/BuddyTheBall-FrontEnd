@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, StyleSheet, ScrollView, Image, Alert, View, Button, TouchableOpacity } from "react-native";
+import { Text, SafeAreaView, StyleSheet, ScrollView, Image, Alert, View, TouchableOpacity } from "react-native";
 import { SelectList } from 'react-native-dropdown-select-list';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useSelector } from "react-redux";
@@ -7,24 +7,49 @@ import { GetParentWithSchoolIdService } from '../services/ParentService';
 import axios from 'axios';
 import Config from '../../Config';
 import LinearGradient from 'react-native-linear-gradient';
+import { GetClassesService, GetParticularClassService } from '../services/ClassService';
+import { UpdateSessionService } from '../services/SessionService';
 
 export default function CoachPhotoCreation({ navigation, route }) {
-    const [customerData, setCustomerData] = useState([]);
-    const [customerId, setCustomerId] = useState();
+    const [parentData, setParentData] = useState([]);
+    const [parentId, setParentId] = useState();
+    const [classId, setClassId] = useState();
+    const [sessionId, setSessionId] = useState();
+    const [classes, setClasses] = useState([])
+    const [sessions, setSessions] = useState([])
     const [selectedFile, setSelectedFile] = useState(null);
     const state = useSelector((state) => state);
-    console.log("d-->", route.params.schoolId)
+
     useEffect(() => {
         try {
             const handleStudentList = async () => {
                 const result = await GetParentWithSchoolIdService(route.params.schoolId);
                 if (result) {
-                    setCustomerData(result.map(v => Object.assign(v, { key: v._id, value: v.parent_name })));
+                    setParentData(result.map(v => Object.assign(v, { key: v._id, value: v.parent_name })));
                 }
             };
             handleStudentList();
+
+            const getClasses = async () => {
+                const result = await GetClassesService();
+                if (result) {
+                    result.map(v => {
+                        if (v.school.region === state.authPage.auth_data?.assigned_region && v.school._id === route.params.schoolId) {
+                            v?.schedules?.map(u => {
+                                if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                                    Object.assign(v, { key: v._id, value: v.topic })
+                                }
+                            })
+                        }
+                    })
+                    setClasses(result);
+                }
+            };
+            getClasses();
         } catch (e) { }
     }, []);
+
+    console.log("jo =--->", classes)
 
     const openGallery = async () => {
         const result = await ImagePicker.openPicker({
@@ -35,38 +60,56 @@ export default function CoachPhotoCreation({ navigation, route }) {
 
     const handleAddPhoto = async () => {
         const formData = new FormData();
-        formData.append('customer_id', customerId);
+        formData.append('customer_id', parentId);
         formData.append('school_id', route.params.schoolId);
         formData.append('coach_id', state.authPage.auth_data?._id);
+        formData.append('class_id', classId);
+        formData.append('schedule_id', sessionId);
         formData.append('file_type', 'customer_photos');
-        selectedFile.forEach((item) => {
-            const newImageUri = "file:///" + item.path.split("file:/").join("");
-            formData.append('file', {
-                uri: newImageUri,
-                type: item.mime,
-                name: newImageUri.split("/").pop()
+        if (selectedFile !== undefined && selectedFile !== null && selectedFile.length > 0) {
+            selectedFile.forEach((item) => {
+                const newImageUri = "file:///" + item.path.split("file:/").join("");
+                formData.append('file', {
+                    uri: newImageUri,
+                    type: item.mime,
+                    name: newImageUri.split("/").pop()
+                });
             });
-        });
-        const res = await axios({
-            method: 'post',
-            url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
-            data: formData,
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        if (res) {
+        }
+        if (parentId && classId && sessionId && selectedFile !== undefined && selectedFile !== null && selectedFile.length > 0) {
+            const res = await axios({
+                method: 'post',
+                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                data: formData,
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            if (res) {
+                Alert.alert(
+                    "Alert",
+                    "All Files Uploaded Sucessfully",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                setSelectedFile(null);
+                                navigation.navigate("Coach Schools Photos");
+                            }
+                        }
+                    ]
+                );
+                const data = { status: 'Completed' }
+                await UpdateSessionService(sessionId, data)
+            }
+        } else {
             Alert.alert(
                 "Alert",
-                "All Files Uploaded Sucessfully",
+                "All Fields Required",
                 [
                     {
-                        text: "OK",
-                        onPress: () => {
-                            setSelectedFile(null);
-                            navigation.navigate("Coach Schools Photos");
-                        }
+                        text: "OK"
                     }
                 ]
             );
@@ -77,18 +120,47 @@ export default function CoachPhotoCreation({ navigation, route }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView style={styles.scrollView}>
-                    <Text style={styles.label}>Customers List</Text>
+                    <Text style={styles.label}>Parents List</Text>
                     <SelectList
-                        setSelected={(val) => setCustomerId(val)}
-                        data={customerData}
+                        setSelected={(val) => setParentId(val)}
+                        data={parentData}
                         save="key"
                     />
+                    {!parentId &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Parent is Required</Text>
+                    }
+                    <Text style={styles.label}>Classes List</Text>
+                    <SelectList
+                        setSelected={async (val) => {
+                            setClassId(val)
+                            const result = await GetParticularClassService(val)
+                            if (result) {
+                                setSessions(result.schedules.map(v => Object.assign(v, { key: v._id, value: v.topic })))
+                            }
+                        }}
+                        data={classes}
+                        save="key"
+                    />
+                    {!classId &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Class is Required</Text>
+                    }
+                    <Text style={styles.label}>Sessions List</Text>
+                    <SelectList
+                        setSelected={(val) => setSessionId(val)}
+                        data={sessions}
+                        save="key"
+                    />
+                    {!sessionId &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
+                    }
                     <View style={styles.btnWrapper}>
                         <View>
-                            {/* <Button onPress={openGallery} title='upload' /> */}
                             <TouchableOpacity onPress={openGallery}>
                                 <Text style={styles.uploadcta}>upload</Text>
                             </TouchableOpacity>
+                            {selectedFile === null &&
+                                <Text style={{ fontSize: 10, color: 'red' }}>Photo is Required</Text>
+                            }
                             {selectedFile !== null && selectedFile.map((ls, index) => {
                                 return (
                                     <View key={index}>
@@ -97,9 +169,8 @@ export default function CoachPhotoCreation({ navigation, route }) {
                                 );
                             })}
                         </View>
-
                         <View>
-                            <TouchableOpacity onPress={handleAddPhoto} >
+                            <TouchableOpacity onPress={handleAddPhoto}>
                                 <Text style={styles.submitcta}>Submit</Text>
                             </TouchableOpacity>
                         </View>

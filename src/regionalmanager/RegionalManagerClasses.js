@@ -41,9 +41,10 @@ export default function RegionalManagerClasses({ navigation }) {
                                     <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Class Description", { classData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.regional_manager_name ? 'You' : item.created_by_name}</DataTable.Cell>
-                                            {item.schedules.map(v => {
+                                            {/* {item.schedules.map(v => {
                                                 return <DataTable.Cell>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</DataTable.Cell>
-                                            })}
+                                            })} */}
+                                            <DataTable.Cell>{item.schedules.length}</DataTable.Cell>
                                             <DataTable.Cell>{item.school.school_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 350,
+        width: 450,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

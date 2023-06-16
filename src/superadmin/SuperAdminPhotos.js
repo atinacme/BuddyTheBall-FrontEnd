@@ -4,22 +4,23 @@ import kids from '../assets/kids.jpg';
 import galley from '../assets/galley.png';
 import profile from '../assets/profile.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { GetSchoolsService } from '../services/SchoolService';
+import { GetAllSchoolPhotosService } from '../services/SchoolService';
 
 export default function SuperAdminPhotos({ navigation }) {
     const [schools, setSchools] = useState([])
 
     useEffect(() => {
         try {
-            const getSchools = async () => {
-                const result = await GetSchoolsService()
+            const getAllPhotos = async () => {
+                const result = await GetAllSchoolPhotosService()
                 if (result) {
                     setSchools(result)
                 }
             }
-            getSchools()
+            getAllPhotos()
         } catch (e) { }
-    })
+    }, []);
+
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
@@ -27,17 +28,18 @@ export default function SuperAdminPhotos({ navigation }) {
                     {schools.map((item) => {
                         return (
                             <TouchableOpacity onPress={() => navigation.navigate("Super Admin Particular School Photos", { schoolItem: item })}>
-                                <ImageBackground source={kids} style={styles.cardBackground}>
+                                <ImageBackground key={item._id} source={item?.photos[0]?.url ? { uri: item?.photos[0]?.url } : kids} style={styles.cardBackground}>
                                     <View style={styles.cardContent}>
                                         <View style={styles.carddes}>
-                                            <Text style={styles.cardSubtitle}>Yesterday</Text>
                                             <View style={styles.cardText}>
                                                 <Text style={styles.title}>{item.school_name}</Text>
+                                                <Text style={styles.cardSubtitle}>Class: {item?.photos[0]?.class_id?.topic}</Text>
+                                                <Text style={styles.title}>Session: {item?.photos[0]?.schedule_id?.topic}</Text>
                                                 <Text style={styles.cardimg}>
                                                     <Image source={galley} style={{ width: 20, height: 20 }} />
-                                                    <Text style={styles.num}>100</Text>
+                                                    <Text style={styles.num}>{item?.photos[0]?.schedule_id?.status}</Text>
                                                     <Image source={profile} style={{ width: 20, height: 20 }} />
-                                                    <Text style={styles.num}>2</Text>
+                                                    <Text style={styles.num}>{item?.photos[0]?.schedule_id?.created_by_name}</Text>
                                                 </Text>
                                             </View>
                                         </View>

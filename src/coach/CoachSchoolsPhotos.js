@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView, ImageBackground, Text, View, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import kids from '../assets/kids.jpg';
 import galley from '../assets/galley.png';
 import profile from '../assets/profile.png';
 import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
+import { GetParticularSchoolPhotosService } from '../services/SchoolService';
 
 export default function CoachSchoolsPhotos({ navigation }) {
     const state = useSelector((state) => state);
     const schoolData = state.authPage.auth_data?.assigned_schools;
+
+    useEffect(() => {
+        try {
+            schoolData.forEach(async targetObj => {
+                const result = await GetParticularSchoolPhotosService(targetObj._id);
+                const sourceObj = result.find(sourceObj => sourceObj.school_id === targetObj._id);
+                if (sourceObj) {
+                    targetObj.photo = sourceObj;
+                }
+            });
+        } catch (e) { }
+    }, [navigation]);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
@@ -28,17 +41,18 @@ export default function CoachSchoolsPhotos({ navigation }) {
                                     ]
                                 )} style={styles.cachpicWrap}
                             >
-                                <ImageBackground source={kids} style={styles.cardBackground}>
+                                <ImageBackground key={item._id} source={item?.photo?.url ? { uri: item?.photo?.url } : kids} style={styles.cardBackground}>
                                     <View style={styles.cardContent}>
                                         <View style={styles.carddes}>
-                                            <Text style={styles.cardSubtitle}>Yesterday</Text>
                                             <View style={styles.cardText}>
                                                 <Text style={styles.title}>{item.school_name}</Text>
+                                                <Text style={styles.cardSubtitle}>Class: {item?.photo?.class_id?.topic}</Text>
+                                                <Text style={styles.title}>Session: {item?.photo?.schedule_id?.topic}</Text>
                                                 <Text style={styles.cardimg}>
                                                     <Image source={galley} style={{ width: 20, height: 20 }} />
-                                                    <Text style={styles.num}>100</Text>
+                                                    <Text style={styles.num}>{item?.photo?.schedule_id?.status}</Text>
                                                     <Image source={profile} style={{ width: 20, height: 20 }} />
-                                                    <Text style={styles.num}>2</Text>
+                                                    <Text style={styles.num}>{item?.photo?.schedule_id?.created_by_name}</Text>
                                                 </Text>
                                             </View>
                                         </View>

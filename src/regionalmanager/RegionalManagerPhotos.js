@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ImageBackground, Text, View, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { SafeAreaView, ImageBackground, Text, View, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import kids from '../assets/kids.jpg';
 import galley from '../assets/galley.png';
 import profile from '../assets/profile.png';
 import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
-import { GetRegionWiseSchools } from '../services/SchoolService';
+import { GetAllSchoolPhotosService } from '../services/SchoolService';
 
 export default function RegionalManagerPhotos({ navigation }) {
     const state = useSelector((state) => state);
@@ -13,12 +13,14 @@ export default function RegionalManagerPhotos({ navigation }) {
 
     useEffect(() => {
         try {
-            const getAllSchools = async () => {
-                const data = { region: state.authPage.auth_data?.assigned_region };
-                const result = await GetRegionWiseSchools(data);
-                setSchoolData(result);
-            };
-            getAllSchools();
+            const getAllPhotos = async () => {
+                const result = await GetAllSchoolPhotosService()
+                if (result) {
+                    result.map(v => v.region === state.authPage.auth_data?.assigned_region)
+                    setSchoolData(result)
+                }
+            }
+            getAllPhotos()
         } catch (e) { }
     }, []);
 
@@ -30,17 +32,18 @@ export default function RegionalManagerPhotos({ navigation }) {
                         return (
                             <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Particular School Photos", { schoolItem: item })}
                                 style={styles.cachpicWrap}>
-                                <ImageBackground source={kids} style={styles.cardBackground}>
+                                <ImageBackground key={item._id} source={item?.photos[0]?.url ? { uri: item?.photos[0]?.url } : kids} style={styles.cardBackground}>
                                     <View style={styles.cardContent}>
                                         <View style={styles.carddes}>
-                                            <Text style={styles.cardSubtitle}>Yesterday</Text>
                                             <View style={styles.cardText}>
                                                 <Text style={styles.title}>{item.school_name}</Text>
+                                                <Text style={styles.cardSubtitle}>Class: {item?.photos[0]?.class_id?.topic}</Text>
+                                                <Text style={styles.title}>Session: {item?.photos[0]?.schedule_id?.topic}</Text>
                                                 <Text style={styles.cardimg}>
                                                     <Image source={galley} style={{ width: 20, height: 20 }} />
-                                                    <Text style={styles.num}>100</Text>
+                                                    <Text style={styles.num}>{item?.photos[0]?.schedule_id?.status}</Text>
                                                     <Image source={profile} style={{ width: 20, height: 20 }} />
-                                                    <Text style={styles.num}>2</Text>
+                                                    <Text style={styles.num}>{item?.photos[0]?.schedule_id?.created_by_name}</Text>
                                                 </Text>
                                             </View>
                                         </View>

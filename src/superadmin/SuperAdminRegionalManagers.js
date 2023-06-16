@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Button, TouchableOpacity, ScrollView, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, View, TouchableOpacity, ScrollView, Text } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetAllRegionalManagersService } from '../services/RegionalManagerService';
@@ -66,14 +66,13 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         width: '100%'
-
     },
     container: {
         margin: 10,
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 350,
+        width: 550,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

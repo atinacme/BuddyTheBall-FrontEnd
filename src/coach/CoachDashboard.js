@@ -13,12 +13,114 @@ import Config from '../../Config';
 import { GetParticularCoachService } from '../services/CoachService';
 import { AuthPageAction } from '../redux/Actions';
 import LinearGradient from 'react-native-linear-gradient';
+import { ProgressBar } from 'react-native-paper';
+import { GetClassesService } from '../services/ClassService';
+import moment from 'moment';
+import { UpdateSessionService } from '../services/SessionService';
 
 export default function CoachDashboard({ navigation }) {
     const state = useSelector((state) => state);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadResult, setUploadResult] = useState(false);
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [progress, setProgress] = useState(0);
+    const [classes, setClasses] = useState([]);
+    const today = new Date();
+    const baseUrl = Config.REACT_APP_BASE_URL;
     const dispatch = useDispatch();
+
+    function getYear(timestamp) {
+        return (new Date(timestamp * 1000)).getFullYear();
+    }
+    function getMon(timestamp) {
+        return (new Date(timestamp * 1000)).getMonth();
+    }
+    function getDate(timestamp) {
+        return (new Date(timestamp * 1000)).getDate();
+    }
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (progress < 1) {
+                setElapsedTime(t => t + 1);
+            }
+        }, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+    function isCurrentInterval(start, end) {
+        const currentTime = new Date();
+        return currentTime >= start && currentTime <= end;
+    }
+    const sessionUpdate = async (id) => {
+        const data = { status: "Ended" }
+        await UpdateSessionService(id, data)
+    }
+
+    useEffect(() => {
+        setProgress(elapsedTime / 3600);
+
+        const getClasses = async () => {
+            const result = await GetClassesService();
+            if (result) {
+                result.map(v => {
+                    if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                        v?.schedules?.map(u => {
+                            if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                                return result
+                            }
+                        })
+                    }
+                })
+                const updatedArray = result.map(obj => ({
+                    ...obj,
+                    schedules: obj.schedules.filter(item => new Date(item.date).toLocaleDateString() === today.toLocaleDateString())
+                }));
+                const allNewArray = updatedArray.map(obj => ({
+                    ...obj,
+                    schedules: obj.schedules.map(u => {
+                        var currentTime = new Date();
+                        var parsedTimeCurrentString = Date.parse(currentTime)
+                        var local = new Date().toLocaleDateString()
+                        var newdate = local.split("/").reverse().join("-");
+                        var timestamp = new Date(newdate).getTime() / 1000
+                        var startTime = moment(u.start_time, ["h:mm A"]).format("HH:mm")
+                        var startTimeSplit = startTime.split(":")
+                        var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1])
+                        var parsedTimeStartString = Date.parse(dateTimeStartString)
+                        var endTime = moment(u.end_time, ["h:mm A"]).format("HH:mm")
+                        var endTimeSplit = endTime.split(":")
+                        var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1])
+                        var parsedTimeEndString = Date.parse(dateTimeEndString)
+                        if (u.status === "Upcoming" && isCurrentInterval(dateTimeStartString, dateTimeEndString)) {
+                            return { ...u, progress: progress };
+                        } else if (u.status === "Upcoming" && parsedTimeCurrentString >= parsedTimeStartString && parsedTimeCurrentString >= parsedTimeEndString) {
+                            sessionUpdate(u._id)
+                        } else if (u.status === "Upcoming" && parsedTimeCurrentString <= parsedTimeStartString) {
+                            return { ...u, progress: 0 };
+                        } else {
+                            return { ...u, progress: 1 };
+                        }
+
+                    })
+                }));
+                setClasses(allNewArray);
+            }
+        };
+        getClasses();
+    }, [elapsedTime]);
+
+    const [dt, setDt] = useState(new Date().toLocaleString());
+
+    useEffect(() => {
+        let secTimer = setInterval(() => {
+            setDt(new Date().toLocaleString())
+        }, 1000)
+
+        return () => clearInterval(secTimer);
+    }, []);
+
 
     useEffect(() => {
         try {
@@ -117,7 +219,24 @@ export default function CoachDashboard({ navigation }) {
                         <Text style={styles.txt}>Favorite Drill: {state.authPage.auth_data?.favorite_drill}</Text>
                     </>
                 )}
-                <ScrollView showsVerticalScrollIndicator style={{ height: 390 }}>
+                <ScrollView showsVerticalScrollIndicator style={{ height: 370 }}>
+                    {classes.length > 0 && classes.map(v => {
+                        return (
+                            <>
+                                <Text>Topic: {v.topic}</Text>
+                                <Text>School: {v.school.school_name}</Text>
+                                {v.schedules.length > 0 && v.schedules.map(u => {
+                                    return (
+                                        <>
+                                            <Text>Session Topic: {u?.topic}</Text>
+                                            <Text>Start Time: {u?.start_time} End Time: {u?.end_time}</Text>
+                                            <ProgressBar progress={u?.progress} />
+                                        </>
+                                    )
+                                })}
+                            </>
+                        )
+                    })}
                     <Text style={styles.adminWrapper}>
                         <TouchableOpacity onPress={() => navigation.navigate("Coach Schools Photos")}>
                             <Image source={photos} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />

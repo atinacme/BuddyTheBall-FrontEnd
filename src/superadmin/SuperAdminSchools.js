@@ -69,14 +69,13 @@ const styles = StyleSheet.create({
         bottom: 0,
         marginBottom: 10,
         width: '100%'
-
     },
     container: {
         margin: 10,
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 350,
+        width: 650,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

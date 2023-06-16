@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 350,
+        width: 450,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',
