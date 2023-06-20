@@ -75,6 +75,10 @@ export default function SignIn({ navigation }) {
                 <TouchableOpacity onPress={handleSignIn}>
                     <Text style={styles.btnWrapper}>Login</Text>
                 </TouchableOpacity>
+                <Text style={{ color: 'blue', marginTop: 10 }}
+                    onPress={() => navigation.navigate("Forgot Password")}>
+                    Forgot Password ?
+                </Text>
             </SafeAreaView>
         </LinearGradient>
     );

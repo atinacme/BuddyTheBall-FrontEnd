@@ -13,6 +13,8 @@ import store from "./store";
 import LinearGradient from 'react-native-linear-gradient';
 import { StyleSheet } from "react-native";
 import SignIn from './src/auth/SignIn.js';
+import ForgotPassword from './src/auth/ForgotPassword';
+import ResetPassword from './src/auth/ResetPassword';
 import ParentDashboard from './src/parent/ParentDashboard';
 import ParentPhotos from './src/parent/ParentPhotos.js';
 import ParentParticularPhoto from './src/parent/ParentParticularPhoto.js';
@@ -109,6 +111,8 @@ const App = () => {
             },
           }}>
             <Stack.Screen name="SignIn" component={SignIn} style={{ marginTop: 40 }} />
+            <Stack.Screen name="Forgot Password" component={ForgotPassword} style={{ marginTop: 40 }} />
+            <Stack.Screen name="Reset Password" component={ResetPassword} style={{ marginTop: 40 }} />
             <Stack.Screen name="Parent Dashboard" options={{ headerBackVisible: false, headerTitleAlign: 'center' }} component={ParentDashboard} />
             <Stack.Screen name="Parent Photos" component={ParentPhotos} />
             <Stack.Screen name="Parent Particular Photo" component={ParentParticularPhoto} />

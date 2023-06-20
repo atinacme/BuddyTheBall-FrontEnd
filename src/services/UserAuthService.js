@@ -12,4 +12,12 @@ const SignUpService = async (data) => {
     return await HttpRequest("POST", `${baseUrl}/auth/signup`, data);
 };
 
-export { SignInService, SignUpService };
+const ForgotPasswordService = async (data) => {
+    return await HttpRequest("POST", `${baseUrl}/auth/forgotPassword`, data);
+};
+
+const ResetPasswordService = async (data) => {
+    return await HttpRequest("POST", `${baseUrl}/auth/resetPassword`, data);
+};
+
+export { SignInService, SignUpService, ForgotPasswordService, ResetPasswordService };
