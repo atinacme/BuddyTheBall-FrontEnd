@@ -9,7 +9,13 @@ import { CreateSessionService } from '../services/SessionService';
 
 export default function CoachSessionCreation({ navigation }) {
     const state = useSelector((state) => state);
-    const [time, setTime] = useState({ start: new Date(), end: new Date() });
+    function add(date) {
+        let dt = date === undefined ? new Date() : new Date(date);
+        dt.setHours(dt.getHours() + 1);
+        let endTime = dt;
+        return endTime
+    }
+    const [time, setTime] = useState({ start: new Date(), end: add() });
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
@@ -25,10 +31,9 @@ export default function CoachSessionCreation({ navigation }) {
         setShow(false);
         if (showType.date) {
             setDate(currentDate);
-        } else if (showType.startTime) {
-            setTime({ ...time, start: currentDate });
         } else {
-            setTime({ ...time, end: currentDate });
+            const endTime = add(currentDate);
+            setTime({ start: currentDate, end: endTime });
         }
     };
 
@@ -52,11 +57,11 @@ export default function CoachSessionCreation({ navigation }) {
         setShowType({ ...show, startTime: true });
     };
 
-    const showEndTimepicker = () => {
-        showMode('time');
-        setShow(true);
-        setShowType({ ...show, endTime: true });
-    };
+    // const showEndTimepicker = () => {
+    //     showMode('time');
+    //     setShow(true);
+    //     setShowType({ ...show, endTime: true });
+    // };
 
     const handleCreateSchedule = async () => {
         if (topic) {
@@ -74,7 +79,7 @@ export default function CoachSessionCreation({ navigation }) {
             if (result) {
                 Alert.alert(
                     "Alert",
-                    "Schedule Added Successfully",
+                    "Session Added Successfully",
                     [
                         {
                             text: "OK",
@@ -97,9 +102,9 @@ export default function CoachSessionCreation({ navigation }) {
                     <TouchableOpacity onPress={showStartTimepicker}>
                         <Text style={styles.btnWrapper}>Select Start Time</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={showEndTimepicker}>
+                    {/* <TouchableOpacity onPress={showEndTimepicker}>
                         <Text style={styles.btnWrapper}>Select End Time</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.label}>Date : {moment(date).format("YYYY-MM-DD")}</Text>
                     <Text style={styles.label}>Start Time : {moment(time.start).format('h:mm A')}</Text>
                     <Text style={styles.label}>End Time : {moment(time.end).format('h:mm A')}</Text>

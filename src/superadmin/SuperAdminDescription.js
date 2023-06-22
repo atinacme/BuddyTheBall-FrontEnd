@@ -80,7 +80,7 @@ export default function SuperAdminDescription({ navigation, route }) {
         if (result) {
             Alert.alert(
                 "Alert",
-                "Schedule Updated Successfully",
+                "Session Updated Successfully",
                 [
                     {
                         text: "OK",
@@ -95,7 +95,7 @@ export default function SuperAdminDescription({ navigation, route }) {
         try {
             Alert.alert(
                 "Alert",
-                "Do You Want to Delete the Schedule ?",
+                "Do You Want to Delete the Session ?",
                 [
                     {
                         text: "YES",
@@ -105,7 +105,7 @@ export default function SuperAdminDescription({ navigation, route }) {
                             if (result) {
                                 Alert.alert(
                                     "Alert",
-                                    "Schedule Deleted Successfully",
+                                    "Session Deleted Successfully",
                                     [
                                         {
                                             text: "OK",
@@ -121,7 +121,7 @@ export default function SuperAdminDescription({ navigation, route }) {
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update Schedule!"
+                "Failed! Can't Update Session!"
             );
         }
     };

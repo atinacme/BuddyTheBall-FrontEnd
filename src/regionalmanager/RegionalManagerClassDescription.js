@@ -153,7 +153,7 @@ export default function RegionalManagerClassDescription({ navigation, route }) {
                     label="Selected Sessions"
                 />
                 {selectedSessions.concat(sessions).length === 0 &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Schedule is Required</Text>
+                    <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
                 }
                 <Text style={styles.label}>School :</Text>
                 <SelectList

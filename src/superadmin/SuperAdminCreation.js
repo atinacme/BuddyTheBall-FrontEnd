@@ -89,7 +89,7 @@ export default function SuperAdminCreation({ navigation }) {
         if (result) {
             Alert.alert(
                 "Alert",
-                "Schedule Added Successfully",
+                "Session Added Successfully",
                 [
                     {
                         text: "OK",

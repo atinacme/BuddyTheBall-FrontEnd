@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { SafeAreaView, TouchableOpacity, StyleSheet, Text, Alert, View, Image, TextInput, ScrollView, Platform } from 'react-native';
-import { useSelector } from "react-redux";
 import buddy from '../assets/buddy.png';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
@@ -8,7 +7,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { DeleteSessionService, UpdateSessionService } from '../services/SessionService';
 
 export default function CoachSessionDescription({ navigation, route }) {
-    const state = useSelector((state) => state);
+    function add(date) {
+        let dt = date === undefined ? new Date() : new Date(date);
+        dt.setHours(dt.getHours() + 1);
+        let endTime = dt;
+        return endTime
+    }
     const time = { start: route.params.scheduleData.start_time, end: route.params.scheduleData.end_time };
     const date = route.params.scheduleData.date;
     const [mode, setMode] = useState('date');
@@ -36,12 +40,10 @@ export default function CoachSessionDescription({ navigation, route }) {
         if (showType.date) {
             setInitialScheduleData({ ...initialScheduleData, date: true });
             setScheduleData({ ...scheduleData, date: currentDate });
-        } else if (showType.startTime) {
-            setInitialScheduleData({ ...initialScheduleData, start: true });
-            setScheduleData({ ...scheduleData, start: currentDate });
         } else {
-            setInitialScheduleData({ ...initialScheduleData, end: true });
-            setScheduleData({ ...scheduleData, end: currentDate });
+            setInitialScheduleData({ ...initialScheduleData, start: true, end: true });
+            const endTime = add(currentDate);
+            setScheduleData({ ...scheduleData, start: currentDate, end: endTime });
         }
     };
 
@@ -65,11 +67,11 @@ export default function CoachSessionDescription({ navigation, route }) {
         setShowType({ ...show, startTime: true });
     };
 
-    const showEndTimepicker = () => {
-        showMode('time');
-        setShow(true);
-        setShowType({ ...show, endTime: true });
-    };
+    // const showEndTimepicker = () => {
+    //     showMode('time');
+    //     setShow(true);
+    //     setShowType({ ...show, endTime: true });
+    // };
 
     const handleUpdateSchedule = async () => {
         if (topic) {
@@ -146,9 +148,9 @@ export default function CoachSessionDescription({ navigation, route }) {
                     <TouchableOpacity onPress={showStartTimepicker}>
                         <Text style={styles.btnWrapper}>Select Start Time</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={showEndTimepicker}>
+                    {/* <TouchableOpacity onPress={showEndTimepicker}>
                         <Text style={styles.btnWrapper}>Select End Time</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.label}>Date : {initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date}</Text>
                     <Text style={styles.label}>Start Time : {initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start}</Text>
                     <Text style={styles.label}>End Time : {initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>

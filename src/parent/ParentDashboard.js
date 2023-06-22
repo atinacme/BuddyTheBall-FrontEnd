@@ -220,11 +220,11 @@ export default function ParentDashboard({ navigation }) {
                                                                                                                                                                                                     v?.current_award.award_name === 'Award-Willing-to-Try' ? <Image resizeMode="contain" source={Award_Willing_to_Try} style={styles.image} /> :
                                                                                                                                                                                                         <Image resizeMode="contain" source={Award_Yellow_Level} style={styles.image} />
                                         }
-                                        <Text>Class Schedules:</Text>
+                                        <Text>Class Sessions:</Text>
                                         {v?.class?.schedules?.map((q, index) => {
                                             return (
                                                 <>
-                                                    <Text>Schedule {index + 1}</Text>
+                                                    <Text>Session {index + 1}</Text>
                                                     <Text>
                                                         On {q.date} From {q.start_time} to {q.end_time} By {q.coaches.map(w => w.coach_name)}
                                                     </Text>
