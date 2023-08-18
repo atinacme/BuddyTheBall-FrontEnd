@@ -10,19 +10,19 @@ export default function RegionalManagerClasses({ navigation }) {
     const [classes, setClasses] = useState([]);
 
     useEffect(() => {
-        try {
-            const getClasses = async () => {
+        const getClasses = async () => {
+            try {
                 const result = await GetClassesService();
                 if (result) {
                     result.map(v => {
                         if (v.school.region === state.authPage.auth_data?.assigned_region) {
                             setClasses(result);
                         }
-                    })
+                    });
                 }
-            };
-            getClasses();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getClasses();
     }, []);
 
     return (
@@ -32,20 +32,19 @@ export default function RegionalManagerClasses({ navigation }) {
                     <View>
                         <DataTable style={styles.container}>
                             <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title>CREATED BY</DataTable.Title>
-                                <DataTable.Title>SESSIONS</DataTable.Title>
+                                <DataTable.Title>CLASS NAME</DataTable.Title>
+                                <DataTable.Title>NO. OF SESSIONS</DataTable.Title>
                                 <DataTable.Title>SCHOOL</DataTable.Title>
+                                <DataTable.Title>CREATED BY</DataTable.Title>
                             </DataTable.Header>
-                            {classes.length > 0 && classes.map(item => {
+                            {classes.length > 0 && classes.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Class Description", { classData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Regional Manager Class Description", { classData: item })}>
                                         <DataTable.Row>
-                                            <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.regional_manager_name ? 'You' : item.created_by_name}</DataTable.Cell>
-                                            {/* {item.schedules.map(v => {
-                                                return <DataTable.Cell>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</DataTable.Cell>
-                                            })} */}
+                                            <DataTable.Cell>{item.topic}</DataTable.Cell>
                                             <DataTable.Cell>{item.schedules.length}</DataTable.Cell>
                                             <DataTable.Cell>{item.school.school_name}</DataTable.Cell>
+                                            <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.regional_manager_name ? 'You' : item.created_by_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 450,
+        width: 850,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

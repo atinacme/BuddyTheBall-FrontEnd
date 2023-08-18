@@ -15,7 +15,7 @@ export default function SuperAdminSessionCreation({ navigation }) {
         let dt = date === undefined ? new Date() : new Date(date);
         dt.setHours(dt.getHours() + 1);
         let endTime = dt;
-        return endTime
+        return endTime;
     }
     const [coachList, setCoachList] = useState([]);
     const [time, setTime] = useState({ start: new Date(), end: add() });
@@ -31,15 +31,15 @@ export default function SuperAdminSessionCreation({ navigation }) {
     const [coach, setCoach] = useState([]);
 
     useEffect(() => {
-        try {
-            const getCoaches = async () => {
+        const getCoaches = async () => {
+            try {
                 const result = await GetAllCoachesService();
                 if (result) {
                     setCoachList(result.map(v => Object.assign(v, { key: v._id, value: v.coach_name })));
                 }
-            };
-            getCoaches();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCoaches();
     }, []);
 
     const onChange = (event, selectedDate) => {
@@ -80,31 +80,33 @@ export default function SuperAdminSessionCreation({ navigation }) {
     // };
 
     const handleCreateSchedule = async () => {
-        if (coach.length > 0 && topic) {
-            const data = {
-                created_by: "superadmin",
-                created_by_name: "Super Admin",
-                created_by_user_id: state.authPage?.id,
-                coaches: coach,
-                date: moment(date).format("YYYY-MM-DD"),
-                start_time: moment(time.start).format('h:mm A'),
-                end_time: moment(time.end).format('h:mm A'),
-                topic: topic
-            };
-            const result = await CreateSessionService(data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Session Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Super Admin Dashboard")
-                        }
-                    ]
-                );
+        try {
+            if (coach.length > 0) {
+                const data = {
+                    created_by: "superadmin",
+                    created_by_name: state.authPage?.auth_data?.super_admin_name,
+                    created_by_user_id: state.authPage?.id,
+                    coaches: coach,
+                    date: moment(date).format("YYYY-MM-DD"),
+                    start_time: moment(time.start).format('h:mm A'),
+                    end_time: moment(time.end).format('h:mm A'),
+                    topic: topic
+                };
+                const result = await CreateSessionService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Session Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Super Admin Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
-        }
+        } catch (e) { }
     };
 
     return (
@@ -150,9 +152,9 @@ export default function SuperAdminSessionCreation({ navigation }) {
                             onChange={onChange}
                         />
                     )}
-                    {!topic &&
+                    {/* {!topic &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
-                    }
+                    } */}
                     <View style={{ marginTop: 20 }}>
                         <TouchableOpacity onPress={handleCreateSchedule}>
                             <Text style={styles.btnWrapper}>Submit</Text>

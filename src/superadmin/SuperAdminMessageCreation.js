@@ -14,15 +14,15 @@ export default function SuperAdminMessageCreation({ navigation, route }) {
     const [message, setMessage] = useState();
 
     useEffect(() => {
-        try {
-            const getCoaches = async () => {
+        const getCoaches = async () => {
+            try {
                 const result = await GetAllCoachesService();
                 if (result) {
                     setCoaches(result.map(v => Object.assign(v, { key: v._id, value: v.coach_name })));
                 }
-            };
-            getCoaches();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCoaches();
     }, []);
 
     const handleSendMessage = async () => {

@@ -3,8 +3,8 @@ import HttpRequest from './HttpRequest';
 
 const baseUrl = Config.REACT_APP_BASE_URL;
 
-const EmailingService = async () => {
-    return await HttpRequest("GET", `${baseUrl}/billingEmail`, null);
+const EmailingService = async (data) => {
+    return await HttpRequest("POST", `${baseUrl}/billingEmail`, data);
 };
 
 export { EmailingService };

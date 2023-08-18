@@ -10,8 +10,8 @@ export default function CoachSessions({ navigation }) {
     const [schedules, setSchedules] = useState([]);
 
     useEffect(() => {
-        try {
-            const getSchedules = async () => {
+        const getSchedules = async () => {
+            try {
                 const result = await GetSessionsService();
                 if (result) {
                     result.map(v => {
@@ -19,12 +19,12 @@ export default function CoachSessions({ navigation }) {
                             if (u._id === state.authPage.auth_data?._id) {
                                 setSchedules(result);
                             }
-                        })
-                    })
+                        });
+                    });
                 }
-            };
-            getSchedules();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getSchedules();
     }, []);
 
     return (
@@ -34,19 +34,21 @@ export default function CoachSessions({ navigation }) {
                     <View>
                         <DataTable style={styles.container}>
                             <DataTable.Header style={styles.tableHeader}>
+                                <DataTable.Title>TOPIC</DataTable.Title>
                                 <DataTable.Title>STATUS</DataTable.Title>
-                                <DataTable.Title>CREATED BY</DataTable.Title>
                                 <DataTable.Title>DATE</DataTable.Title>
                                 <DataTable.Title>TIMINGS</DataTable.Title>
+                                <DataTable.Title>CREATED BY</DataTable.Title>
                             </DataTable.Header>
-                            {schedules.length > 0 && schedules.map(item => {
+                            {schedules.length > 0 && schedules.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Coach Session Description", { scheduleData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Coach Session Description", { scheduleData: item })}>
                                         <DataTable.Row>
+                                            <DataTable.Cell>{item.topic}</DataTable.Cell>
                                             <DataTable.Cell>{item.status}</DataTable.Cell>
-                                            <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.coach_name ? 'You' : item.created_by_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.date}</DataTable.Cell>
                                             <DataTable.Cell>{item.start_time} to {item.end_time}</DataTable.Cell>
+                                            <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.coach_name ? 'You' : item.created_by_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 550,
+        width: 1000,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

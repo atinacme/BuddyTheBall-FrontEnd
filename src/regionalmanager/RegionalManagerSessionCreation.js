@@ -8,6 +8,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { CreateSessionService } from '../services/SessionService';
 import { GetCoachesOfParticularRegionalManager } from '../services/RegionalManagerService';
+import { GetAllCoachesService } from '../services/CoachService';
 
 export default function RegionalManagerSessionCreation({ navigation }) {
     const state = useSelector((state) => state);
@@ -15,7 +16,7 @@ export default function RegionalManagerSessionCreation({ navigation }) {
         let dt = date === undefined ? new Date() : new Date(date);
         dt.setHours(dt.getHours() + 1);
         let endTime = dt;
-        return endTime
+        return endTime;
     }
     const [coachList, setCoachList] = useState([]);
     const [time, setTime] = useState({ start: new Date(), end: add() });
@@ -31,15 +32,16 @@ export default function RegionalManagerSessionCreation({ navigation }) {
     const [coach, setCoach] = useState([]);
 
     useEffect(() => {
-        try {
-            const getRegionalManagerCoaches = async () => {
-                const result = await GetCoachesOfParticularRegionalManager(state.authPage.auth_data?.user_id);
+        const getRegionalManagerCoaches = async () => {
+            try {
+                const result = await GetAllCoachesService();
                 if (result) {
-                    setCoachList(result.map(v => Object.assign(v, { key: v._id, value: v.coach_name })));
+                    const filteredArray = result.filter(element => element.assigned_region === state.authPage.auth_data?.assigned_region);
+                    setCoachList(filteredArray.map(v => Object.assign(v, { key: v._id, value: v.coach_name })));
                 }
-            };
-            getRegionalManagerCoaches();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegionalManagerCoaches();
     }, []);
 
     const onChange = (event, selectedDate) => {
@@ -80,31 +82,33 @@ export default function RegionalManagerSessionCreation({ navigation }) {
     // };
 
     const handleCreateSchedule = async () => {
-        if (coach.length > 0 && topic) {
-            const data = {
-                created_by: "regionalmanager",
-                created_by_name: state.authPage.auth_data?.regional_manager_name,
-                created_by_user_id: state.authPage.auth_data?.user_id,
-                coaches: coach,
-                date: moment(date).format("YYYY-MM-DD"),
-                start_time: moment(time.start).format('h:mm A'),
-                end_time: moment(time.end).format('h:mm A'),
-                topic: topic
-            };
-            const result = await CreateSessionService(data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Session Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Regional Manager Dashboard")
-                        }
-                    ]
-                );
+        try {
+            if (coach.length > 0) {
+                const data = {
+                    created_by: "regionalmanager",
+                    created_by_name: state.authPage.auth_data?.regional_manager_name,
+                    created_by_user_id: state.authPage.auth_data?.user_id,
+                    coaches: coach,
+                    date: moment(date).format("YYYY-MM-DD"),
+                    start_time: moment(time.start).format('h:mm A'),
+                    end_time: moment(time.end).format('h:mm A'),
+                    topic: topic
+                };
+                const result = await CreateSessionService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Session Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Regional Manager Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
-        }
+        } catch (e) { }
     };
 
     return (
@@ -140,9 +144,9 @@ export default function RegionalManagerSessionCreation({ navigation }) {
                         onChangeText={(val) => setTopic(val)}
                         value={topic}
                     />
-                    {!topic &&
+                    {/* {!topic &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
-                    }
+                    } */}
                     {show && (
                         <DateTimePicker
                             testID="dateTimePicker"

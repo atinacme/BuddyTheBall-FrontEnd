@@ -9,15 +9,15 @@ export default function ParentPhotos({ navigation }) {
     const [customerPhotos, setCustomerPhotos] = useState([]);
 
     useEffect(() => {
-        try {
-            const getCustomerPhotos = async () => {
+        const getCustomerPhotos = async () => {
+            try {
                 const result = await GetParticularCustomerPhotosService(state.authPage.auth_data?._id);
                 if (result) {
                     setCustomerPhotos(result);
                 }
-            };
-            getCustomerPhotos();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomerPhotos();
     }, [navigation]);
 
     return (
@@ -25,9 +25,9 @@ export default function ParentPhotos({ navigation }) {
             <SafeAreaView style={styles.wrapper}>
                 <View style={styles.imgWrap}>
                     <ScrollView style={styles.scrollView}>
-                        {customerPhotos.map(item => {
+                        {customerPhotos.map((item, index) => {
                             return (
-                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
+                                <TouchableOpacity key={index} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
                                     <Image key={item._id} source={{ uri: item.url }} style={{ height: 300, width: 300, marginTop: 10, marginBottom: 10 }} />
                                 </TouchableOpacity>
                             );

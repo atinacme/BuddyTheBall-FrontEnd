@@ -11,8 +11,8 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
     });
 
     useEffect(() => {
-        try {
-            const getParticularRegion = async () => {
+        const getParticularRegion = async () => {
+            try {
                 const result = await GetParticularRegionService(route.params.regionData._id);
                 if (result) {
                     setRegionData({
@@ -20,9 +20,9 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
                         cities: result.cities
                     });
                 }
-            };
-            getParticularRegion();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getParticularRegion();
     }, []);
 
     const handleUpdateRegion = async () => {
@@ -61,8 +61,8 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
                     {
                         text: "YES",
                         onPress: async () => {
-                            const data = { id: route.params.regionData._id }
-                            const result = await DeleteRegionService(data)
+                            const data = { id: route.params.regionData._id };
+                            const result = await DeleteRegionService(data);
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -101,7 +101,7 @@ export default function SuperAdminRegionDescription({ navigation, route }) {
                     <View style={styles.cities}>
                         <Text style={styles.label}>Cities</Text>
                         <TouchableOpacity onPress={() => setRegionData({ ...regionData, cities: [...regionData.cities, { name: '' }] })}>
-                            <Text style={styles.label}>+</Text>
+                            <Text style={styles.plusBtn} >+</Text>
                         </TouchableOpacity>
                     </View>
                     {regionData.cities.length > 0 && regionData.cities.map((item, index) => {
@@ -174,6 +174,16 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         bottom: 0,
         marginBottom: 10
+    },
+    plusBtn: {
+        borderColor: "#fff",
+        padding: 3,
+        textAlign: "center",
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 50,
+        width: 30,
+        height: 30
     },
     backbtn: {
         borderColor: "#fff",

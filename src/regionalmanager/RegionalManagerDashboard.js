@@ -20,18 +20,18 @@ export default function RegionalManagerDashboard({ navigation }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        try {
-            const getRegionalManagerData = async () => {
+        const getRegionalManagerData = async () => {
+            try {
                 const result = await GetParticularRegionalManagerService(state.authPage.auth_data?._id);
                 if (result) {
                     dispatch(AuthPageAction(state.authPage.id, state.authPage.email, state.authPage.roles, result, state.authPage.accessToken));
                     setUploadResult(false);
                 }
-            };
-            if (uploadResult) {
-                getRegionalManagerData();
-            }
-        } catch (e) { }
+            } catch (e) { }
+        };
+        if (uploadResult) {
+            getRegionalManagerData();
+        }
     }, [uploadResult]);
 
     const openGallery = async () => {

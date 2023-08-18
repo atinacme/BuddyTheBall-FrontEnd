@@ -9,15 +9,15 @@ export default function SuperAdminSchools({ navigation }) {
     const [schools, setSchools] = useState([]);
 
     useEffect(() => {
-        try {
-            const getSchools = async () => {
+        const getSchools = async () => {
+            try {
                 const result = await GetSchoolsService();
                 if (result) {
                     setSchools(result);
                 }
-            };
-            getSchools();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getSchools();
     }, []);
 
     return (
@@ -31,9 +31,9 @@ export default function SuperAdminSchools({ navigation }) {
                                 <DataTable.Title>REGION</DataTable.Title>
                                 <DataTable.Title>REGISTERED ON</DataTable.Title>
                             </DataTable.Header>
-                            {schools.map(item => {
+                            {schools.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin School Description", { school: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin School Description", { school: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.school_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.region}</DataTable.Cell>
@@ -44,7 +44,6 @@ export default function SuperAdminSchools({ navigation }) {
                             })}
                         </DataTable>
                     </View>
-
                 </ScrollView>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("Super Admin School Creation")}>
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 650,
+        width: 850,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

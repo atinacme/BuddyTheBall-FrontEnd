@@ -13,6 +13,7 @@ export default function SuperAdminCoachCreation({ navigation }) {
     const [data, setData] = useState([]);
     const [selected, setSelected] = useState([]);
     const [regions, setRegions] = useState([]);
+    const handed_list = ["Left", "Right"];
     const [coachData, setCoachData] = useState({
         email: "",
         password: "",
@@ -25,16 +26,16 @@ export default function SuperAdminCoachCreation({ navigation }) {
     });
 
     useEffect(() => {
-        try {
-            const getRegions = async () => {
+        const getRegions = async () => {
+            try {
                 const result = await GetAllRegionsService();
                 if (result) {
                     result.map(v => Object.assign(v, { key: v.region_name, value: v.region_name }));
                     setRegions(result);
                 }
-            };
-            getRegions();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegions();
     }, []);
 
     const handleSignUp = async () => {
@@ -48,6 +49,7 @@ export default function SuperAdminCoachCreation({ navigation }) {
                     assigned_region: coachData.assigned_region,
                     assigned_schools: selected,
                     assigned_by: 'Super Admin',
+                    assigned_by_name: state.authPage?.auth_data?.super_admin_name,
                     assigned_by_user_id: state.authPage?.id,
                     tennis_club: coachData.tennis_club,
                     favorite_pro_player: coachData.favorite_pro_player,
@@ -86,6 +88,7 @@ export default function SuperAdminCoachCreation({ navigation }) {
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, email: e })}
                         value={coachData.email}
+                        autoCapitalize='none'
                     />
                     {!coachData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
@@ -111,9 +114,9 @@ export default function SuperAdminCoachCreation({ navigation }) {
                     <Text style={styles.label}>Assigned Region</Text>
                     <SelectList
                         setSelected={async (val) => {
-                            setCoachData({ ...coachData, assigned_region: val })
+                            setCoachData({ ...coachData, assigned_region: val });
                             try {
-                                const data = { region: val }
+                                const data = { region: val };
                                 const result = await GetRegionWiseSchools(data);
                                 result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
                                 setData(result);
@@ -153,10 +156,10 @@ export default function SuperAdminCoachCreation({ navigation }) {
                         <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
                     }
                     <Text style={styles.label}>Handed</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
-                        value={coachData.handed}
+                    <SelectList
+                        setSelected={(val) => setCoachData({ ...coachData, handed: val })}
+                        data={handed_list}
+                        label="Selected Handed"
                     />
                     {!coachData.handed &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>

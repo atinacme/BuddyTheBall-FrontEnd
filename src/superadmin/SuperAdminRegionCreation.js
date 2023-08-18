@@ -112,7 +112,7 @@ export default function SuperAdminRegionCreation({ navigation }) {
                                 <View style={styles.cities}>
                                     <Text style={styles.label}>Cities</Text>
                                     <TouchableOpacity onPress={() => setCities([...cities, { name: '' }])}>
-                                        <Text style={styles.label}>+</Text>
+                                        <Text style={styles.plusBtn} >+</Text>
                                     </TouchableOpacity>
                                 </View>
                                 {cities.length > 0 && cities.map((item, index) => {
@@ -202,6 +202,16 @@ const styles = StyleSheet.create({
         color: '#000',
         paddingTop: 10,
         paddingBottom: 5
+    },
+    plusBtn: {
+        borderColor: "#fff",
+        padding: 3,
+        textAlign: "center",
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 50,
+        width: 30,
+        height: 30
     },
     btnWrapper: {
         borderColor: "#fff",

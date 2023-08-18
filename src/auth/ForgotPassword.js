@@ -53,6 +53,7 @@ export default function ForgotPassword({ navigation }) {
                     style={styles.input}
                     onChangeText={(e) => setEmail(e)}
                     value={email}
+                    autoCapitalize='none'
                 />
                 {!email &&
                     <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>

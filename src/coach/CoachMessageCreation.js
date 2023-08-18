@@ -16,15 +16,15 @@ export default function CoachMessageCreation({ navigation, route }) {
     const [message, setMessage] = useState();
 
     useEffect(() => {
-        try {
-            const getCustomersOfCoach = async () => {
+        const getCustomersOfCoach = async () => {
+            try {
                 const result = await GetCustomersOfParticularCoachService(state.authPage.auth_data?._id);
                 if (result) {
                     setCustomers(result.map(v => Object.assign(v, { key: v._id, value: v.player_name })));
                 }
-            };
-            getCustomersOfCoach();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomersOfCoach();
     }, []);
 
     const handleSendMessage = async () => {

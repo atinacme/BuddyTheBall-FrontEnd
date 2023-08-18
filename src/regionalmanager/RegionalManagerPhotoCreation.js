@@ -15,15 +15,15 @@ export default function RegionalManagerPhotoCreation({ navigation, route }) {
     const state = useSelector((state) => state);
 
     useEffect(() => {
-        try {
-            const handleStudentList = async () => {
+        const handleStudentList = async () => {
+            try {
                 const result = await GetCustomerWithSchoolIdService(route.params.schoolId);
                 if (result) {
                     setCustomerData(result.map(v => Object.assign(v, { key: v._id, value: v.player_name })));
                 }
-            };
-            handleStudentList();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        handleStudentList();
     }, []);
 
     const openGallery = async () => {
@@ -47,30 +47,32 @@ export default function RegionalManagerPhotoCreation({ navigation, route }) {
                 name: newImageUri.split("/").pop()
             });
         });
-        const res = await axios({
-            method: 'post',
-            url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
-            data: formData,
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        if (res) {
-            Alert.alert(
-                "Alert",
-                "All Files Uploaded Sucessfully",
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            setSelectedFile(null);
-                            navigation.navigate("Coach Schools Photos");
+        try {
+            const res = await axios({
+                method: 'post',
+                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                data: formData,
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            if (res) {
+                Alert.alert(
+                    "Alert",
+                    "All Files Uploaded Sucessfully",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                setSelectedFile(null);
+                                navigation.navigate("Coach Schools Photos");
+                            }
                         }
-                    }
-                ]
-            );
-        }
+                    ]
+                );
+            }
+        } catch (e) { }
     };
 
     return (
@@ -97,7 +99,6 @@ export default function RegionalManagerPhotoCreation({ navigation, route }) {
                                 );
                             })}
                         </View>
-
                         <View>
                             <TouchableOpacity onPress={handleAddPhoto} >
                                 <Text style={styles.submitcta}>Submit</Text>

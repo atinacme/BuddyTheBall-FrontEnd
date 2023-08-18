@@ -54,59 +54,63 @@ export default function CoachDashboard({ navigation }) {
         return currentTime >= start && currentTime <= end;
     }
     const sessionUpdate = async (id) => {
-        const data = { status: "Ended" }
-        await UpdateSessionService(id, data)
-    }
+        try {
+            const data = { status: "Ended" };
+            await UpdateSessionService(id, data);
+        } catch (e) { }
+    };
 
     useEffect(() => {
         setProgress(elapsedTime / 3600);
 
         const getClasses = async () => {
-            const result = await GetClassesService();
-            if (result) {
-                result.map(v => {
-                    if (v.school.region === state.authPage.auth_data?.assigned_region) {
-                        v?.schedules?.map(u => {
-                            if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
-                                return result
-                            }
-                        })
-                    }
-                })
-                const updatedArray = result.map(obj => ({
-                    ...obj,
-                    schedules: obj.schedules.filter(item => new Date(item.date).toLocaleDateString() === today.toLocaleDateString())
-                }));
-                const allNewArray = updatedArray.map(obj => ({
-                    ...obj,
-                    schedules: obj.schedules.map(u => {
-                        var currentTime = new Date();
-                        var parsedTimeCurrentString = Date.parse(currentTime)
-                        var local = new Date().toLocaleDateString()
-                        var newdate = local.split("/").reverse().join("-");
-                        var timestamp = new Date(newdate).getTime() / 1000
-                        var startTime = moment(u.start_time, ["h:mm A"]).format("HH:mm")
-                        var startTimeSplit = startTime.split(":")
-                        var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1])
-                        var parsedTimeStartString = Date.parse(dateTimeStartString)
-                        var endTime = moment(u.end_time, ["h:mm A"]).format("HH:mm")
-                        var endTimeSplit = endTime.split(":")
-                        var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1])
-                        var parsedTimeEndString = Date.parse(dateTimeEndString)
-                        if (u.status === "Upcoming" && isCurrentInterval(dateTimeStartString, dateTimeEndString)) {
-                            return { ...u, progress: progress };
-                        } else if (u.status === "Upcoming" && parsedTimeCurrentString >= parsedTimeStartString && parsedTimeCurrentString >= parsedTimeEndString) {
-                            sessionUpdate(u._id)
-                        } else if (u.status === "Upcoming" && parsedTimeCurrentString <= parsedTimeStartString) {
-                            return { ...u, progress: 0 };
-                        } else {
-                            return { ...u, progress: 1 };
+            try {
+                const result = await GetClassesService();
+                if (result) {
+                    result.map(v => {
+                        if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                            v?.schedules?.map(u => {
+                                if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                                    return result;
+                                }
+                            });
                         }
+                    });
+                    const updatedArray = result.map(obj => ({
+                        ...obj,
+                        schedules: obj.schedules.filter(item => new Date(item.date).toLocaleDateString() === today.toLocaleDateString())
+                    }));
+                    const allNewArray = updatedArray.map(obj => ({
+                        ...obj,
+                        schedules: obj.schedules.map(u => {
+                            var currentTime = new Date();
+                            var parsedTimeCurrentString = Date.parse(currentTime);
+                            var local = new Date().toLocaleDateString();
+                            var newdate = local.split("/").reverse().join("-");
+                            var timestamp = new Date(newdate).getTime() / 1000;
+                            var startTime = moment(u.start_time, ["h:mm A"]).format("HH:mm");
+                            var startTimeSplit = startTime.split(":");
+                            var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1]);
+                            var parsedTimeStartString = Date.parse(dateTimeStartString);
+                            var endTime = moment(u.end_time, ["h:mm A"]).format("HH:mm");
+                            var endTimeSplit = endTime.split(":");
+                            var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1]);
+                            var parsedTimeEndString = Date.parse(dateTimeEndString);
+                            if (u.status === "Upcoming" && isCurrentInterval(dateTimeStartString, dateTimeEndString)) {
+                                return { ...u, progress: progress };
+                            } else if (u.status === "Upcoming" && parsedTimeCurrentString >= parsedTimeStartString && parsedTimeCurrentString >= parsedTimeEndString) {
+                                sessionUpdate(u._id);
+                            } else if (u.status === "Upcoming" && parsedTimeCurrentString <= parsedTimeStartString) {
+                                return { ...u, progress: 0 };
+                            } else {
+                                return { ...u, progress: 1 };
+                            }
 
-                    })
-                }));
-                setClasses(allNewArray);
-            }
+                        })
+                    }));
+                    setClasses(allNewArray);
+                }
+            } catch (e) { }
         };
         getClasses();
     }, [elapsedTime]);
@@ -115,26 +119,26 @@ export default function CoachDashboard({ navigation }) {
 
     useEffect(() => {
         let secTimer = setInterval(() => {
-            setDt(new Date().toLocaleString())
-        }, 1000)
+            setDt(new Date().toLocaleString());
+        }, 1000);
 
         return () => clearInterval(secTimer);
     }, []);
 
 
     useEffect(() => {
-        try {
-            const getCoachData = async () => {
+        const getCoachData = async () => {
+            try {
                 const result = await GetParticularCoachService(state.authPage.auth_data?._id);
                 if (result) {
                     dispatch(AuthPageAction(state.authPage.id, state.authPage.email, state.authPage.roles, result, state.authPage.accessToken));
                     setUploadResult(false);
                 }
-            };
-            if (uploadResult) {
-                getCoachData();
-            }
-        } catch (e) { }
+            } catch (e) { }
+        };
+        if (uploadResult) {
+            getCoachData();
+        }
     }, [uploadResult]);
 
     const openGallery = async () => {
@@ -219,23 +223,23 @@ export default function CoachDashboard({ navigation }) {
                         <Text style={styles.txt}>Favorite Drill: {state.authPage.auth_data?.favorite_drill}</Text>
                     </>
                 )}
-                <ScrollView showsVerticalScrollIndicator style={{ height: 370 }}>
-                    {classes.length > 0 && classes.map(v => {
+                <ScrollView showsVerticalScrollIndicator style={{ height: 320 }}>
+                    {classes.length > 0 && classes.map((v, index) => {
                         return (
-                            <>
-                                <Text>Topic: {v.topic}</Text>
+                            <View key={index}>
+                                <Text>Class Name: {v.topic}</Text>
                                 <Text>School: {v.school.school_name}</Text>
-                                {v.schedules.length > 0 && v.schedules.map(u => {
+                                {v.schedules.length > 0 && v.schedules.map((u, i) => {
                                     return (
-                                        <>
+                                        <View key={i}>
                                             <Text>Session Topic: {u?.topic}</Text>
                                             <Text>Start Time: {u?.start_time} End Time: {u?.end_time}</Text>
                                             <ProgressBar progress={u?.progress} />
-                                        </>
-                                    )
+                                        </View>
+                                    );
                                 })}
-                            </>
-                        )
+                            </View>
+                        );
                     })}
                     <Text style={styles.adminWrapper}>
                         <TouchableOpacity onPress={() => navigation.navigate("Coach Schools Photos")}>
@@ -271,40 +275,30 @@ export default function CoachDashboard({ navigation }) {
 const styles = StyleSheet.create({
     linearGradient: {
         flex: 1,
+        paddingLeft: 15,
+        paddingRight: 15,
     },
     adminbtn: {
-        display: 'flex',
-        // alignItems: 'center',
-        flexDirection: 'row',
+        // display: 'flex',
+        alignItems: 'center',
+        // flexDirection: 'row',
         justifyContent: 'center',
-        position: 'absolute',
-        bottom: 0,
-        width: '100%',
-        paddingBottom: 20
-    },
-    backbtn: {
-        borderColor: "#fff",
-        paddingTop: 10,
-        paddingBottom: 10,
-        backgroundColor: "#ff8400",
-        borderWidth: 3,
-        borderRadius: 10,
-        textAlign: "center",
-        fontWeight: "700",
-        marginTop: 25,
-        width: 120,
+        // marginBottom: 50,
+        // position: 'absolute',
+        // bottom: 0,
+        // width: 300,
+        // paddingBottom: 20
     },
     btnWrapper: {
         borderColor: "#fff",
-        paddingTop: 10,
-        paddingBottom: 10,
+        padding: 10,
+        // paddingBottom: 10,
         backgroundColor: "#ff8400",
         borderWidth: 3,
         borderRadius: 10,
         textAlign: "center",
         fontWeight: "700",
-        marginTop: 25,
-        width: 320,
+        width: 300,
     },
     adminWrapper: {
         display: 'flex',
@@ -313,49 +307,7 @@ const styles = StyleSheet.create({
         // justifyContent: 'space-between',
         // marginTop: 30,
         // marginBottom: 30,
-        paddingBottom: 50,
-    },
-    adminContainer: {
-        width: 155,
-        margin: 5,
-        padding: 35,
-        paddingLeft: 0,
-        paddingRight: 0,
-        color: '#000',
-        fontSize: 12,
-        height: 100,
-        borderRadius: 10,
-        textAlign: 'center',
-        lineHeight: 20,
-        borderWidth: 3,
-        borderColor: '#fff',
-        fontWeight: '600',
-        fontFamily: 'LemonJuice',
-        verticalAlign: 'middle'
-    },
-    adminBg1: {
-        backgroundColor: '#ffc000'
-    },
-    adminBg2: {
-        backgroundColor: '#ffff00'
-    },
-    adminBg3: {
-        backgroundColor: '#ed7d31'
-    },
-    adminBg4: {
-        backgroundColor: '#0070c0'
-    },
-    adminBg5: {
-        backgroundColor: '#ff0000'
-    },
-    adminBg6: {
-        backgroundColor: '#ff0000'
-    },
-    adminBg7: {
-        backgroundColor: '#ffff00'
-    },
-    adminBg8: {
-        backgroundColor: 'blue'
+        // paddingBottom: 50,
     },
     txt: {
         fontFamily: 'LemonJuice',
@@ -364,7 +316,7 @@ const styles = StyleSheet.create({
     },
     dashimgWrap: {
         textAlign: 'center',
-        marginTop: 10
+        marginTop: 50
     },
     heading: {
         fontSize: 25,

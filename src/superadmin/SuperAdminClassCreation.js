@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Alert, TouchableOpacity, Text, View, Image, TextInput } from 'react-native';
+import { SafeAreaView, StyleSheet, Alert, TouchableOpacity, Text, View, Image, TextInput, ScrollView } from 'react-native';
 import buddy from '../assets/buddy.png';
 import { useSelector } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,94 +10,100 @@ import { GetSchoolsService } from '../services/SchoolService';
 
 export default function SuperAdminClassCreation({ navigation }) {
     const state = useSelector((state) => state);
-    const [sessionsList, setSessionsList] = useState([])
-    const [sessions, setSessions] = useState([])
-    const [schoolsList, setSchoolsList] = useState([])
-    const [selectedSchool, setSelectedSchool] = useState()
+    const [sessionsList, setSessionsList] = useState([]);
+    const [sessions, setSessions] = useState([]);
+    const [schoolsList, setSchoolsList] = useState([]);
+    const [selectedSchool, setSelectedSchool] = useState();
     const [topic, setTopic] = useState();
 
     useEffect(() => {
-        try {
-            const getSessions = async () => {
+        const getSessions = async () => {
+            try {
                 const result = await GetSessionsService();
                 if (result) {
                     setSessionsList(result.map(v => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time}) By ${v.coaches.map(u => u.coach_name)}` })));
                 }
-            };
-            getSessions();
+            } catch (e) { }
+        };
+        getSessions();
 
-            const getSchools = async () => {
-                const result = await GetSchoolsService()
+        const getSchools = async () => {
+            try {
+                const result = await GetSchoolsService();
                 if (result) {
                     const schoolData = result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
                     setSchoolsList(schoolData);
                 }
-            }
-            getSchools()
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getSchools();
     }, []);
 
     const handleCreateClass = async () => {
-        if (sessions.length > 0 && selectedSchool && topic) {
-            const data = {
-                created_by: "superadmin",
-                created_by_name: "Super Admin",
-                created_by_user_id: state.authPage?._id,
-                schedules: sessions,
-                school: selectedSchool,
-                topic: topic
+        try {
+            if (sessions.length > 0 && selectedSchool && topic) {
+                const data = {
+                    created_by: "superadmin",
+                    created_by_name: state.authPage?.auth_data?.super_admin_name,
+                    created_by_user_id: state.authPage?._id,
+                    schedules: sessions,
+                    school: selectedSchool,
+                    topic: topic
+                };
+                const result = await CreateClassService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Class Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Super Admin Dashboard")
+                            }
+                        ]
+                    );
+                }
             }
-            const result = await CreateClassService(data)
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Class Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Super Admin Dashboard")
-                        }
-                    ]
-                );
-            }
-        }
-    }
+        } catch (e) { }
+    };
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                <View>
-                    <Text style={styles.label}>Topic :</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => setTopic(val)}
-                        value={topic}
-                        placeholder='Topic'
+                <ScrollView>
+                    <View>
+                        <Text style={styles.label}>Class Name :</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(val) => setTopic(val)}
+                            value={topic}
+                            placeholder='Class Name'
+                        />
+                    </View>
+                    {!topic &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Class Name is Required</Text>
+                    }
+                    <Text style={styles.label}>Sessions :</Text>
+                    <MultipleSelectList
+                        setSelected={(val) => setSessions(val)}
+                        data={sessionsList}
+                        save="key"
+                        label="Selected Sessions"
                     />
-                </View>
-                {!topic &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
-                }
-                <Text style={styles.label}>Sessions :</Text>
-                <MultipleSelectList
-                    setSelected={(val) => setSessions(val)}
-                    data={sessionsList}
-                    save="key"
-                    label="Selected Sessions"
-                />
-                {sessions.length === 0 &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
-                }
-                <Text style={styles.label}>School :</Text>
-                <SelectList
-                    setSelected={(val) => setSelectedSchool(val)}
-                    data={schoolsList}
-                    save="key"
-                />
-                {!selectedSchool &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
-                }
+                    {sessions.length === 0 &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>Session is Required</Text>
+                    }
+                    <Text style={styles.label}>School :</Text>
+                    <SelectList
+                        setSelected={(val) => setSelectedSchool(val)}
+                        data={schoolsList}
+                        save="key"
+                    />
+                    {!selectedSchool &&
+                        <Text style={{ fontSize: 10, color: 'red' }}>School is Required</Text>
+                    }
+                </ScrollView>
                 <View style={{ marginTop: 20 }}>
                     <TouchableOpacity onPress={handleCreateClass}>
                         <Text style={styles.btnWrapper}>Submit</Text>

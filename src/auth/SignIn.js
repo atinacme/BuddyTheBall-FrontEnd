@@ -10,6 +10,7 @@ export default function SignIn({ navigation }) {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
     const dispatch = useDispatch();
+
     const handleSignIn = async () => {
         try {
             const data = {
@@ -28,7 +29,7 @@ export default function SignIn({ navigation }) {
                 dispatch(AuthPageAction(result.id, result.email, result.roles, result.regionalmanager_data, result.accessToken));
             } else {
                 navigation.navigate("Super Admin Dashboard");
-                dispatch(AuthPageAction(result.id, result.email, result.roles, null, result.accessToken));
+                dispatch(AuthPageAction(result.id, result.email, result.roles, result.superadmin_data, result.accessToken));
             }
         } catch (e) {
             if (e.message === "Request failed with status code 404") {
@@ -65,6 +66,7 @@ export default function SignIn({ navigation }) {
                     style={styles.input}
                     onChangeText={(e) => setEmail(e)}
                     value={email}
+                    autoCapitalize='none'
                 />
                 <Text style={styles.label}>Password</Text>
                 <TextInput

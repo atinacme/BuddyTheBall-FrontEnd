@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
-import { MultipleSelectList } from 'react-native-dropdown-select-list';
+import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
 import buddy from '../assets/buddy.png';
 import { GetRegionWiseSchools } from '../services/SchoolService';
 import { SignUpService } from '../services/UserAuthService';
@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 export default function RegionalManagerCoachCreation({ navigation }) {
     const state = useSelector((state) => state);
     const [data, setData] = useState([]);
+    const handed_list = ["Left", "Right"];
     const [selected, setSelected] = useState([]);
     const [coachData, setCoachData] = useState({
         email: "",
@@ -23,15 +24,15 @@ export default function RegionalManagerCoachCreation({ navigation }) {
     });
 
     useEffect(() => {
-        try {
-            const getAllSchools = async () => {
+        const getAllSchools = async () => {
+            try {
                 const data = { region: state.authPage.auth_data?.assigned_region };
                 const result = await GetRegionWiseSchools(data);
                 result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
                 setData(result);
-            };
-            getAllSchools();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getAllSchools();
     }, []);
 
     const handleSignUp = async () => {
@@ -45,6 +46,7 @@ export default function RegionalManagerCoachCreation({ navigation }) {
                     assigned_region: state.authPage.auth_data?.assigned_region,
                     assigned_schools: selected,
                     assigned_by: 'Regional Manager',
+                    assigned_by_name: state.authPage?.auth_data?.regional_manager_name,
                     assigned_by_user_id: state.authPage.auth_data?.user_id,
                     tennis_club: coachData.tennis_club,
                     favorite_pro_player: coachData.favorite_pro_player,
@@ -83,6 +85,7 @@ export default function RegionalManagerCoachCreation({ navigation }) {
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, email: e })}
                         value={coachData.email}
+                        autoCapitalize='none'
                     />
                     {!coachData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
@@ -135,10 +138,10 @@ export default function RegionalManagerCoachCreation({ navigation }) {
                         <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
                     }
                     <Text style={styles.label}>Handed</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
-                        value={coachData.handed}
+                    <SelectList
+                        setSelected={(val) => setCoachData({ ...coachData, handed: val })}
+                        data={handed_list}
+                        label="Selected Handed"
                     />
                     {!coachData.handed &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>

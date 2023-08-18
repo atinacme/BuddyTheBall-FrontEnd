@@ -9,15 +9,15 @@ export default function SuperAdminParticularSchoolPhotos({ navigation, route }) 
     const [photos, setPhotos] = useState([]);
 
     useEffect(() => {
-        try {
-            const getPhotos = async () => {
+        const getPhotos = async () => {
+            try {
                 const result = await GetParticularSchoolPhotosService(route.params.schoolItem._id);
                 if (result) {
                     setPhotos(result);
                 }
-            };
-            getPhotos();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getPhotos();
     }, [navigation]);
 
     return (
@@ -26,9 +26,9 @@ export default function SuperAdminParticularSchoolPhotos({ navigation, route }) 
                 <ScrollView style={styles.scrollView}>
                     <Text style={styles.label}>{route.params.schoolItem.school_name}</Text>
                     <View style={styles.imgWrap}>
-                        {photos.length > 0 && photos.map((item) => {
+                        {photos.length > 0 && photos.map((item, index) => {
                             return (
-                                <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Particular Photo", { photo: item })}>
+                                <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin Particular Photo", { photo: item })}>
                                     <ImageBackground key={item?._id} source={{ uri: item?.url }} style={styles.cardBackground}>
                                         <View style={styles.cardContent}>
                                             <View style={styles.carddes}>

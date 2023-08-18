@@ -53,7 +53,6 @@ import SuperAdminSchoolCreation from './src/superadmin/SuperAdminSchoolCreation.
 import SuperAdminPhotos from './src/superadmin/SuperAdminPhotos.js';
 import SuperAdminParticularSchoolPhotos from './src/superadmin/SuperAdminParticularSchoolPhotos';
 import SuperAdminParticularPhoto from './src/superadmin/SuperAdminParticularPhoto';
-import SuperAdminStudents from './src/superadmin/SuperAdminStudents.js';
 import SuperAdminParents from './src/superadmin/SuperAdminParents';
 import SuperAdminParentCreation from './src/superadmin/SuperAdminParentCreation';
 import SuperAdminParentDescription from './src/superadmin/SuperAdminParentDescription';
@@ -68,9 +67,6 @@ import SuperAdminRegionalManagerCreation from './src/superadmin/SuperAdminRegion
 import SuperAdminRegions from './src/superadmin/SuperAdminRegions';
 import SuperAdminRegionCreation from './src/superadmin/SuperAdminRegionCreation';
 import SuperAdminRegionDescription from './src/superadmin/SuperAdminRegionDescription';
-import SuperAdmins from './src/superadmin/SuperAdmins';
-import SuperAdminCreation from './src/superadmin/SuperAdminCreation';
-import SuperAdminDescription from './src/superadmin/SuperAdminDescription';
 import SuperAdminSessions from './src/superadmin/SuperAdminSessions';
 import SuperAdminSessionCreation from './src/superadmin/SuperAdminSessionCreation';
 import SuperAdminSessionDescription from './src/superadmin/SuperAdminSessionDescription';
@@ -151,7 +147,6 @@ const App = () => {
             <Stack.Screen name="Super Admin Photos" component={SuperAdminPhotos} />
             <Stack.Screen name="Super Admin Particular School Photos" component={SuperAdminParticularSchoolPhotos} />
             <Stack.Screen name="Super Admin Particular Photo" component={SuperAdminParticularPhoto} />
-            <Stack.Screen name="Super Admin Students" component={SuperAdminStudents} />
             <Stack.Screen name="Super Admin Parents" component={SuperAdminParents} />
             <Stack.Screen name="Super Admin Parent Creation" component={SuperAdminParentCreation} />
             <Stack.Screen name="Super Admin Parent Description" component={SuperAdminParentDescription} />
@@ -166,9 +161,6 @@ const App = () => {
             <Stack.Screen name="Super Admin Regions" component={SuperAdminRegions} />
             <Stack.Screen name="Super Admin Region Creation" component={SuperAdminRegionCreation} />
             <Stack.Screen name="Super Admin Region Description" component={SuperAdminRegionDescription} />
-            <Stack.Screen name="Super Admins" component={SuperAdmins} />
-            <Stack.Screen name="Super Admin Creation" component={SuperAdminCreation} />
-            <Stack.Screen name="Super Admin Description" component={SuperAdminDescription} />
             <Stack.Screen name="Super Admin Sessions" component={SuperAdminSessions} />
             <Stack.Screen name="Super Admin Session Creation" component={SuperAdminSessionCreation} />
             <Stack.Screen name="Super Admin Session Description" component={SuperAdminSessionDescription} />

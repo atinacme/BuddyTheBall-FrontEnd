@@ -10,15 +10,15 @@ export default function SuperAdminParents({ navigation }) {
     const [customers, setCustomers] = useState([]);
 
     useEffect(() => {
-        try {
-            const getCustomers = async () => {
+        const getCustomers = async () => {
+            try {
                 const result = await GetParentsService();
                 if (result) {
                     setCustomers(result);
                 }
-            };
-            getCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomers();
     }, []);
 
     return (
@@ -29,16 +29,16 @@ export default function SuperAdminParents({ navigation }) {
                         <DataTable style={styles.container}>
                             <DataTable.Header style={styles.tableHeader}>
                                 <DataTable.Title>PARENT</DataTable.Title>
-                                <DataTable.Title>CREATED BY</DataTable.Title>
                                 <DataTable.Title>EMAIL</DataTable.Title>
+                                <DataTable.Title>CREATED BY</DataTable.Title>
                             </DataTable.Header>
-                            {customers.map(item => {
+                            {customers.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Parent Description", { customerData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin Parent Description", { customerData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.parent_name}</DataTable.Cell>
-                                            <DataTable.Cell>{item.created_by_user_id === state.authPage?.id ? 'You' : item.created_by === 'coach' ? item.created_by_name : item.created_by === 'regionalmanager' ? item.created_by_name : 'Shopify'}</DataTable.Cell>
                                             <DataTable.Cell>{item.email}</DataTable.Cell>
+                                            <DataTable.Cell>{item.created_by_user_id === state.authPage?.id ? 'You' : item.created_by === 'coach' ? item.created_by_name : item.created_by === 'regionalmanager' ? item.created_by_name : 'Shopify'}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 500,
+        width: 850,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

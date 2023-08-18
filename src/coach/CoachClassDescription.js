@@ -9,58 +9,60 @@ import { DeleteClassService, UpdateClassService } from '../services/ClassService
 
 export default function CoachClassDescription({ navigation, route }) {
     const state = useSelector((state) => state);
-    const [sessionsList, setSessionsList] = useState([])
-    const [sessions, setSessions] = useState([])
-    const [selectedSessions, setSelectedSessions] = useState(route.params.classData.schedules)
-    const schoolsList = state.authPage.auth_data?.assigned_schools.map(v => Object.assign(v, { key: v?._id, value: v?.school_name }))
-    const [selectedSchool, setSelectedSchool] = useState()
+    const [sessionsList, setSessionsList] = useState([]);
+    const [sessions, setSessions] = useState([]);
+    const [selectedSessions, setSelectedSessions] = useState(route.params.classData.schedules);
+    const schoolsList = state.authPage.auth_data?.assigned_schools.map(v => Object.assign(v, { key: v?._id, value: v?.school_name }));
+    const [selectedSchool, setSelectedSchool] = useState();
     const [topic, setTopic] = useState(route.params.classData?.topic);
 
     useEffect(() => {
-        try {
-            const getCoachSessions = async () => {
-                const data = { coach_id: state.authPage.auth_data?.user_id, regional_manager_id: state.authPage.auth_data?.assigned_by_user_id }
+        const getCoachSessions = async () => {
+            try {
+                const data = { coach_id: state.authPage.auth_data?.user_id, regional_manager_id: state.authPage.auth_data?.assigned_by_user_id };
                 const result = await GetSessionsService(data);
                 if (result) {
                     result.map(v => {
                         if (v?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
-                            Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` })
+                            Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` });
                         }
                     });
-                    // const arr = result.map(v => Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` }));
-                    var newArr = result.filter(function (objFromA) {
+                    const filteredArray = result.filter(obj => obj.hasOwnProperty('key'));
+                    var newArr = filteredArray.filter(function (objFromA) {
                         return !route.params.classData?.schedules?.find(function (objFromB) {
-                            return objFromA._id === objFromB._id
-                        })
-                    })
-                    setSessionsList(newArr)
+                            return objFromA._id === objFromB._id;
+                        });
+                    });
+                    setSessionsList(newArr);
                 }
-            };
-            getCoachSessions();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCoachSessions();
     }, []);
 
     const handleUpdateClass = async () => {
-        const selectedSessionsId = selectedSessions.map(v => { return v._id })
+        const selectedSessionsId = selectedSessions.map(v => { return v._id; });
         if (selectedSessionsId.concat(sessions).length > 0 && selectedSchool && topic) {
             const data = {
                 schedules: selectedSessionsId.concat(sessions),
                 school: selectedSchool,
                 topic: topic
             };
-            const result = await UpdateClassService(route.params.classData._id, data);
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Class Updated Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Coach Dashboard")
-                        }
-                    ]
-                );
-            }
+            try {
+                const result = await UpdateClassService(route.params.classData._id, data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Class Updated Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Coach Dashboard")
+                            }
+                        ]
+                    );
+                }
+            } catch (e) { }
         }
     };
 
@@ -78,8 +80,8 @@ export default function CoachClassDescription({ navigation, route }) {
                     {
                         text: "OK",
                         onPress: async () => {
-                            const data = { id: route.params.classData._id }
-                            const result = await DeleteClassService(data)
+                            const data = { id: route.params.classData._id };
+                            const result = await DeleteClassService(data);
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -110,25 +112,25 @@ export default function CoachClassDescription({ navigation, route }) {
                 <ScrollView>
                     <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
                     <View>
-                        <Text style={styles.label}>Topic :</Text>
+                        <Text style={styles.label}>Class Name :</Text>
                         <TextInput
                             style={styles.input}
                             onChangeText={(val) => setTopic(val)}
                             value={topic}
-                            placeholder='Topic'
+                            placeholder='Class Name'
                         />
                     </View>
                     {!topic &&
-                        <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                        <Text style={{ fontSize: 10, color: 'red' }}>Class Name is Required</Text>
                     }
                     <Text style={styles.label}>Sessions :</Text>
-                    {selectedSessions.map(v => {
+                    {selectedSessions.map((v, index) => {
                         return (
-                            <View>
+                            <View key={index}>
                                 <Text>{v.date} ({v.start_time} to {v.end_time}) By {v.coaches.map(u => u.coach_name)}</Text>
                                 <TouchableOpacity onPress={() => {
                                     v.key = v._id;
-                                    v.value = `${v.date} (${v.start_time} to ${v.end_time})`
+                                    v.value = `${v.date} (${v.start_time} to ${v.end_time})`;
                                     var array = [...selectedSessions];
                                     var indexData = array.indexOf(v);
                                     if (indexData !== -1) {
@@ -140,7 +142,7 @@ export default function CoachClassDescription({ navigation, route }) {
                                     <Text>X</Text>
                                 </TouchableOpacity>
                             </View>
-                        )
+                        );
                     })}
                     <MultipleSelectList
                         setSelected={(val) => setSessions(val)}

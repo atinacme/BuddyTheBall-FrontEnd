@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView, View, Pressable } from "react-native";
-import { MultipleSelectList } from 'react-native-dropdown-select-list';
+import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
 import buddy from '../assets/buddy.png';
 import { CoachUpdateService, DeleteCoachService } from '../services/CoachService';
 import { GetRegionWiseSchools } from '../services/SchoolService';
@@ -23,15 +23,15 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
         favorite_drill: ""
     });
     const [data, setData] = useState([]);
-    const [regionSchools, setRegionSchools] = useState([]);
+    const handed_list = ["Left", "Right"];
     const [coachSchools, setCoachSchools] = useState([]);
     const [assignedSchools, setAssignedSchools] = useState([]);
     const [assignedSlots, setAssignedSlots] = useState([]);
     const [selected, setSelected] = useState([]);
 
     useEffect(() => {
-        try {
-            const getParticularCoach = async () => {
+        const getParticularCoach = async () => {
+            try {
                 const result = await GetCoachOfParticularRegionalManager(route.params.coachData._id, state.authPage.auth_data?.user_id);
                 if (result) {
                     setCoachData({
@@ -50,23 +50,24 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                     setAssignedSchools(result[0].assigned_schools.map(v => { return { key: v._id, value: v.school_name }; }));
                     setAssignedSlots(result[0].assign_slot);
                 }
-            };
-            getParticularCoach();
+            } catch (e) { }
+        };
+        getParticularCoach();
 
-            const getAllSchools = async () => {
+        const getAllSchools = async () => {
+            try {
                 const data = { region: state.authPage.auth_data?.assigned_region };
                 const result = await GetRegionWiseSchools(data);
                 result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
-                setRegionSchools(result);
                 var res = result.filter(function (item) {
                     return !assignedSchools.find(function (school) {
                         return item.key === school.key;
                     });
                 });
                 setData(res);
-            };
-            getAllSchools();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getAllSchools();
     }, []);
 
     const handleCoachUpdate = async () => {
@@ -115,8 +116,8 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                     {
                         text: "YES",
                         onPress: async () => {
-                            const data = { id: route.params.coach._id, user_id: coachData.user_id }
-                            const result = await DeleteCoachService(data)
+                            const data = { id: route.params.coach._id, user_id: coachData.user_id };
+                            const result = await DeleteCoachService(data);
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -136,7 +137,7 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update Coach!"
+                "Failed! Can't Delete Coach!"
             );
         }
     };
@@ -151,6 +152,7 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, email: e })}
                         value={coachData.email}
+                        autoCapitalize='none'
                     />
                     {!coachData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
@@ -174,9 +176,9 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                         <Text style={{ fontSize: 10, color: 'red' }}>Coach Name is Required</Text>
                     }
                     <Text style={styles.label}>Assigned Schools</Text>
-                    {assignedSchools.length > 0 && assignedSchools.map((item) => {
+                    {assignedSchools.length > 0 && assignedSchools.map((item, index) => {
                         return (
-                            <View key={item.key} style={{
+                            <View key={index} style={{
                                 alignItems: 'center',
                                 flexDirection: 'row',
                                 justifyContent: 'space-between'
@@ -224,10 +226,11 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                         <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
                     }
                     <Text style={styles.label}>Handed</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
-                        value={coachData.handed}
+                    <SelectList
+                        setSelected={(val) => setCoachData({ ...coachData, handed: val })}
+                        data={handed_list}
+                        defaultOption={{ "key": coachData.handed, "value": coachData.handed }}
+                        label="Selected Handed"
                     />
                     {!coachData.handed &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>

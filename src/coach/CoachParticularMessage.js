@@ -12,8 +12,8 @@ export default function CoachParticularMessage({ navigation, route }) {
     const [msgResult, setMsgResult] = useState();
 
     useEffect(() => {
-        try {
-            const getMessagesBySenderIdReceiverId = async () => {
+        const getMessagesBySenderIdReceiverId = async () => {
+            try {
                 var result;
                 if (route.params.messages.sender_role === 'coach') {
                     result = await GetMessagesBySenderIdReceiverIdService(state.authPage.auth_data?._id, route.params.messages.receiver_id);
@@ -23,9 +23,9 @@ export default function CoachParticularMessage({ navigation, route }) {
                 if (result) {
                     setSenderMessages(result[0]);
                 }
-            };
-            getMessagesBySenderIdReceiverId();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getMessagesBySenderIdReceiverId();
     }, [msgResult]);
 
     const handleSendMessage = async () => {
@@ -52,9 +52,9 @@ export default function CoachParticularMessage({ navigation, route }) {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollView}>
-                {senderMessages?.messages?.map(item => {
+                {senderMessages?.messages?.map((item, index) => {
                     return (
-                        <View key={item._id} style={styles.DateName}>
+                        <View key={index} style={styles.DateName}>
                             {item.url ?
                                 <View style={styles.pro_img}>
                                     <Image source={{ uri: item.url }} style={{ width: 40, height: 40 }} />

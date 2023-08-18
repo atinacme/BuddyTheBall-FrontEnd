@@ -12,23 +12,23 @@ export default function CoachMessages({ navigation }) {
     const [senderMessages, setSenderMessages] = useState([]);
 
     useEffect(() => {
-        try {
-            const getMessagesBySenderId = async () => {
+        const getMessagesBySenderId = async () => {
+            try {
                 const result = await GetMessagesBySenderIdService(state.authPage.auth_data?._id);
                 if (result) {
                     setSenderMessages(result);
                 }
-            };
-            getMessagesBySenderId();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getMessagesBySenderId();
     }, []);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
-                {senderMessages.map(item => {
+                {senderMessages.map((item, index) => {
                     return (
-                        <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Coach Particular Message", { messages: item })}>
+                        <TouchableOpacity key={index} onPress={() => navigation.navigate("Coach Particular Message", { messages: item })}>
                             {item.sender_role === "coach" ?
                                 <View key={item._id} style={styles.messagewrap}>
                                     <Image source={{ uri: item.receiver_profile_url }} style={{ width: 40, height: 40, borderRadius: 60 }} />

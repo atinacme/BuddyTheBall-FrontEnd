@@ -17,15 +17,15 @@ export default function ParentParticularPhoto({ navigation, route }) {
         state.authPage.roles[0] === "ROLE_COACH" ? state.authPage.auth_data?.coach_name : state.authPage.auth_data?.regional_manager_name;
 
     useEffect(() => {
-        try {
-            const getCustomers = async () => {
+        const getCustomers = async () => {
+            try {
                 const result = await GetCustomerParticularPhotoService(route.params.photo._id);
                 if (result) {
                     setOnloadMessages(result.messages);
                 }
-            };
-            getCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomers();
     }, [navigation, msgResult]);
 
     const handleSendMessage = async () => {
@@ -48,9 +48,9 @@ export default function ParentParticularPhoto({ navigation, route }) {
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.container}>
                 <ScrollView style={styles.scrollView}>
-                    {onLoadMessages.length > 0 && onLoadMessages.map(item => {
+                    {onLoadMessages.length > 0 && onLoadMessages.map((item, index) => {
                         return (
-                            <View key={item._id} style={styles.DateName}>
+                            <View key={index} style={styles.DateName}>
                                 {item.url ?
                                     <View style={styles.pro_img}>
                                         <Image source={{ uri: item.url }} style={{ width: 40, height: 40 }} />

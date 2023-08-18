@@ -10,15 +10,15 @@ export default function SuperAdminCoaches({ navigation }) {
     const [coaches, setCoaches] = useState([]);
 
     useEffect(() => {
-        try {
-            const getCoaches = async () => {
+        const getCoaches = async () => {
+            try {
                 const result = await GetAllCoachesService();
                 if (result) {
                     setCoaches(result);
                 }
-            };
-            getCoaches();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCoaches();
     }, []);
 
     return (
@@ -30,17 +30,17 @@ export default function SuperAdminCoaches({ navigation }) {
                             <DataTable.Header style={styles.tableHeader}>
                                 <DataTable.Title>COACH</DataTable.Title>
                                 <DataTable.Title>REGION</DataTable.Title>
-                                <DataTable.Title>CREATED BY</DataTable.Title>
                                 <DataTable.Title>SCHOOL QTY</DataTable.Title>
+                                <DataTable.Title>CREATED BY</DataTable.Title>
                             </DataTable.Header>
-                            {coaches.map(item => {
+                            {coaches.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("SuperAdmin Coach Description", { coach: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("SuperAdmin Coach Description", { coach: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.coach_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.assigned_region}</DataTable.Cell>
-                                            <DataTable.Cell>{item.assigned_by_user_id === state.authPage?.id ? "You" : "Regional Manager"}</DataTable.Cell>
                                             <DataTable.Cell>{item.assigned_schools.length}</DataTable.Cell>
+                                            <DataTable.Cell>{item.assigned_by_user_id === state.authPage?.id ? "You" : item.assigned_by_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );

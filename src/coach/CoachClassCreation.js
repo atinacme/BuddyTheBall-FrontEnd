@@ -9,27 +9,27 @@ import { CreateClassService } from '../services/ClassService';
 
 export default function CoachClassCreation({ navigation }) {
     const state = useSelector((state) => state);
-    const [sessionsList, setSessionsList] = useState([])
-    const [sessions, setSessions] = useState([])
-    const schoolsList = state.authPage.auth_data?.assigned_schools.map(v => Object.assign(v, { key: v._id, value: v.school_name }))
-    const [selectedSchool, setSelectedSchool] = useState()
+    const [sessionsList, setSessionsList] = useState([]);
+    const [sessions, setSessions] = useState([]);
+    const schoolsList = state.authPage.auth_data?.assigned_schools.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
+    const [selectedSchool, setSelectedSchool] = useState();
     const [topic, setTopic] = useState();
 
     useEffect(() => {
-        try {
-            const getSchedules = async () => {
+        const getSchedules = async () => {
+            try {
                 const result = await GetSessionsService();
                 if (result) {
                     result.map(v => {
                         if (v?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
-                            Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` })
+                            Object.assign(v, { key: v._id, value: `${v.date} (${v.start_time} to ${v.end_time})` });
                         }
                     });
-                    setSessionsList(result)
+                    setSessionsList(result);
                 }
-            };
-            getSchedules();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getSchedules();
     }, []);
 
     const handleCreateClass = async () => {
@@ -41,38 +41,40 @@ export default function CoachClassCreation({ navigation }) {
                 schedules: sessions,
                 school: selectedSchool,
                 topic: topic
-            }
-            const result = await CreateClassService(data)
-            if (result) {
-                Alert.alert(
-                    "Alert",
-                    "Class Added Successfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => navigation.navigate("Coach Dashboard")
-                        }
-                    ]
-                );
-            }
+            };
+            try {
+                const result = await CreateClassService(data);
+                if (result) {
+                    Alert.alert(
+                        "Alert",
+                        "Class Added Successfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => navigation.navigate("Coach Dashboard")
+                            }
+                        ]
+                    );
+                }
+            } catch (e) { }
         }
-    }
+    };
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
                 <View>
-                    <Text style={styles.label}>Topic :</Text>
+                    <Text style={styles.label}>Class Name :</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(val) => setTopic(val)}
                         value={topic}
-                        placeholder='Topic'
+                        placeholder='Class Name'
                     />
                 </View>
                 {!topic &&
-                    <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                    <Text style={{ fontSize: 10, color: 'red' }}>Class Name is Required</Text>
                 }
                 <Text style={styles.label}>Sessions :</Text>
                 <MultipleSelectList

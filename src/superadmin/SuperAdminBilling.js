@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, ScrollView, View, Text, TouchableOpacity, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from "react-redux";
 import { GetSchoolsService } from '../services/SchoolService';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import moment from 'moment';
 import { EmailingService } from '../services/EmailService';
 
 export default function SuperAdminBilling({ navigation }) {
+    const state = useSelector((state) => state);
     const [schools, setSchools] = useState([]);
 
     useEffect(() => {
-        try {
-            const getSchools = async () => {
+        const getSchools = async () => {
+            try {
                 const result = await GetSchoolsService();
                 if (result) {
                     setSchools(result);
                 }
-            };
-            getSchools();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getSchools();
     }, []);
 
     const htmlData = () => {
@@ -95,26 +97,21 @@ export default function SuperAdminBilling({ navigation }) {
     };
 
     async function createPDF() {
-        let options = {
-            html: `
-                ${htmlData()}
-            `,
-            fileName: `swdw`,
-            directory: 'Documents',
-        };
+        // let options = {
+        //     html: `
+        //         ${htmlData()}
+        //     `,
+        //     fileName: `swdw`,
+        //     directory: 'Documents',
+        // };
 
-        let file = await RNHTMLtoPDF.convert(options);
-        const result = await EmailingService()
+        // let file = await RNHTMLtoPDF.convert(options);
+        const data = { email: state.authPage?.email };
+        const result = await EmailingService(data);
         if (result) {
-            Alert.alert(
-                "Alert",
-                file.filePath,
-                [
-                    {
-                        text: "OK",
-                    }
-                ]
-            );
+            Alert.alert('Alert', 'Billing Pdf is send to your Email!', [
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
         }
     }
 
@@ -135,7 +132,7 @@ export default function SuperAdminBilling({ navigation }) {
                                     <>
                                         {school.classes.map((v, indexNew) => {
                                             return (
-                                                <>
+                                                <View key={indexNew}>
                                                     <Text>Class: {indexNew + 1}</Text>
                                                     <View key={indexNew} style={styles.stddesc}>
                                                         {v.schedules.map((u, scheduleIndex) => {
@@ -146,13 +143,13 @@ export default function SuperAdminBilling({ navigation }) {
                                                                             <TouchableOpacity key={coachIndex} onPress={() => navigation.navigate("Super Admin Billing Coach School", { school: school, class: v, schedule: u, coach: d })}>
                                                                                 <Text>{d.coach_name}</Text>
                                                                             </TouchableOpacity>
-                                                                        )
+                                                                        );
                                                                     })}
                                                                 </Text>
-                                                            )
+                                                            );
                                                         })}
                                                     </View>
-                                                </>
+                                                </View>
                                             );
                                         })}
                                     </>

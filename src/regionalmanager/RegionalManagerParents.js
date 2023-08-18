@@ -10,8 +10,8 @@ export default function RegionalManagerParents({ navigation }) {
     const [customers, setCustomers] = useState([]);
 
     useEffect(() => {
-        try {
-            const getCustomers = async () => {
+        const getCustomers = async () => {
+            try {
                 const result = await GetParentsService();
                 if (result) {
                     var parents = [];
@@ -20,17 +20,17 @@ export default function RegionalManagerParents({ navigation }) {
                             u.class.schedules.forEach(w => {
                                 w.coaches.forEach(q => {
                                     if (q.assigned_region === state.authPage.auth_data?.assigned_region) {
-                                        parents.push(element)
+                                        parents.push(element);
                                     }
-                                })
-                            })
-                        })
+                                });
+                            });
+                        });
                     });
-                    setCustomers([...new Set(parents)])
+                    setCustomers([...new Set(parents)]);
                 }
-            };
-            getCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomers();
     }, []);
 
     return (
@@ -41,17 +41,16 @@ export default function RegionalManagerParents({ navigation }) {
                         <DataTable style={styles.container}>
                             <DataTable.Header style={styles.tableHeader}>
                                 <DataTable.Title>PARENT</DataTable.Title>
-                                <DataTable.Title>CREATED BY</DataTable.Title>
                                 <DataTable.Title>EMAIL</DataTable.Title>
+                                <DataTable.Title>CREATED BY</DataTable.Title>
                             </DataTable.Header>
-                            {customers.map(item => {
+                            {customers.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Parent Description", { customerData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Regional Manager Parent Description", { customerData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.parent_name}</DataTable.Cell>
-                                            <DataTable.Cell>
-                                                {item.created_by_user_id === state.authPage?.auth_data.user_id ? 'You' : item.created_by === 'coach' ? item.created_by_name : item.created_by === 'superadmin' ? item.created_by_name : 'Shopify'}</DataTable.Cell>
                                             <DataTable.Cell>{item.email}</DataTable.Cell>
+                                            <DataTable.Cell>{item.created_by_user_id === state.authPage?.auth_data.user_id ? 'You' : item.created_by === 'coach' ? item.created_by_name : item.created_by === 'superadmin' ? item.created_by_name : 'Shopify'}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 550,
+        width: 850,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

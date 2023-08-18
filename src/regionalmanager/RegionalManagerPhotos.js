@@ -12,25 +12,25 @@ export default function RegionalManagerPhotos({ navigation }) {
     const [schoolData, setSchoolData] = useState([]);
 
     useEffect(() => {
-        try {
-            const getAllPhotos = async () => {
-                const result = await GetAllSchoolPhotosService()
+        const getAllPhotos = async () => {
+            try {
+                const result = await GetAllSchoolPhotosService();
                 if (result) {
-                    result.map(v => v.region === state.authPage.auth_data?.assigned_region)
-                    setSchoolData(result)
+                    result.map(v => v.region === state.authPage.auth_data?.assigned_region);
+                    setSchoolData(result);
                 }
-            }
-            getAllPhotos()
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getAllPhotos();
     }, []);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView showsVerticalScrollIndicator>
-                    {schoolData.map(item => {
+                    {schoolData.map((item, index) => {
                         return (
-                            <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Particular School Photos", { schoolItem: item })}
+                            <TouchableOpacity key={index} onPress={() => navigation.navigate("Regional Manager Particular School Photos", { schoolItem: item })}
                                 style={styles.cachpicWrap}>
                                 <ImageBackground key={item._id} source={item?.photos[0]?.url ? { uri: item?.photos[0]?.url } : kids} style={styles.cardBackground}>
                                     <View style={styles.cardContent}>

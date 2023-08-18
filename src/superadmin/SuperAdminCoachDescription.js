@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView, View, Pressable } from "react-native";
-import { MultipleSelectList } from 'react-native-dropdown-select-list';
+import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
 import { Dropdown } from 'react-native-element-dropdown';
 import LinearGradient from 'react-native-linear-gradient';
 import buddy from '../assets/buddy.png';
@@ -21,16 +21,17 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
         handed: "",
         favorite_drill: ""
     });
+    const handed_list = ["Left", "Right"];
     const [data, setData] = useState([]);
     const [regions, setRegions] = useState([]);
     const [coachSchools, setCoachSchools] = useState([]);
     const [assignedSchools, setAssignedSchools] = useState([]);
     const [selected, setSelected] = useState([]);
-    const [schoolListVisible, setSchoolListVisible] = useState(false)
+    const [schoolListVisible, setSchoolListVisible] = useState(false);
 
     useEffect(() => {
-        try {
-            const getParticularCoach = async () => {
+        const getParticularCoach = async () => {
+            try {
                 const result = await GetParticularCoachService(route.params.coach._id);
                 if (result) {
                     setCoachData({
@@ -47,28 +48,30 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                     });
                     setCoachSchools(result.assigned_schools.map(v => v.school_name));
                     setAssignedSchools(result.assigned_schools.map(v => { return { ...v, key: v._id, value: v.school_name }; }));
-                    const data = { region: result.assigned_region }
+                    const data = { region: result.assigned_region };
                     const result1 = await GetRegionWiseSchools(data);
                     result1.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
                     var c = result1.filter(function (objFromA) {
                         return assignedSchools.find(function (objFromB) {
-                            return objFromA.key === objFromB.key
-                        })
-                    })
+                            return objFromA.key === objFromB.key;
+                        });
+                    });
                     setData(c);
                 }
-            };
-            getParticularCoach();
+            } catch (e) { }
+        };
+        getParticularCoach();
 
-            const getRegions = async () => {
+        const getRegions = async () => {
+            try {
                 const result = await GetAllRegionsService();
                 if (result) {
                     result.map(v => Object.assign(v, { key: v.region_name, value: v.region_name }));
                     setRegions(result);
                 }
-            };
-            getRegions();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegions();
     }, []);
 
     const handleCoachUpdate = async () => {
@@ -116,8 +119,8 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                     {
                         text: "YES",
                         onPress: async () => {
-                            const data = { id: route.params.coach._id, user_id: coachData.user_id }
-                            const result = await DeleteCoachService(data)
+                            const data = { id: route.params.coach._id, user_id: coachData.user_id };
+                            const result = await DeleteCoachService(data);
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -152,6 +155,7 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                         style={styles.input}
                         onChangeText={(e) => setCoachData({ ...coachData, email: e })}
                         value={coachData.email}
+                        autoCapitalize='none'
                     />
                     {!coachData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
@@ -189,18 +193,18 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                         searchPlaceholder="Search..."
                         value={coachData.assigned_region}
                         onChange={async (val) => {
-                            setCoachData({ ...coachData, assigned_region: val.region_name })
-                            const data = { region: val.region_name }
+                            setCoachData({ ...coachData, assigned_region: val.region_name });
+                            const data = { region: val.region_name };
                             const result = await GetRegionWiseSchools(data);
                             result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
                             var c = result.filter(function (objFromA) {
                                 return !assignedSchools.find(function (objFromB) {
-                                    return objFromA.key === objFromB.key
-                                })
-                            })
+                                    return objFromA.key === objFromB.key;
+                                });
+                            });
                             setData(c);
-                            setAssignedSchools([])
-                            setCoachSchools([])
+                            setAssignedSchools([]);
+                            setCoachSchools([]);
                         }}
                     />
                     {!coachData.assigned_region &&
@@ -210,24 +214,24 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                     {assignedSchools.length === 0 ?
                         <TouchableOpacity
                             onPress={async () => {
-                                setSchoolListVisible(true)
-                                const data = { region: coachData.assigned_region }
+                                setSchoolListVisible(true);
+                                const data = { region: coachData.assigned_region };
                                 const result = await GetRegionWiseSchools(data);
                                 result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
                                 var c = result.filter(function (objFromA) {
                                     return !assignedSchools.find(function (objFromB) {
-                                        return objFromA.key === objFromB.key
-                                    })
-                                })
+                                        return objFromA.key === objFromB.key;
+                                    });
+                                });
                                 setData(c);
                             }}>
-                            <Text>+</Text>
+                            <Text style={styles.plusBtn}>+</Text>
                         </TouchableOpacity>
                         :
                         <>
-                            {assignedSchools.length > 0 && assignedSchools.map((item) => {
+                            {assignedSchools.length > 0 && assignedSchools.map((item, index) => {
                                 return (
-                                    <>
+                                    <View key={index}>
                                         {item.region === coachData.assigned_region && (
                                             <View key={item.key} style={{
                                                 alignItems: 'center',
@@ -242,13 +246,13 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                                                     onPress={() => {
                                                         setAssignedSchools(assignedSchools.filter((school) => school.key !== item.key));
                                                         setCoachSchools(coachSchools.filter((school) => school !== item.value));
-                                                        setData(prevState => [...prevState, item])
+                                                        setData(prevState => [...prevState, item]);
                                                     }}>
                                                     <Text style={styles.agendaCrossBtn}>X</Text>
                                                 </Pressable>
                                             </View>
                                         )}
-                                    </>
+                                    </View>
                                 );
                             })}
                         </>
@@ -283,10 +287,11 @@ export default function SuperAdminCoachDescription({ navigation, route }) {
                         <Text style={{ fontSize: 10, color: 'red' }}>Favorite Pro Player is Required</Text>
                     }
                     <Text style={styles.label}>Handed</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(e) => setCoachData({ ...coachData, handed: e })}
-                        value={coachData.handed}
+                    <SelectList
+                        setSelected={(val) => setCoachData({ ...coachData, handed: val })}
+                        data={handed_list}
+                        defaultOption={{ "key": coachData.handed, "value": coachData.handed }}
+                        label="Selected Handed"
                     />
                     {!coachData.handed &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Handed is Required</Text>
@@ -342,6 +347,16 @@ const styles = StyleSheet.create({
         marginTop: 5,
         display: 'flex',
         justifyContent: 'flex-end'
+    },
+    plusBtn: {
+        borderColor: "#fff",
+        padding: 3,
+        textAlign: "center",
+        backgroundColor: "#ff8400",
+        borderWidth: 3,
+        borderRadius: 50,
+        width: 30,
+        height: 30
     },
     deletebtn: {
         borderColor: "#fff",

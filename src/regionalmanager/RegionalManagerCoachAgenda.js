@@ -5,18 +5,19 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export default function RegionalManagerCoachAgenda({ navigation, route }) {
     const [agendas, setAgendas] = useState([]);
-    console.log(route.params.coachData);
+
     useEffect(() => {
-        try {
-            const getAgendas = async () => {
+        const getAgendas = async () => {
+            try {
                 const result = await GetSchoolsService(route.params.coachData._id);
                 if (result) {
                     setAgendas(result);
                 }
-            };
-            getAgendas();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getAgendas();
     });
+
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>

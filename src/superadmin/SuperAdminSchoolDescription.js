@@ -23,8 +23,8 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
     const [schedulesId, setSchedulesId] = useState([]);
 
     useEffect(() => {
-        try {
-            const getParticularCoach = async () => {
+        const getParticularCoach = async () => {
+            try {
                 const result = await GetParticularSchoolService(route.params.school._id);
                 if (result) {
                     setSchoolData({
@@ -38,31 +38,33 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         time: result.time
                     });
                 }
-            };
-            getParticularCoach();
+            } catch (e) { }
+        };
+        getParticularCoach();
 
-            const getRegions = async () => {
+        const getRegions = async () => {
+            try {
                 const result = await GetAllRegionsService();
                 if (result) {
                     result.map(v => Object.assign(v, { key: v.region_name, value: v.region_name }));
                     setRegions(result);
                 }
-            };
-            getRegions();
+            } catch (e) { }
+        };
+        getRegions();
 
-            var arr1 = []
-            route.params.school.classes.forEach(v => {
-                const arr = [...v.schedules]
-                arr1.push(arr)
-                setClassesId(prevState => [...prevState, v._id])
-            })
-            const arrOfObj = arr1.reduce((acc, curr) => {
-                return [...acc, ...curr];
-            }, []);
-            var ids = [];
-            arrOfObj.forEach(v => ids.push(v._id))
-            setSchedulesId([...new Set(ids)])
-        } catch (e) { }
+        var arr1 = []
+        route.params.school.classes.forEach(v => {
+            const arr = [...v.schedules]
+            arr1.push(arr)
+            setClassesId(prevState => [...prevState, v._id])
+        })
+        const arrOfObj = arr1.reduce((acc, curr) => {
+            return [...acc, ...curr];
+        }, []);
+        var ids = [];
+        arrOfObj.forEach(v => ids.push(v._id))
+        setSchedulesId([...new Set(ids)])
     }, []);
 
     const handleUpdateSchool = async () => {
@@ -128,7 +130,7 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update School!"
+                "Failed! Can't Delete School!"
             );
         }
     };
@@ -171,6 +173,7 @@ export default function SuperAdminSchoolDescription({ navigation, route }) {
                         style={styles.input}
                         onChangeText={(e) => setSchoolData({ ...schoolData, director_email: e })}
                         value={schoolData.director_email}
+                        autoCapitalize='none'
                     />
                     {!schoolData.director_email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Director Email is Required</Text>

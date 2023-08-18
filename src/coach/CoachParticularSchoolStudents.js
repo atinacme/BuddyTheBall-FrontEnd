@@ -3,38 +3,22 @@ import { useSelector } from "react-redux";
 import { SafeAreaView, Text, StyleSheet, TextInput, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import buddy from '../assets/buddy.png';
-import moment from 'moment';
 import { CreateAndUpdateAttendanceService, GetAttendanceBySessionService } from '../services/AttendanceService';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetParentWithSlot } from '../services/ParentService';
 
 export default function CoachParticularSchoolStudents({ route }) {
     const state = useSelector((state) => state);
-    const [allDates, setAllDates] = useState({ key: '', value: '' });
-    const [selectedDate, setSelectedDate] = useState(route.params.sessionItem.startDate);
-    const [modalVisible, setModalVisible] = useState(false);
     const [customers, setCustomers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [attendanceResult, setAttendanceResult] = useState(false);
 
-    function dateRange(startDate, endDate, steps = 1) {
-        const dateArray = [];
-        let currentDate = new Date(startDate);
-        while (currentDate <= new Date(endDate)) {
-            let dateNew = moment(new Date(currentDate)).format('YYYY-MM-DD');
-            dateArray.push(dateNew);
-            currentDate.setUTCDate(currentDate.getUTCDate() + steps);
-        }
-        return dateArray;
-    }
-    // console.log("sessin-->", route.params.sessionItem);
     useEffect(() => {
-        try {
-            const getCustomers = async () => {
+        const getCustomers = async () => {
+            try {
                 const data = { coach: state.authPage.auth_data?._id, slot: route.params.sessionItem._id };
                 const result = await GetParentWithSlot(data);
                 if (result) {
-                    // setCustomers(result);
                     var removeEmpty = result.filter(v => v.children_data.length !== 0);
                     var cust = removeEmpty.map(v => {
                         return v.children_data.map(u => ({ ...u, coach_id: route.params.sessionItem.coach_id, session_id: route.params.sessionItem._id, customer: v._doc.parent_name, email: v._doc.email, customer_id: v._doc._id, customer_user_id: v._doc.user_id, attendance: 'NA' }));
@@ -49,7 +33,6 @@ export default function CoachParticularSchoolStudents({ route }) {
                     const newData = {
                         session_id: route.params.sessionItem._id
                     };
-                    console.log("route out--->", allCust);
                     const result1 = await GetAttendanceBySessionService(newData);
                     if (result1.data.length > 0) {
                         result1.data.forEach(v => {
@@ -64,49 +47,18 @@ export default function CoachParticularSchoolStudents({ route }) {
                             customer_user_id,
                             ...rest
                         }));
-                        console.log("route in--->", result1.data, newArrayOfObj);
                         var res = allCust.filter(function (item) {
-                            console.log("item all Cust--->", item);
                             return !newArrayOfObj.find(function (newitem) {
-                                console.log("new obj--->", newitem);
                                 return item._id === newitem._id;
                             });
                         });
                         var concat = newArrayOfObj.concat(res);
-                        console.log("date--->", concat);
                         setCustomers(concat);
                     }
                 }
-            };
-            getCustomers();
-        } catch (e) { }
-        // let range = dateRange(route.params.sessionItem.startDate, route.params.sessionItem.endDate);
-        // setAllDates({ key: range, value: range });
-        // try {
-        //     const getCustomers = async () => {
-        //         const result = await GetCustomersOfParticularCoachOfParticularSchool(state.authPage.auth_data?._id, route.params.sessionItem._id);
-        //         if (result) {
-        //             var customers = result.map(v => ({ ...v, customer: v.player_name, attendance: 'NA' }));
-        //             const data = {
-        //                 attendance_date: selectedDate
-        //             };
-        //             const result1 = await GetAttendanceByDateService(data);
-        //             if (result1) {
-        //                 var res = customers.filter(function (item) {
-        //                     return !result1.data.find(function (newitem) {
-        //                         return item.user_id === newitem.user_id;
-        //                     });
-        //                 });
-        //                 var concat = result1.data.concat(res);
-        //                 var results = concat.length > 0 && concat.filter(v =>
-        //                     v.customer.toLowerCase().includes(searchTerm.toLowerCase())
-        //                 );
-        //                 setCustomers(results);
-        //             }
-        //         }
-        //     };
-        //     getCustomers();
-        // } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomers();
     }, []);
 
 
@@ -123,7 +75,6 @@ export default function CoachParticularSchoolStudents({ route }) {
             array[index]['attendance'] = 'P';
             setCustomers(array);
         }
-        console.log("item--->", item);
         const data = {
             coach_id: state.authPage.auth_data?._id,
             school_id: item.school,
@@ -141,7 +92,6 @@ export default function CoachParticularSchoolStudents({ route }) {
         try {
             const result = await CreateAndUpdateAttendanceService(data);
             if (result) {
-                console.log("allshd--->", result);
                 setAttendanceResult(!attendanceResult);
             }
         } catch (e) { }
@@ -192,10 +142,9 @@ export default function CoachParticularSchoolStudents({ route }) {
                             <Text style={styles.calendarSectionText}>{route.params.sessionItem.school.school_name}</Text>
                         </View>
                     </View>
-                    {customers !== undefined && customers.length > 0 && customers.map(v => {
+                    {customers !== undefined && customers.length > 0 && customers.map((v, index) => {
                         return (
-                            <View key={v._id} style={styles.listSection}>
-                                {console.log("inside--->", v)}
+                            <View key={index} style={styles.listSection}>
                                 <TouchableOpacity
                                     // onPress={() => setModalVisible(!modalVisible)}
                                     style={styles.listSectionLeft}

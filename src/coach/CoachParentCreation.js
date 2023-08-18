@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { SignUpService } from '../services/UserAuthService';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetAwardsService } from '../services/ParentService';
-import { GetClassCreatedByUserIdService } from '../services/ClassService';
+import { GetClassCreatedByUserIdService, GetClassesService } from '../services/ClassService';
 
 export default function CoachParentCreation({ navigation }) {
     const state = useSelector((state) => state);
@@ -28,34 +28,54 @@ export default function CoachParentCreation({ navigation }) {
         { key: "Purple", value: "Purple" },
         { key: "Red", value: "Red" },
         { key: "Black", value: "Black" }
-    ]
+    ];
 
     useEffect(() => {
         const getAwardsList = async () => {
-            const result = await GetAwardsService();
-            if (result) {
-                result.map(v => {
-                    Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` })
-                })
-                setAwardList(result);
-            }
+            try {
+                const result = await GetAwardsService();
+                if (result) {
+                    result.map(v => {
+                        Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` });
+                    });
+                    setAwardList(result);
+                }
+            } catch (e) { }
         };
         getAwardsList();
 
         const getClasses = async () => {
-            const data = { created_by_user_id: state.authPage.auth_data?.user_id }
-            const result = await GetClassCreatedByUserIdService(data);
-            if (result) {
-                result.map(v => {
-                    v.schedules.map(u => {
-                        Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` })
-                    })
-                })
-                setClasses(result);
-            }
+            try {
+                const result = await GetClassesService();
+                if (result) {
+                    result.map(v => {
+                        if (v.school.region === state.authPage.auth_data?.assigned_region) {
+                            v?.schedules?.map(u => {
+                                console.log("ghsxdf--->", u.coaches);
+                                // if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
+                                Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` });
+                                // }
+                            });
+                        }
+                    });
+                    // const filteredArray = result.filter(obj => obj.hasOwnProperty('key'));
+                    setClasses(result);
+                }
+                // const data = { created_by_user_id: state.authPage.auth_data?.user_id };
+                // const result = await GetClassCreatedByUserIdService(data);
+                // if (result) {
+                //     result.map(v => {
+                //         v.schedules.map(u => {
+                //             Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` });
+                //         });
+                //     });
+                //     setClasses(result);
+                // }
+            } catch (e) { }
         };
         getClasses();
     }, []);
+    console.log("qwt--->", classes);
 
     const handleAddCustomer = async () => {
         try {
@@ -123,6 +143,7 @@ export default function CoachParentCreation({ navigation }) {
                         onChangeText={(val) => setParentData({ ...parentData, email: val })}
                         value={parentData.email}
                         style={styles.input}
+                        autoCapitalize='none'
                     />
                     {!parentData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
@@ -173,8 +194,9 @@ export default function CoachParentCreation({ navigation }) {
                         </TouchableOpacity>
                     </View>
                     {childrenData.length > 0 && childrenData.map((item, index) => {
+                        { console.log("dwddw--->", item.class_list); }
                         return (
-                            <View key={index}>
+                            <View style={styles.childDiv} key={index}>
                                 <Text style={styles.label}>Child Name</Text>
                                 <TextInput
                                     name="player_name"
@@ -330,14 +352,30 @@ export default function CoachParentCreation({ navigation }) {
                                 }
                                 <TouchableOpacity
                                     onPress={() => {
-                                        var array = [...childrenData];
-                                        var indexData = array.indexOf(item);
-                                        if (indexData !== -1) {
-                                            array.splice(indexData, 1);
-                                            setChildrenData(array);
-                                        }
+                                        Alert.alert(
+                                            "Alert",
+                                            "Do You Want to Delete the Child ?",
+                                            [
+                                                {
+                                                    text: 'Cancel',
+                                                    onPress: () => console.log('Cancel Pressed'),
+                                                    style: 'cancel',
+                                                },
+                                                {
+                                                    text: "OK",
+                                                    onPress: () => {
+                                                        var array = [...childrenData];
+                                                        var indexData = array.indexOf(item);
+                                                        if (indexData !== -1) {
+                                                            array.splice(indexData, 1);
+                                                            setChildrenData(array);
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        );
                                     }}>
-                                    <Text style={styles.removebtn}>Remove</Text>
+                                    <Text style={styles.removebtn}>Remove Child</Text>
                                 </TouchableOpacity>
                             </View>
                         );
@@ -423,9 +461,16 @@ const styles = StyleSheet.create({
         marginTop: 10,
         display: 'flex',
         left: 0,
-        width: 100,
+        width: 150,
         bottom: 0,
         marginBottom: 10
+    },
+    childDiv: {
+        borderWidth: 1,
+        borderColor: "#000",
+        padding: 10,
+        borderRadius: 10,
+        marginVertical: 10
     },
     backbtn: {
         borderColor: "#fff",

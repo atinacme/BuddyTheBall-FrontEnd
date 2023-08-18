@@ -12,25 +12,25 @@ export default function RegionalManagerMessages({ navigation }) {
     const [senderMessages, setSenderMessages] = useState([]);
 
     useEffect(() => {
-        try {
-            const getMessagesBySenderId = async () => {
+        const getMessagesBySenderId = async () => {
+            try {
                 const result = await GetMessagesBySenderIdService(state.authPage.auth_data?._id);
                 if (result) {
                     setSenderMessages(result);
                 }
-            };
-            getMessagesBySenderId();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getMessagesBySenderId();
     }, []);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
-                {senderMessages.map(item => {
+                {senderMessages.map((item, index) => {
                     return (
-                        <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Coach Particular Message", { messages: item })}>
+                        <TouchableOpacity key={index} onPress={() => navigation.navigate("Coach Particular Message", { messages: item })}>
                             {item.sender_role === "coach" ?
-                                <View key={item._id} style={styles.messagewrap}>
+                                <View key={index} style={styles.messagewrap}>
                                     <Image source={{ uri: item.receiver_profile_url }} style={{ width: 40, height: 40, borderRadius: 60 }} />
                                     <Text style={styles.msgName}>{item.receiver_name}</Text>
                                     <Text style={styles.msgWrap}>{item.last_message}</Text>
@@ -40,7 +40,7 @@ export default function RegionalManagerMessages({ navigation }) {
                                     </Text>
                                 </View>
                                 :
-                                <View key={item._id} style={styles.messagewrap}>
+                                <View key={index} style={styles.messagewrap}>
                                     <Image source={{ uri: item.sender_profile_url }} style={{ width: 30, height: 30 }} />
                                     <Text style={styles.msgName}>{item.sender_name}</Text>
                                     <Text style={styles.msgWrap}>{item.last_message}</Text>

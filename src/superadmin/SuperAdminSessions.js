@@ -10,15 +10,15 @@ export default function SuperAdminSessions({ navigation }) {
     const [schedules, setSchedules] = useState([]);
 
     useEffect(() => {
-        try {
-            const getSchedules = async () => {
+        const getSchedules = async () => {
+            try {
                 const result = await GetSessionsService();
                 if (result) {
                     setSchedules(result);
                 }
-            };
-            getSchedules();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getSchedules();
     }, []);
 
     return (
@@ -28,23 +28,21 @@ export default function SuperAdminSessions({ navigation }) {
                     <View>
                         <DataTable style={styles.container}>
                             <DataTable.Header style={styles.tableHeader}>
-                                <DataTable.Title>COACHES</DataTable.Title>
-                                <DataTable.Title>CREATED BY</DataTable.Title>
+                                <DataTable.Title>TOPIC</DataTable.Title>
                                 <DataTable.Title>STATUS</DataTable.Title>
                                 <DataTable.Title>DATE</DataTable.Title>
                                 <DataTable.Title>TIMINGS</DataTable.Title>
+                                <DataTable.Title>CREATED BY</DataTable.Title>
                             </DataTable.Header>
-                            {schedules.length > 0 && schedules.map(item => {
+                            {schedules?.length > 0 && schedules?.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Session Description", { scheduleData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin Session Description", { scheduleData: item })}>
                                         <DataTable.Row>
-                                            {item.coaches.map(v => {
-                                                return <DataTable.Cell>{v.coach_name}</DataTable.Cell>
-                                            })}
-                                            <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.regional_manager_name ? 'You' : item.created_by_name}</DataTable.Cell>
+                                            <DataTable.Cell>{item.topic}</DataTable.Cell>
                                             <DataTable.Cell>{item.status}</DataTable.Cell>
                                             <DataTable.Cell>{item.date}</DataTable.Cell>
                                             <DataTable.Cell>{item.start_time} to {item.end_time}</DataTable.Cell>
+                                            <DataTable.Cell>{item.created_by_name === state.authPage.auth_data?.super_admin_name ? 'You' : item.created_by_name}</DataTable.Cell>
                                         </DataTable.Row>
                                     </TouchableOpacity>
                                 );
@@ -81,7 +79,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 600,
+        width: 950,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

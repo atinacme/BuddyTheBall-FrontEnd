@@ -20,63 +20,60 @@ export default function CoachSchoolList({ navigation }) {
     }
 
     useEffect(() => {
-        try {
-            const getClasses = async () => {
-                const data = { created_by_user_id: state.authPage.auth_data?.user_id }
-                const result = await GetClassesService(data)
+        const getClasses = async () => {
+            try {
+                const data = { created_by_user_id: state.authPage.auth_data?.user_id };
+                const result = await GetClassesService(data);
                 if (result) {
-                    result.map(v => v.school.region === state.authPage.auth_data?.assigned_region)
-                    console.log("res--->", result)
+                    result.map(v => v.school.region === state.authPage.auth_data?.assigned_region);
                     result.forEach(u => {
                         u.schedules.forEach(v => {
-                            var local = new Date(v.date).toLocaleDateString()
+                            console.log("ascdhgfsc----->", v.date, v.start_time, v.end_time);
+                            var local = new Date(v.date).toLocaleDateString();
                             var newdate = local.split("/").reverse().join("-");
-                            var timestamp = new Date(newdate).getTime() / 1000
-                            var startTime = moment(v.start_time, ["h:mm A"]).format("HH:mm")
-                            var startTimeSplit = startTime.split(":")
-                            var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1])
-                            var parsedTimeStartString = Date.parse(dateTimeStartString)
-                            var endTime = moment(v.end_time, ["h:mm A"]).format("HH:mm")
-                            var endTimeSplit = endTime.split(":")
-                            var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1])
-                            var parsedTimeEndString = Date.parse(dateTimeEndString)
-                            var parsedCurrentDateTimeString = Date.parse(moment().utcOffset("+05:30").format())
+                            var timestamp = new Date(newdate).getTime() / 1000;
+                            var startTime = moment(v.start_time, ["h:mm A"]).format("HH:mm");
+                            var startTimeSplit = startTime.split(":");
+                            var dateTimeStartString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), startTimeSplit[0], startTimeSplit[1]);
+                            var parsedTimeStartString = Date.parse(dateTimeStartString);
+                            var endTime = moment(v.end_time, ["h:mm A"]).format("HH:mm");
+                            var endTimeSplit = endTime.split(":");
+                            var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1]);
+                            var parsedTimeEndString = Date.parse(dateTimeEndString);
+                            var parsedCurrentDateTimeString = Date.parse(moment().utcOffset("+05:30").format());
                             if (parsedCurrentDateTimeString >= parsedTimeStartString && parsedCurrentDateTimeString <= parsedTimeEndString) {
-                                console.log("Hi")
                                 Object.assign(u, { session: 'current', date: v.date, start_time: v.start_time, end_time: v.end_time });
                                 setSchedules([u]);
                             } else if (parsedCurrentDateTimeString <= parsedTimeStartString) {
                                 Object.assign(u, { session: 'upcoming', date: v.date, start_time: v.start_time, end_time: v.end_time });
                                 setSchedules(prevState => [...prevState, u]);
                             } else {
-                                console.log("Bolloo")
                                 Object.assign(u, { session: 'completed', date: v.date, start_time: v.start_time, end_time: v.end_time });
                                 setSchedules(prevState => [...prevState, u]);
                             }
                         });
-                    })
+                    });
                 }
             }
-            getClasses()
-        }
-        catch (e) { }
+            catch (e) { }
+        };
+        getClasses();
     }, []);
-    console.log("sdx-->", schedules)
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView style={styles.scrollView}>
                     <Text>CURRENT REGION: {state.authPage.auth_data?.assigned_region}</Text>
-                    {schedules.length > 0 && schedules.map(item => {
+                    {schedules.length > 0 && schedules.map((item, index) => {
                         return (
-                            <View key={item._id}>
+                            <View key={index}>
                                 {item.session === 'upcoming' ?
-                                    <Text>UPCOMING SEASON: FALL - {item.date} - {item.start_time} {item.end_time}</Text>
+                                    <Text>UPCOMING SESSION: FALL - {item.date} - {item.start_time} {item.end_time}</Text>
                                     : item.session === 'current' ?
-                                        <Text>CURRENT SEASON: FALL - {item.date} - {item.start_time} {item.end_time}</Text>
+                                        <Text>CURRENT SESSION: FALL - {item.date} - {item.start_time} {item.end_time}</Text>
                                         :
-                                        <Text>COMPLETED SEASON: FALL - {item.date} - {item.start_time} {item.end_time}</Text>
+                                        <Text>COMPLETED SESSION: FALL - {item.date} - {item.start_time} {item.end_time}</Text>
                                 }
                                 <DataTable style={styles.container}>
                                     <DataTable.Header style={styles.tableHeader}>

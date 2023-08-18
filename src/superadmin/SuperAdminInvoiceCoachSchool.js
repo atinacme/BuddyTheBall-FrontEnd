@@ -16,9 +16,10 @@ export default function SuperAdminInvoiceCoachSchool({ navigation, route }) {
         invoice_total: '',
         total_due: ''
     });
+
     useEffect(() => {
-        try {
-            const handleCustomers = async () => {
+        const handleCustomers = async () => {
+            try {
                 const result = await GetCustomersOfParticularCoachOfParticularSchool(route.params.coach._id, route.params.school._id);
                 if (result) {
                     var customer_data = [];
@@ -36,9 +37,9 @@ export default function SuperAdminInvoiceCoachSchool({ navigation, route }) {
                         total_due: customer_data.length * 100 - customer_data.length * 30
                     });
                 }
-            };
-            handleCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        handleCustomers();
     }, []);
 
     async function createPDF() {

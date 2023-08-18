@@ -17,8 +17,8 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
     const [regions, setRegions] = useState([]);
 
     useEffect(() => {
-        try {
-            const getParticularRegionalManager = async () => {
+        const getParticularRegionalManager = async () => {
+            try {
                 const result = await GetParticularRegionalManagerService(route.params.regional_manager._id);
                 if (result) {
                     setRegionalManagerData({
@@ -29,18 +29,20 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                         assigned_region: result.assigned_region
                     });
                 }
-            };
-            getParticularRegionalManager();
+            } catch (e) { }
+        };
+        getParticularRegionalManager();
 
-            const getRegions = async () => {
+        const getRegions = async () => {
+            try {
                 const result = await GetAllRegionsService();
                 if (result) {
                     result.map(v => Object.assign(v, { key: v.region_name, value: v.region_name }));
                     setRegions(result);
                 }
-            };
-            getRegions();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegions();
     }, []);
 
     const handleUpdateRegionalManager = async () => {
@@ -104,7 +106,7 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update Customer!"
+                "Failed! Can't Delete Customer!"
             );
         }
     };
@@ -119,6 +121,7 @@ export default function SuperAdminRegionalManagerDescription({ navigation, route
                         style={styles.input}
                         onChangeText={(e) => setRegionalManagerData({ ...regionalManagerData, email: e })}
                         value={regionalManagerData.email}
+                        autoCapitalize='none'
                     />
                     {!regionalManagerData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>

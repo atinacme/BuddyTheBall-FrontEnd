@@ -12,24 +12,24 @@ export default function CoachSchoolsPhotos({ navigation }) {
     const schoolData = state.authPage.auth_data?.assigned_schools;
 
     useEffect(() => {
-        try {
-            schoolData.forEach(async targetObj => {
+        schoolData.forEach(async targetObj => {
+            try {
                 const result = await GetParticularSchoolPhotosService(targetObj._id);
                 const sourceObj = result.find(sourceObj => sourceObj.school_id === targetObj._id);
                 if (sourceObj) {
                     targetObj.photo = sourceObj;
                 }
-            });
-        } catch (e) { }
+            } catch (e) { }
+        });
     }, [navigation]);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView showsVerticalScrollIndicator>
-                    {schoolData.map(item => {
+                    {schoolData.map((item, index) => {
                         return (
-                            <TouchableOpacity key={item._id} onPress={() => item.region.indexOf(state.authPage.auth_data?.assigned_region) > -1 ?
+                            <TouchableOpacity key={index} onPress={() => item.region.indexOf(state.authPage.auth_data?.assigned_region) > -1 ?
                                 navigation.navigate("Coach Particular School Photos", { schoolItem: item })
                                 : Alert.alert(
                                     "Alert",

@@ -9,15 +9,15 @@ export default function CoachParticularSchoolPhotos({ navigation, route }) {
     const [customerData, setCustomerData] = useState([]);
 
     useEffect(() => {
-        try {
-            const getCustomers = async () => {
+        const getCustomers = async () => {
+            try {
                 const result = await GetParticularSchoolPhotosService(route.params.schoolItem._id);
                 if (result) {
                     setCustomerData(result);
                 }
-            };
-            getCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomers();
     }, [navigation]);
 
     return (
@@ -29,9 +29,9 @@ export default function CoachParticularSchoolPhotos({ navigation, route }) {
                     </TouchableOpacity>
                     <Text style={styles.label}>{route.params.schoolItem.school_name}</Text>
                     <View style={styles.imgWrap}>
-                        {customerData.length > 0 && customerData.map((item) => {
+                        {customerData.length > 0 && customerData.map((item, index) => {
                             return (
-                                <TouchableOpacity key={item?._id} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
+                                <TouchableOpacity key={index} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
                                     <ImageBackground key={item?._id} source={{ uri: item?.url }} style={styles.cardBackground}>
                                         <View style={styles.cardContent}>
                                             <View style={styles.carddes}>

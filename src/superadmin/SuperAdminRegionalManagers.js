@@ -8,15 +8,15 @@ export default function SuperAdminRegionalManagers({ navigation }) {
     const [regionalManagers, setRegionalManagers] = useState([]);
 
     useEffect(() => {
-        try {
-            const getRegionalManagers = async () => {
+        const getRegionalManagers = async () => {
+            try {
                 const result = await GetAllRegionalManagersService();
                 if (result) {
                     setRegionalManagers(result);
                 }
-            };
-            getRegionalManagers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegionalManagers();
     }, []);
 
     return (
@@ -29,9 +29,9 @@ export default function SuperAdminRegionalManagers({ navigation }) {
                                 <DataTable.Title>REGIONAL MANAGER NAME</DataTable.Title>
                                 <DataTable.Title>ASSIGNED REGION</DataTable.Title>
                             </DataTable.Header>
-                            {regionalManagers.map(item => {
+                            {regionalManagers.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Regional Manager Description", { regional_manager: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin Regional Manager Description", { regional_manager: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.regional_manager_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.assigned_region}</DataTable.Cell>

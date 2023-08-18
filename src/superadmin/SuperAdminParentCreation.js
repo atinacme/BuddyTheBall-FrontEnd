@@ -28,34 +28,36 @@ export default function SuperAdminParentCreation({ navigation }) {
         { key: "Purple", value: "Purple" },
         { key: "Red", value: "Red" },
         { key: "Black", value: "Black" }
-    ]
+    ];
 
     useEffect(() => {
-        try {
-            const getAwardsList = async () => {
+        const getAwardsList = async () => {
+            try {
                 const result = await GetAwardsService();
                 if (result) {
                     result.map(v => {
-                        Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` })
-                    })
+                        Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` });
+                    });
                     setAwardList(result);
                 }
-            };
-            getAwardsList();
+            } catch (e) { }
+        };
+        getAwardsList();
 
-            const getClasses = async () => {
+        const getClasses = async () => {
+            try {
                 const result = await GetClassesService();
                 if (result) {
                     result.map(v => {
                         v.schedules.map(u => {
-                            Object.assign(v, { key: v._id, value: `${v.topic} in ${v.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)}` })
-                        })
-                    })
+                            Object.assign(v, { key: v._id, value: `${v.topic} in ${v.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)}` });
+                        });
+                    });
                     setClasses(result);
                 }
-            };
-            getClasses();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getClasses();
     }, []);
 
     const handleAddCustomer = async () => {
@@ -85,7 +87,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                     roles: ['customer'],
                     parent_name: parentData.parent_name,
                     created_by: 'superadmin',
-                    created_by_name: "Super Admin",
+                    created_by_name: state.authPage?.auth_data?.super_admin_name,
                     created_by_user_id: state.authPage?.id,
                     children_data: childrenData
                 };
@@ -123,6 +125,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                         onChangeText={(val) => setParentData({ ...parentData, email: val })}
                         value={parentData.email}
                         style={styles.input}
+                        autoCapitalize='none'
                     />
                     {!parentData.email &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Email is Required</Text>
@@ -174,7 +177,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                     </View>
                     {childrenData.length > 0 && childrenData.map((item, index) => {
                         return (
-                            <View key={index}>
+                            <View style={styles.childDiv} key={index}>
                                 <Text style={styles.label}>Child Name</Text>
                                 <TextInput
                                     name="player_name"
@@ -342,14 +345,30 @@ export default function SuperAdminParentCreation({ navigation }) {
                                 <TouchableOpacity
                                     // style={[styles.agendaButton, styles.buttonClose]}
                                     onPress={() => {
-                                        var array = [...childrenData];
-                                        var indexData = array.indexOf(item);
-                                        if (indexData !== -1) {
-                                            array.splice(indexData, 1);
-                                            setChildrenData(array);
-                                        }
+                                        Alert.alert(
+                                            "Alert",
+                                            "Do You Want to Delete the Child ?",
+                                            [
+                                                {
+                                                    text: 'Cancel',
+                                                    onPress: () => console.log('Cancel Pressed'),
+                                                    style: 'cancel',
+                                                },
+                                                {
+                                                    text: "OK",
+                                                    onPress: () => {
+                                                        var array = [...childrenData];
+                                                        var indexData = array.indexOf(item);
+                                                        if (indexData !== -1) {
+                                                            array.splice(indexData, 1);
+                                                            setChildrenData(array);
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        );
                                     }}>
-                                    <Text style={styles.removebtn}>Remove</Text>
+                                    <Text style={styles.removebtn}>Remove Child</Text>
                                 </TouchableOpacity>
                             </View>
                         );
@@ -418,7 +437,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         display: 'flex',
         left: 0,
-        width: 100,
+        width: 150,
         bottom: 0,
         marginBottom: 10
     },
@@ -432,6 +451,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "700",
         marginTop: 10
+    },
+    childDiv: {
+        borderWidth: 1,
+        borderColor: "#000",
+        padding: 10,
+        borderRadius: 10,
+        marginVertical: 10
     },
     backbtn: {
         borderColor: "#fff",

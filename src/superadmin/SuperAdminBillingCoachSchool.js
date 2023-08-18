@@ -10,8 +10,8 @@ export default function SuperAdminBillingCoachSchool({ navigation, route }) {
     const [customerData, setCustomerData] = useState([]);
 
     useEffect(() => {
-        try {
-            const handleCustomers = async () => {
+        const handleCustomers = async () => {
+            try {
                 const result = await GetCustomersOfParticularCoachOfParticularSchool(route.params.coach._id, route.params.school._id);
                 if (result) {
                     var customer_data = [];
@@ -25,9 +25,9 @@ export default function SuperAdminBillingCoachSchool({ navigation, route }) {
                     }, {}));
                     setCustomerData(sessionWise);
                 }
-            };
-            handleCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        handleCustomers();
     }, []);
 
     const htmltable = () => {
@@ -47,6 +47,7 @@ export default function SuperAdminBillingCoachSchool({ navigation, route }) {
         }
         return t;
     };
+
     async function createPDF() {
         let options = {
             html: `
@@ -117,29 +118,28 @@ export default function SuperAdminBillingCoachSchool({ navigation, route }) {
                 </DataTable>
                 <ScrollView horizontal style={styles.border}>
                     <DataTable style={styles.container}>
-                        {customerData.map(v => {
+                        {customerData.map((v, index) => {
                             return (
-                                <>
+                                <View key={index}>
                                     <DataTable.Header style={styles.tableHeader}>
                                         <DataTable.Title style={styles.title}>Child Name</DataTable.Title>
                                         <DataTable.Title style={styles.title}>Child ID</DataTable.Title>
                                         <DataTable.Title style={styles.title}>Attended</DataTable.Title>
                                         <DataTable.Title style={styles.title}>Absent</DataTable.Title>
                                     </DataTable.Header>
-                                    {v.cells.map(item => {
+                                    {v.cells.map((item, i) => {
                                         return (
-                                            <>
-
+                                            <View key={i}>
                                                 <DataTable.Row key={item.child._id}>
                                                     <DataTable.Cell>{item.child.player_name}</DataTable.Cell>
                                                     <DataTable.Cell>{item.child._id}</DataTable.Cell>
                                                     <DataTable.Cell>{item.child.total_present === null ? 0 : item.child.total_present}</DataTable.Cell>
                                                     <DataTable.Cell>{item.child.total_absent === null ? 0 : item.child.total_absent}</DataTable.Cell>
                                                 </DataTable.Row>
-                                            </>
+                                            </View>
                                         );
                                     })}
-                                </>
+                                </View>
                             );
                         })}
                     </DataTable>

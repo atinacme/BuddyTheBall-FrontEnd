@@ -67,18 +67,18 @@ export default function ParentDashboard({ navigation }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        try {
-            const getCustomerData = async () => {
+        const getCustomerData = async () => {
+            try {
                 const result = await GetParticularParentService(state.authPage.auth_data?._id);
                 if (result) {
                     dispatch(AuthPageAction(state.authPage.id, state.authPage.email, state.authPage.roles, result, state.authPage.accessToken));
                     setUploadResult(false);
                 }
-            };
-            if (uploadResult) {
-                getCustomerData();
-            }
-        } catch (e) { }
+            } catch (e) { }
+        };
+        if (uploadResult) {
+            getCustomerData();
+        }
     }, [uploadResult]);
 
     const openGallery = async () => {
@@ -158,9 +158,9 @@ export default function ParentDashboard({ navigation }) {
                     {state.authPage?.auth_data && (
                         <>
                             <Text style={styles.heading}>{state.authPage.auth_data?.parent_name}</Text>
-                            {state.authPage?.auth_data?.children_data?.map(v => {
+                            {state.authPage?.auth_data?.children_data?.map((v, index) => {
                                 return (
-                                    <>
+                                    <View key={index}>
                                         <Text>Child Name: {v?.player_name}</Text>
                                         <Text>Child Age: {v?.player_age}</Text>
                                         <Text>Wristband Level:</Text>
@@ -223,16 +223,16 @@ export default function ParentDashboard({ navigation }) {
                                         <Text>Class Sessions:</Text>
                                         {v?.class?.schedules?.map((q, index) => {
                                             return (
-                                                <>
+                                                <View key={index}>
                                                     <Text>Session {index + 1}</Text>
                                                     <Text>
                                                         On {q.date} From {q.start_time} to {q.end_time} By {q.coaches.map(w => w.coach_name)}
                                                     </Text>
-                                                </>
-                                            )
+                                                </View>
+                                            );
                                         })}
-                                    </>
-                                )
+                                    </View>
+                                );
                             })}
                         </>
                     )}

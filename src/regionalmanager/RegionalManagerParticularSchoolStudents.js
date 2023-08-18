@@ -31,8 +31,8 @@ export default function RegionalManagerParticularSchoolStudents({ route }) {
     useEffect(() => {
         let range = dateRange(route.params.schoolItem.startDate, route.params.schoolItem.endDate);
         setAllDates({ key: range, value: range });
-        try {
-            const getCustomers = async () => {
+        const getCustomers = async () => {
+            try {
                 const result = await GetCustomersOfParticularCoachOfParticularSchool(state.authPage.auth_data?._id, route.params.schoolItem._id);
                 if (result) {
                     var customers = result.map(v => ({ ...v, customer: v.player_name, attendance: 'NA' }));
@@ -53,9 +53,9 @@ export default function RegionalManagerParticularSchoolStudents({ route }) {
                         setCustomers(results);
                     }
                 }
-            };
-            getCustomers();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getCustomers();
     }, [selectedDate, searchTerm]);
 
     const handleAttendance = async (item) => {
@@ -127,10 +127,9 @@ export default function RegionalManagerParticularSchoolStudents({ route }) {
                             <Text style={styles.calendarSectionText}>{route.params.schoolItem.school}</Text>
                         </View>
                     </View>
-                    {customers.length > 0 && customers.map(v => {
+                    {customers.length > 0 && customers.map((v, index) => {
                         return (
-                            <View key={v._id} style={styles.listSection}>
-                                {console.log("inside--->", v)}
+                            <View key={index} style={styles.listSection}>
                                 <TouchableOpacity
                                     // onPress={() => setModalVisible(!modalVisible)}
                                     style={styles.listSectionLeft}
@@ -189,7 +188,7 @@ export default function RegionalManagerParticularSchoolStudents({ route }) {
                                 </View>
                             </Modal>
                         </View> */}
-                                <TouchableOpacity key={v._id} style={v.attendance === 'NA' ? styles.listSectionRight : v.attendance === 'P' ? styles.listSectionRightPresent : styles.listSectionRightAbsent} onPress={() => handleAttendance(v)}>
+                                <TouchableOpacity key={index} style={v.attendance === 'NA' ? styles.listSectionRight : v.attendance === 'P' ? styles.listSectionRightPresent : styles.listSectionRightAbsent} onPress={() => handleAttendance(v)}>
                                     <Text style={styles.attendanceText}>{v.attendance === 'NA' ? 'NA' : v.attendance === 'P' ? 'P' : 'A'}</Text>
                                 </TouchableOpacity>
                             </View>

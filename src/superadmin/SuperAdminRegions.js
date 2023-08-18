@@ -8,15 +8,15 @@ export default function SuperAdminRegions({ navigation }) {
     const [regions, setRegions] = useState([]);
 
     useEffect(() => {
-        try {
-            const getRegions = async () => {
+        const getRegions = async () => {
+            try {
                 const result = await GetAllRegionsService();
                 if (result) {
                     setRegions(result);
                 }
-            };
-            getRegions();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegions();
     }, []);
 
     return (
@@ -29,13 +29,13 @@ export default function SuperAdminRegions({ navigation }) {
                                 <DataTable.Title>REGION</DataTable.Title>
                                 <DataTable.Title>CITIES</DataTable.Title>
                             </DataTable.Header>
-                            {regions.map(item => {
+                            {regions.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Super Admin Region Description", { regionData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin Region Description", { regionData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.region_name}</DataTable.Cell>
-                                            {item.cities.map(items => {
-                                                return (<DataTable.Cell>{items.name}</DataTable.Cell>);
+                                            {item.cities.map((items, i) => {
+                                                return (<DataTable.Cell key={i}>{items.name}</DataTable.Cell>);
                                             })}
                                         </DataTable.Row>
                                     </TouchableOpacity>

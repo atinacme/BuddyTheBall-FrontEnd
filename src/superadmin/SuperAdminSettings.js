@@ -20,11 +20,6 @@ export default function SuperAdminSettings({ navigation }) {
                             <Image source={messages} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
                         </View>
                     </TouchableOpacity>
-                    {/* <TouchableOpacity onPress={() => navigation.navigate("Super Admins")}>
-                        <View style={{ textAlign: 'center' }}>
-                            <Image source={superadmin} style={{ width: 300, height: 100, resizeMode: 'contain', marginLeft: 'auto', marginRight: 'auto' }} />
-                        </View>
-                    </TouchableOpacity> */}
                 </Text>
                 <View style={styles.adminbtn}>
                     <TouchableOpacity onPress={() => navigation.navigate("Super Admin Dashboard")}>

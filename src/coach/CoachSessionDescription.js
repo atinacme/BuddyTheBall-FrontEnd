@@ -11,10 +11,11 @@ export default function CoachSessionDescription({ navigation, route }) {
         let dt = date === undefined ? new Date() : new Date(date);
         dt.setHours(dt.getHours() + 1);
         let endTime = dt;
-        return endTime
+        return endTime;
     }
     const time = { start: route.params.scheduleData.start_time, end: route.params.scheduleData.end_time };
     const date = route.params.scheduleData.date;
+    const status = route.params.scheduleData.status;
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [showType, setShowType] = useState({
@@ -74,13 +75,13 @@ export default function CoachSessionDescription({ navigation, route }) {
     // };
 
     const handleUpdateSchedule = async () => {
-        if (topic) {
-            const data = {
-                date: initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date,
-                start_time: initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start,
-                end_time: initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end,
-                topic: topic
-            };
+        const data = {
+            date: initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date,
+            start_time: initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start,
+            end_time: initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end,
+            topic: topic
+        };
+        try {
             const result = await UpdateSessionService(route.params.scheduleData._id, data);
             if (result) {
                 Alert.alert(
@@ -94,6 +95,11 @@ export default function CoachSessionDescription({ navigation, route }) {
                     ]
                 );
             }
+        } catch (e) {
+            Alert.alert(
+                "Alert",
+                "Failed! Can't Update Session!"
+            );
         }
     };
 
@@ -111,8 +117,8 @@ export default function CoachSessionDescription({ navigation, route }) {
                     {
                         text: "YES",
                         onPress: async () => {
-                            const data = { id: route.params.scheduleData._id }
-                            const result = await DeleteSessionService(data)
+                            const data = { id: route.params.scheduleData._id };
+                            const result = await DeleteSessionService(data);
                             if (result) {
                                 Alert.alert(
                                     "Alert",
@@ -132,7 +138,7 @@ export default function CoachSessionDescription({ navigation, route }) {
         } catch (e) {
             Alert.alert(
                 "Alert",
-                "Failed! Can't Update Session!"
+                "Failed! Can't Delete Session!"
             );
         }
     };
@@ -142,26 +148,34 @@ export default function CoachSessionDescription({ navigation, route }) {
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView style={styles.scrollView}>
                     <Image source={buddy} style={{ width: 200, height: 100, marginLeft: 'auto', marginRight: 'auto' }} />
-                    <TouchableOpacity onPress={showDatepicker}>
-                        <Text style={styles.btnWrapper}>Select Date</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={showStartTimepicker}>
-                        <Text style={styles.btnWrapper}>Select Start Time</Text>
-                    </TouchableOpacity>
+                    {status !== 'Ended' && 'Completed' && (
+                        <>
+                            <TouchableOpacity onPress={showDatepicker}>
+                                <Text style={styles.btnWrapper}>Select Date</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={showStartTimepicker}>
+                                <Text style={styles.btnWrapper}>Select Start Time</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
                     {/* <TouchableOpacity onPress={showEndTimepicker}>
                         <Text style={styles.btnWrapper}>Select End Time</Text>
                     </TouchableOpacity> */}
                     <Text style={styles.label}>Date : {initialScheduleData.date ? moment(scheduleData.date).format("YYYY-MM-DD") : date}</Text>
                     <Text style={styles.label}>Start Time : {initialScheduleData.start ? moment(scheduleData.start).format('h:mm A') : time.start}</Text>
                     <Text style={styles.label}>End Time : {initialScheduleData.end ? moment(scheduleData.end).format('h:mm A') : time.end}</Text>
-                    <Text style={styles.label}>Topic :</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(val) => setTopic(val)}
-                        value={topic}
-                    />
-                    {!topic &&
-                        <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
+                    <Text style={styles.label}>Status : {status}</Text>
+                    {status !== 'Ended' && 'Completed' ?
+                        <View>
+                            <Text style={styles.label}>Topic :</Text>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={(val) => setTopic(val)}
+                                value={topic}
+                            />
+                        </View>
+                        :
+                        <Text style={styles.label}>Topic : {topic}</Text>
                     }
                     {show && (
                         <DateTimePicker
@@ -172,19 +186,29 @@ export default function CoachSessionDescription({ navigation, route }) {
                         />
                     )}
                 </ScrollView>
-                <View style={{ marginTop: 20 }}>
-                    <TouchableOpacity onPress={handleUpdateSchedule}>
-                        <Text style={styles.btnWrapper}>Update</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={{ marginTop: 80 }}>
-                    <TouchableOpacity onPress={handleScheduleDelete}>
-                        <Text style={styles.deletebtn}>Delete</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("Coach Sessions")}>
-                        <Text style={styles.backbtn}>Back</Text>
-                    </TouchableOpacity>
-                </View>
+                {status !== 'Ended' && 'Completed' ?
+                    <>
+                        <View style={{ marginTop: 20 }}>
+                            <TouchableOpacity onPress={handleUpdateSchedule}>
+                                <Text style={styles.btnWrapper}>Update</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ marginTop: 80 }}>
+                            <TouchableOpacity onPress={handleScheduleDelete}>
+                                <Text style={styles.deletebtn}>Delete</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("Coach Sessions")}>
+                                <Text style={styles.backbtn}>Back</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                    :
+                    <View style={{ marginTop: 80 }}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Coach Sessions")}>
+                            <Text style={styles.backbtn}>Back</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
             </SafeAreaView>
         </LinearGradient>
     );

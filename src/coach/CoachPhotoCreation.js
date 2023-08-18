@@ -21,16 +21,18 @@ export default function CoachPhotoCreation({ navigation, route }) {
     const state = useSelector((state) => state);
 
     useEffect(() => {
-        try {
-            const handleStudentList = async () => {
+        const handleStudentList = async () => {
+            try {
                 const result = await GetParentWithSchoolIdService(route.params.schoolId);
                 if (result) {
                     setParentData(result.map(v => Object.assign(v, { key: v._id, value: v.parent_name })));
                 }
-            };
-            handleStudentList();
+            } catch (e) { }
+        };
+        handleStudentList();
 
-            const getClasses = async () => {
+        const getClasses = async () => {
+            try {
                 const result = await GetClassesService();
                 if (result) {
                     result.map(v => {
@@ -44,12 +46,10 @@ export default function CoachPhotoCreation({ navigation, route }) {
                     })
                     setClasses(result);
                 }
-            };
-            getClasses();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getClasses();
     }, []);
-
-    console.log("jo =--->", classes)
 
     const openGallery = async () => {
         const result = await ImagePicker.openPicker({
@@ -77,32 +77,34 @@ export default function CoachPhotoCreation({ navigation, route }) {
             });
         }
         if (parentId && classId && sessionId && selectedFile !== undefined && selectedFile !== null && selectedFile.length > 0) {
-            const res = await axios({
-                method: 'post',
-                url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
-                data: formData,
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            if (res) {
-                Alert.alert(
-                    "Alert",
-                    "All Files Uploaded Sucessfully",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                setSelectedFile(null);
-                                navigation.navigate("Coach Schools Photos");
+            try {
+                const res = await axios({
+                    method: 'post',
+                    url: `${Config.REACT_APP_BASE_URL}/uploadCustomerPhotos`,
+                    data: formData,
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                if (res) {
+                    Alert.alert(
+                        "Alert",
+                        "All Files Uploaded Sucessfully",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => {
+                                    setSelectedFile(null);
+                                    navigation.navigate("Coach Schools Photos");
+                                }
                             }
-                        }
-                    ]
-                );
-                const data = { status: 'Completed' }
-                await UpdateSessionService(sessionId, data)
-            }
+                        ]
+                    );
+                    const data = { status: 'Completed' }
+                    await UpdateSessionService(sessionId, data)
+                }
+            } catch (e) { }
         } else {
             Alert.alert(
                 "Alert",

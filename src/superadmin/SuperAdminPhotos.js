@@ -7,27 +7,27 @@ import LinearGradient from 'react-native-linear-gradient';
 import { GetAllSchoolPhotosService } from '../services/SchoolService';
 
 export default function SuperAdminPhotos({ navigation }) {
-    const [schools, setSchools] = useState([])
+    const [schools, setSchools] = useState([]);
 
     useEffect(() => {
-        try {
-            const getAllPhotos = async () => {
-                const result = await GetAllSchoolPhotosService()
+        const getAllPhotos = async () => {
+            try {
+                const result = await GetAllSchoolPhotosService();
                 if (result) {
-                    setSchools(result)
+                    setSchools(result);
                 }
-            }
-            getAllPhotos()
-        } catch (e) { }
+            } catch (e) { console.log(e); }
+        };
+        getAllPhotos();
     }, []);
 
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>
                 <ScrollView showsVerticalScrollIndicator>
-                    {schools.map((item) => {
+                    {schools.map((item, index) => {
                         return (
-                            <TouchableOpacity onPress={() => navigation.navigate("Super Admin Particular School Photos", { schoolItem: item })}>
+                            <TouchableOpacity key={index} onPress={() => navigation.navigate("Super Admin Particular School Photos", { schoolItem: item })}>
                                 <ImageBackground key={item._id} source={item?.photos[0]?.url ? { uri: item?.photos[0]?.url } : kids} style={styles.cardBackground}>
                                     <View style={styles.cardContent}>
                                         <View style={styles.carddes}>

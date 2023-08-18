@@ -4,21 +4,23 @@ import { useSelector } from "react-redux";
 import { DataTable } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetCoachesOfParticularRegionalManager } from '../services/RegionalManagerService';
+import { GetAllCoachesService } from '../services/CoachService';
 
 export default function RegionalManagerCoaches({ navigation }) {
     const state = useSelector((state) => state);
     const [coaches, setCoaches] = useState([]);
 
     useEffect(() => {
-        try {
-            const getRegionalManagerCoaches = async () => {
-                const result = await GetCoachesOfParticularRegionalManager(state.authPage.auth_data?.user_id);
+        const getRegionalManagerCoaches = async () => {
+            try {
+                const result = await GetAllCoachesService();
                 if (result) {
-                    setCoaches(result);
+                    const filteredArray = result.filter(element => element.assigned_region === state.authPage.auth_data?.assigned_region);
+                    setCoaches(filteredArray);
                 }
-            };
-            getRegionalManagerCoaches();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegionalManagerCoaches();
     }, []);
 
     return (
@@ -32,9 +34,9 @@ export default function RegionalManagerCoaches({ navigation }) {
                                 <DataTable.Title>REGION</DataTable.Title>
                                 <DataTable.Title>SCHOOL QTY</DataTable.Title>
                             </DataTable.Header>
-                            {coaches.map(item => {
+                            {coaches.map((item, index) => {
                                 return (
-                                    <TouchableOpacity key={item._id} onPress={() => navigation.navigate("Regional Manager Coach Description", { coachData: item })}>
+                                    <TouchableOpacity key={index} onPress={() => navigation.navigate("Regional Manager Coach Description", { coachData: item })}>
                                         <DataTable.Row>
                                             <DataTable.Cell>{item.coach_name}</DataTable.Cell>
                                             <DataTable.Cell>{item.assigned_region}</DataTable.Cell>
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         overflow: 'scroll',
-        width: 450,
+        width: 850,
         marginLeft: 'auto',
         marginRight: 'auto',
         fontFamily: 'LemonJuice',

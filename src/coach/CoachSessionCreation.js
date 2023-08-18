@@ -13,7 +13,7 @@ export default function CoachSessionCreation({ navigation }) {
         let dt = date === undefined ? new Date() : new Date(date);
         dt.setHours(dt.getHours() + 1);
         let endTime = dt;
-        return endTime
+        return endTime;
     }
     const [time, setTime] = useState({ start: new Date(), end: add() });
     const [date, setDate] = useState(new Date());
@@ -64,17 +64,17 @@ export default function CoachSessionCreation({ navigation }) {
     // };
 
     const handleCreateSchedule = async () => {
-        if (topic) {
-            const data = {
-                created_by: "coach",
-                created_by_name: state.authPage.auth_data?.coach_name,
-                created_by_user_id: state.authPage.auth_data?.user_id,
-                coaches: state.authPage.auth_data?._id,
-                date: moment(date).format("YYYY-MM-DD"),
-                start_time: moment(time.start).format('h:mm A'),
-                end_time: moment(time.end).format('h:mm A'),
-                topic: topic
-            };
+        const data = {
+            created_by: "coach",
+            created_by_name: state.authPage.auth_data?.coach_name,
+            created_by_user_id: state.authPage.auth_data?.user_id,
+            coaches: state.authPage.auth_data?._id,
+            date: moment(date).format("YYYY-MM-DD"),
+            start_time: moment(time.start).format('h:mm A'),
+            end_time: moment(time.end).format('h:mm A'),
+            topic: topic
+        };
+        try {
             const result = await CreateSessionService(data);
             if (result) {
                 Alert.alert(
@@ -88,7 +88,7 @@ export default function CoachSessionCreation({ navigation }) {
                     ]
                 );
             }
-        }
+        } catch (e) { }
     };
 
     return (
@@ -124,9 +124,9 @@ export default function CoachSessionCreation({ navigation }) {
                             onChange={onChange}
                         />
                     )}
-                    {!topic &&
+                    {/* {!topic &&
                         <Text style={{ fontSize: 10, color: 'red' }}>Topic is Required</Text>
-                    }
+                    } */}
                     <TouchableOpacity onPress={handleCreateSchedule}>
                         <Text style={styles.btnWrapper}>Submit</Text>
                     </TouchableOpacity>

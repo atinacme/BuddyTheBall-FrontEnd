@@ -12,16 +12,16 @@ export default function SuperAdminRegionalManagerCreation({ navigation }) {
     const [regions, setRegions] = useState([]);
 
     useEffect(() => {
-        try {
-            const getRegions = async () => {
+        const getRegions = async () => {
+            try {
                 const result = await GetAllRegionsService();
                 if (result) {
                     result.map(v => Object.assign(v, { key: v.region_name, value: v.region_name }));
                     setRegions(result);
                 }
-            };
-            getRegions();
-        } catch (e) { }
+            } catch (e) { }
+        };
+        getRegions();
     }, []);
 
     const validationSchema = yup.object().shape({
@@ -96,6 +96,7 @@ export default function SuperAdminRegionalManagerCreation({ navigation }) {
                                     onBlur={handleBlur('email')}
                                     value={values.email}
                                     style={styles.input}
+                                    autoCapitalize='none'
                                 />
                                 {errors.email &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>{errors.email}</Text>
