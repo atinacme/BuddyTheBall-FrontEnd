@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { SelectList } from 'react-native-dropdown-select-list';
+import { MultiSelect } from 'react-native-element-dropdown';
 import buddy from '../assets/buddy.png';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from "react-redux";
@@ -169,7 +170,7 @@ export default function SuperAdminParentCreation({ navigation }) {
                                 jersey_size: '',
                                 visible: false,
                                 award_list: awardList,
-                                current_award: ''
+                                current_award: []
                             }]);
                         }}>
                             <Text style={styles.plusBtn}>+</Text>
@@ -231,17 +232,6 @@ export default function SuperAdminParentCreation({ navigation }) {
                                     data={item?.wristband_level_list?.length > 0 ? item?.wristband_level_list : []}
                                     label="Selected WristBand"
                                 />
-                                {/* <TextInput
-                                    name="wristband_level"
-                                    placeholder="WristBand Level"
-                                    onChangeText={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].wristband_level = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    value={item.wristband_level}
-                                    style={styles.input}
-                                /> */}
                                 {!item.wristband_level &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>WristBand Level is Required</Text>
                                 }
@@ -303,47 +293,33 @@ export default function SuperAdminParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].current_award = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.award_list}
-                                    save="key"
-                                    label="Selected Award"
-                                />
-                                {/* <TouchableOpacity onPress={() => {
-                                    let newArr = [...childrenData];
-                                    newArr[index].visible = !newArr[index].visible;
-                                    setChildrenData(newArr);
-                                }}>
-                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
-                                </TouchableOpacity>
-                                {item?.visible &&
-                                    (<View style={styles.award}>
-                                        {item?.visible && item?.award_list?.length > 0 && item?.award_list?.map(v => {
-                                            return (
-                                                <ScrollView showsVerticalScrollIndicator>
-                                                    <TouchableOpacity key={v.index} onPress={() => {
-                                                        let newArr = [...childrenData];
-                                                        newArr[index].current_award.name = v.name;
-                                                        newArr[index].current_award.image = v.url;
-                                                        newArr[index].visible = !newArr[index].visible;
-                                                        setChildrenData(newArr);
-                                                    }}>
-                                                        <Image source={{ uri: v.url }} style={{ height: 100, width: 100 }} />
-                                                    </TouchableOpacity>
-                                                </ScrollView>
-                                            );
-                                        })}
-                                    </View>
-                                    )} */}
-                                {!item.current_award &&
+                                <View style={styles.container}>
+                                    <MultiSelect
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        containerStyle={styles.containerStyle}
+                                        search
+                                        data={item.award_list}
+                                        labelField="value"
+                                        valueField="key"
+                                        placeholder="Select Awards"
+                                        searchPlaceholder="Search..."
+                                        value={item.current_award}
+                                        onChange={item => {
+                                            let newArr = [...childrenData];
+                                            newArr[index].current_award = item;
+                                            setChildrenData(newArr);
+                                        }}
+                                        selectedStyle={styles.selectedStyle}
+                                    />
+                                </View>
+                                {item.current_award.length === 0 &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity
-                                    // style={[styles.agendaButton, styles.buttonClose]}
                                     onPress={() => {
                                         Alert.alert(
                                             "Alert",
@@ -507,5 +483,35 @@ const styles = StyleSheet.create({
     },
     wrist_yellow: {
         color: 'yellow'
-    }
+    },
+    container: { padding: 16 },
+    dropdown: {
+        height: 50,
+        backgroundColor: 'transparent',
+        borderBottomColor: 'gray',
+        borderBottomWidth: 0.5,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 14,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    containerStyle: {
+        height: 200,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    selectedStyle: {
+        borderRadius: 12,
+    },
 });

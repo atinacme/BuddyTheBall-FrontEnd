@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { SelectList } from 'react-native-dropdown-select-list';
+import { MultiSelect } from 'react-native-element-dropdown';
 import buddy from '../assets/buddy.png';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from "react-redux";
@@ -170,7 +171,7 @@ export default function RegionalManagerParentCreation({ navigation }) {
                                 jersey_size: '',
                                 visible: false,
                                 award_list: awardList,
-                                current_award: ''
+                                current_award: []
                             }]);
                         }}>
                             <Text style={styles.plusBtn}>+</Text>
@@ -293,43 +294,29 @@ export default function RegionalManagerParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].current_award = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.award_list}
-                                    save="key"
-                                    label="Selected Award"
-                                />
-                                {/* <TouchableOpacity onPress={() => {
-                                    let newArr = [...childrenData];
-                                    newArr[index].visible = !newArr[index].visible;
-                                    setChildrenData(newArr);
-                                }}>
-                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
-                                </TouchableOpacity>
-                                {item.visible &&
-                                    (<View style={styles.award}>
-                                        {item.visible && awardList.map(v => {
-                                            return (
-                                                <ScrollView showsVerticalScrollIndicator>
-                                                    <TouchableOpacity key={v.index} onPress={() => {
-                                                        let newArr = [...childrenData];
-                                                        newArr[index].current_award.name = v.name;
-                                                        newArr[index].current_award.image = v.url;
-                                                        newArr[index].visible = !newArr[index].visible;
-                                                        setChildrenData(newArr);
-                                                    }}>
-                                                        <Image source={{ uri: v.url }} style={{ height: 100, width: 100 }} />
-                                                    </TouchableOpacity>
-                                                </ScrollView>
-                                            );
-                                        })}
-                                    </View>
-                                    )} */}
-                                {!item.current_award &&
+                                <View style={styles.container}>
+                                    <MultiSelect
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        search
+                                        data={item.award_list}
+                                        labelField="value"
+                                        valueField="key"
+                                        placeholder="Select Awards"
+                                        searchPlaceholder="Search..."
+                                        value={item.current_award}
+                                        onChange={item => {
+                                            let newArr = [...childrenData];
+                                            newArr[index].current_award = item;
+                                            setChildrenData(newArr);
+                                        }}
+                                        selectedStyle={styles.selectedStyle}
+                                    />
+                                </View>
+                                {item.current_award.length === 0 &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity

@@ -49,10 +49,10 @@ export default function SuperAdminSessionDescription({ navigation, route }) {
     };
 
     const showMode = (currentMode) => {
-        if (Platform.OS === 'android') {
-            setShow(false);
-            // for iOS, add a button that closes the picker
-        }
+        // if (Platform.OS === 'android') {
+        setShow(false);
+        // for iOS, add a button that closes the picker
+        // }
         setMode(currentMode);
     };
 

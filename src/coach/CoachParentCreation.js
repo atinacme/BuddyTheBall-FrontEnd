@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { SelectList } from 'react-native-dropdown-select-list';
+import { MultiSelect } from 'react-native-element-dropdown';
 import buddy from '../assets/buddy.png';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from "react-redux";
 import { SignUpService } from '../services/UserAuthService';
 import LinearGradient from 'react-native-linear-gradient';
 import { GetAwardsService } from '../services/ParentService';
-import { GetClassCreatedByUserIdService, GetClassesService } from '../services/ClassService';
+import { GetClassesService } from '../services/ClassService';
 
 export default function CoachParentCreation({ navigation }) {
     const state = useSelector((state) => state);
@@ -51,31 +52,16 @@ export default function CoachParentCreation({ navigation }) {
                     result.map(v => {
                         if (v.school.region === state.authPage.auth_data?.assigned_region) {
                             v?.schedules?.map(u => {
-                                console.log("ghsxdf--->", u.coaches);
-                                // if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
                                 Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` });
-                                // }
                             });
                         }
                     });
-                    // const filteredArray = result.filter(obj => obj.hasOwnProperty('key'));
                     setClasses(result);
                 }
-                // const data = { created_by_user_id: state.authPage.auth_data?.user_id };
-                // const result = await GetClassCreatedByUserIdService(data);
-                // if (result) {
-                //     result.map(v => {
-                //         v.schedules.map(u => {
-                //             Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` });
-                //         });
-                //     });
-                //     setClasses(result);
-                // }
             } catch (e) { }
         };
         getClasses();
     }, []);
-    console.log("qwt--->", classes);
 
     const handleAddCustomer = async () => {
         try {
@@ -311,43 +297,30 @@ export default function CoachParentCreation({ navigation }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].current_award = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.award_list}
-                                    save="key"
-                                    label="Selected Award"
-                                />
-                                {/* <TouchableOpacity onPress={() => {
-                                    let newArr = [...childrenData];
-                                    newArr[index].visible = !newArr[index].visible;
-                                    setChildrenData(newArr);
-                                }}>
-                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
-                                </TouchableOpacity>
-                                {item.visible &&
-                                    (<View style={styles.award}>
-                                        {item.visible && awardList.map(v => {
-                                            return (
-                                                <ScrollView showsVerticalScrollIndicator>
-                                                    <TouchableOpacity key={v.index} onPress={() => {
-                                                        let newArr = [...childrenData];
-                                                        newArr[index].current_award.name = v.name;
-                                                        newArr[index].current_award.image = v.url;
-                                                        newArr[index].visible = !newArr[index].visible;
-                                                        setChildrenData(newArr);
-                                                    }}>
-                                                        <Image source={{ uri: v.url }} style={{ height: 100, width: 100 }} />
-                                                    </TouchableOpacity>
-                                                </ScrollView>
-                                            );
-                                        })}
-                                    </View>
-                                    )} */}
-                                {!item.current_award &&
+                                <View style={styles.container}>
+                                    <MultiSelect
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        containerStyle={styles.containerStyle}
+                                        search
+                                        data={item.award_list}
+                                        labelField="value"
+                                        valueField="key"
+                                        placeholder="Select Awards"
+                                        searchPlaceholder="Search..."
+                                        value={item.current_award}
+                                        onChange={item => {
+                                            let newArr = [...childrenData];
+                                            newArr[index].current_award = item;
+                                            setChildrenData(newArr);
+                                        }}
+                                        selectedStyle={styles.selectedStyle}
+                                    />
+                                </View>
+                                {item.current_award.length === 0 &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity
@@ -517,5 +490,35 @@ const styles = StyleSheet.create({
     buttonImage: {
         height: 100,
         width: 100
-    }
+    },
+    container: { padding: 16 },
+    dropdown: {
+        height: 50,
+        backgroundColor: 'transparent',
+        borderBottomColor: 'gray',
+        borderBottomWidth: 0.5,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 14,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    containerStyle: {
+        height: 200,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    selectedStyle: {
+        borderRadius: 12,
+    },
 });

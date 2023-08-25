@@ -3,6 +3,7 @@ import { Text, SafeAreaView, TextInput, StyleSheet, Image, Alert, ScrollView, To
 import buddy from '../assets/buddy.png';
 import { DeleteParentService, GetAwardsService, GetParticularParentService, UpdateParentService } from '../services/ParentService';
 import { SelectList } from 'react-native-dropdown-select-list';
+import { MultiSelect } from 'react-native-element-dropdown';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -37,9 +38,7 @@ export default function CoachParentDescription({ navigation, route }) {
                     result.map(v => {
                         if (v.school.region === state.authPage.auth_data?.assigned_region) {
                             v?.schedules?.map(u => {
-                                // if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
                                 Object.assign(v, { key: v._id, value: `${v.topic} from ${u.date} (${u.start_time} to ${u.end_time})` });
-                                // }
                             });
                         }
                     });
@@ -60,6 +59,11 @@ export default function CoachParentDescription({ navigation, route }) {
                                     Object.assign(element.class, { key: element.class._id, value: `${element.class?.topic} from ${u.date} (${u.start_time} to ${u.end_time}) in ${element.class.school.school_name}` });
                                 });
                             }
+                            var newArr = result2.filter(function (objFromA) {
+                                return !element?.current_award?.find(function (objFromB) {
+                                    return objFromA._id === objFromB._id;
+                                });
+                            });
                             childrenData.push({
                                 player_name: element.player_name,
                                 calendar_visible: false,
@@ -77,8 +81,9 @@ export default function CoachParentDescription({ navigation, route }) {
                                 num_buddy_books_read: element.num_buddy_books_read,
                                 jersey_size: element.jersey_size,
                                 visible: false,
-                                award_list: result2,
-                                current_award: element?.current_award
+                                award_list: newArr,
+                                alloted_awards: element?.current_award?.map(v => { return Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` }); }),
+                                selected_award: []
                             });
                         });
                         setCustomerData({
@@ -108,6 +113,13 @@ export default function CoachParentDescription({ navigation, route }) {
             customerData.children_data.forEach(v => delete v.award_list);
             customerData.children_data.forEach(v => delete v.handed_list);
             customerData.children_data.forEach(v => delete v.wristband_level_list);
+
+            for (let i = 0; i < childrenData.length; i++) {
+                const obj = childrenData[i];
+                let newArr = [];
+                obj.alloted_awards.forEach(v => newArr.push(v._id));
+                obj.current_award = obj.selected_award.concat(newArr);
+            }
 
             function checkKeyValues(array) {
                 for (let obj of array) {
@@ -247,7 +259,8 @@ export default function CoachParentDescription({ navigation, route }) {
                                     jersey_size: '',
                                     visible: false,
                                     award_list: awardList,
-                                    current_award: ''
+                                    alloted_awards: [],
+                                    selected_award: []
                                 }]
                             });
                         }}>
@@ -417,46 +430,64 @@ export default function CoachParentDescription({ navigation, route }) {
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <Text>{item?.current_award?.award_name} ({item?.current_award?.award_description})</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...customerData.children_data];
-                                        newArr[index].current_award = val;
-                                        setCustomerData({ ...customerData, children_data: newArr });
-                                    }}
-                                    data={item.award_list}
-                                    save="key"
-                                    label="Selected Award"
-                                />
-                                {/* <TouchableOpacity onPress={() => {
-                                    let newArr = [...customerData.children_data];
-                                    newArr[index].visible = !newArr[index].visible;
-                                    setCustomerData({ ...customerData, children_data: newArr });
-                                }}>
-                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
-                                </TouchableOpacity>
-                                {item.visible &&
-                                    (<View style={styles.award}>
-                                        {item.visible && awardList.map(v => {
-                                            return (
-                                                <ScrollView showsVerticalScrollIndicator>
-                                                    <TouchableOpacity key={v.index} onPress={() => {
-                                                        let newArr = [...customerData.children_data];
-                                                        newArr[index].current_award.name = v.name;
-                                                        newArr[index].current_award.image = v.url;
-                                                        newArr[index].visible = !newArr[index].visible;
-                                                        setCustomerData({ ...customerData, children_data: newArr });
-                                                    }}>
-                                                        <Image source={{ uri: v.url }} style={{ height: 100, width: 100 }} />
-                                                    </TouchableOpacity>
-                                                </ScrollView>
-                                            );
-                                        })}
-                                    </View>
-                                    )} */}
-                                {/* {!item.current_award.name &&
+                                {item?.alloted_awards?.map((v, i) => {
+                                    return (
+                                        <View key={i} style={{
+                                            alignItems: 'center',
+                                            flexDirection: 'row',
+                                            margin: 20,
+                                            justifyContent: 'center',
+                                        }}>
+                                            <Text key={i}>{v?.award_name} ({v?.award_description})</Text>
+                                            <TouchableOpacity style={[styles.agendaButton, styles.buttonClose]} onPress={() => {
+                                                v.key = v._id;
+                                                v.value = `${v?.award_name} (${v?.award_description})`;
+                                                var array = [...item.alloted_awards];
+                                                var indexData = array.indexOf(v);
+                                                let newArr = [...customerData.children_data];
+                                                if (indexData !== -1) {
+                                                    array.splice(indexData, 1);
+                                                    newArr[index].alloted_awards = array;
+                                                    setCustomerData({ ...customerData, children_data: newArr });
+                                                }
+                                                let new_curr = [...newArr[index].award_list];
+                                                newArr[index].award_list = [...new_curr, v];
+                                                setCustomerData({ ...customerData, children_data: newArr });
+                                            }}>
+                                                <Text style={styles.agendaCrossBtn}>X</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    );
+                                })}
+                                {item?.award_list?.length > 0 && (
+                                    <Text style={{ fontSize: 20, color: 'green' }}>You can choose Awards from the below Dropdown</Text>
+                                )}
+                                <View style={styles.container}>
+                                    <MultiSelect
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        containerStyle={styles.containerStyle}
+                                        search
+                                        data={item.award_list}
+                                        labelField="value"
+                                        valueField="key"
+                                        placeholder="Select Awards"
+                                        searchPlaceholder="Search..."
+                                        value={item.selected_award}
+                                        onChange={item => {
+                                            let newArr = [...customerData.children_data];
+                                            newArr[index].selected_award = item;
+                                            setCustomerData({ ...customerData, children_data: newArr });
+                                        }}
+                                        selectedStyle={styles.selectedStyle}
+                                    />
+                                </View>
+                                {item?.selected_award?.concat(item.alloted_awards).length === 0 &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
-                                } */}
+                                }
                                 <TouchableOpacity
                                     onPress={() => {
                                         Alert.alert(
@@ -599,9 +630,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     classRemoveBtn: {
-        display: 'flex',
         flexDirection: 'row',
-        width: 300,
+        margin: 20,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -653,28 +683,36 @@ const styles = StyleSheet.create({
         height: 100,
         width: 100
     },
+    container: {
+        padding: 16,
+    },
     dropdown: {
-        margin: 16,
-        height: 80,
+        height: 50,
+        backgroundColor: 'transparent',
         borderBottomColor: 'gray',
         borderBottomWidth: 0.5,
-    },
-    icon: {
-        marginRight: 5,
     },
     placeholderStyle: {
         fontSize: 16,
     },
     selectedTextStyle: {
-        fontSize: 16,
-        height: 100
+        fontSize: 14,
     },
     iconStyle: {
         width: 20,
         height: 20,
     },
+    containerStyle: {
+        height: 200,
+    },
     inputSearchStyle: {
         height: 40,
         fontSize: 16,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    selectedStyle: {
+        borderRadius: 12,
     },
 });

@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { GetClassesService } from '../services/ClassService';
 import { SelectList } from 'react-native-dropdown-select-list';
+import { MultiSelect } from 'react-native-element-dropdown';
 
 export default function RegionalManagerParentDescription({ navigation, route }) {
     const state = useSelector((state) => state);
@@ -60,6 +61,11 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                         Object.assign(element.class, { key: element.class._id, value: `${element.class.topic}  in ${element.class.school.school_name} from ${u.date} (${u.start_time} to ${u.end_time}) By ${u.coaches.map(x => x.coach_name)}` });
                                     });
                                 }
+                                var newArr = result2.filter(function (objFromA) {
+                                    return !element?.current_award?.find(function (objFromB) {
+                                        return objFromA._id === objFromB._id;
+                                    });
+                                });
                                 setChildrenData(prevState => [...prevState, {
                                     player_name: element.player_name,
                                     calendar_visible: false,
@@ -77,8 +83,9 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                     num_buddy_books_read: element.num_buddy_books_read,
                                     jersey_size: element.jersey_size,
                                     visible: false,
-                                    award_list: result2,
-                                    current_award: element?.current_award
+                                    award_list: newArr,
+                                    alloted_awards: element?.current_award?.map(v => { return Object.assign(v, { key: v._id, value: `${v.award_name} (${v.award_description})` }); }),
+                                    selected_award: []
                                 }]);
                             }, 1000);
                         }
@@ -108,6 +115,13 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
             childrenData.forEach(v => delete v.award_list);
             childrenData.forEach(v => delete v.handed_list);
             childrenData.forEach(v => delete v.wristband_level_list);
+
+            for (let i = 0; i < childrenData.length; i++) {
+                const obj = childrenData[i];
+                let newArr = [];
+                obj.alloted_awards.forEach(v => newArr.push(v._id));
+                obj.current_award = obj.selected_award.concat(newArr);
+            }
 
             function checkKeyValues(array) {
                 for (let obj of array) {
@@ -255,7 +269,8 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                 jersey_size: '',
                                 visible: false,
                                 award_list: awardList,
-                                current_award: ''
+                                alloted_awards: [],
+                                selected_award: []
                             }]);
                         }}>
                             <Text style={styles.plusBtn}>+</Text>
@@ -424,44 +439,62 @@ export default function RegionalManagerParentDescription({ navigation, route }) 
                                     <Text style={{ fontSize: 10, color: 'red' }}>Jersey Size is Required</Text>
                                 }
                                 <Text style={styles.label}>Current Award</Text>
-                                <Text>{item?.current_award?.award_name} ({item?.current_award?.award_description})</Text>
-                                <SelectList
-                                    setSelected={(val) => {
-                                        let newArr = [...childrenData];
-                                        newArr[index].current_award = val;
-                                        setChildrenData(newArr);
-                                    }}
-                                    data={item.award_list}
-                                    save="key"
-                                    label="Selected Award"
-                                />
-                                {/* <TouchableOpacity onPress={() => {
-                                    let newArr = [...childrenData];
-                                    newArr[index].visible = !newArr[index].visible;
-                                    setChildrenData(newArr);
-                                }}>
-                                    <View style={styles.buttonText}>{item?.current_award?.image ? <Image source={{ uri: item?.current_award?.image }} style={styles.buttonImage} /> : <Text>Select the Award</Text>}</View>
-                                </TouchableOpacity>
-                                {item.visible &&
-                                    (<View style={styles.award}>
-                                        {item.visible && awardList.map(v => {
-                                            return (
-                                                <ScrollView showsVerticalScrollIndicator>
-                                                    <TouchableOpacity key={v.index} onPress={() => {
-                                                        let newArr = [...childrenData];
-                                                        newArr[index].current_award.name = v.name;
-                                                        newArr[index].current_award.image = v.url;
-                                                        newArr[index].visible = !newArr[index].visible;
-                                                        setChildrenData(newArr);
-                                                    }}>
-                                                        <Image source={{ uri: v.url }} style={{ height: 100, width: 100 }} />
-                                                    </TouchableOpacity>
-                                                </ScrollView>
-                                            );
-                                        })}
-                                    </View>
-                                    )} */}
-                                {!item.current_award &&
+                                {item?.alloted_awards?.map((v, i) => {
+                                    return (
+                                        <View key={i} style={{
+                                            alignItems: 'center',
+                                            flexDirection: 'row',
+                                            margin: 20,
+                                            justifyContent: 'center',
+                                        }}>
+                                            <Text key={i}>{v?.award_name} ({v?.award_description})</Text>
+                                            <TouchableOpacity style={[styles.agendaButton, styles.buttonClose]} onPress={() => {
+                                                v.key = v._id;
+                                                v.value = `${v?.award_name} (${v?.award_description})`;
+                                                var array = [...item.alloted_awards];
+                                                var indexData = array.indexOf(v);
+                                                let newArr = [...childrenData];
+                                                if (indexData !== -1) {
+                                                    array.splice(indexData, 1);
+                                                    newArr[index].alloted_awards = array;
+                                                    setChildrenData(newArr);
+                                                }
+                                                let new_curr = [...newArr[index].award_list];
+                                                newArr[index].award_list = [...new_curr, v];
+                                                setChildrenData(newArr);
+                                            }}>
+                                                <Text style={styles.agendaCrossBtn}>X</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    );
+                                })}
+                                {item?.award_list?.length > 0 && (
+                                    <Text style={{ fontSize: 20, color: 'green' }}>You can choose Awards from the below Dropdown</Text>
+                                )}
+                                <View style={styles.container}>
+                                    <MultiSelect
+                                        style={styles.dropdown}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        containerStyle={styles.containerStyle}
+                                        search
+                                        data={item.award_list}
+                                        labelField="value"
+                                        valueField="key"
+                                        placeholder="Select Awards"
+                                        searchPlaceholder="Search..."
+                                        value={item.selected_award}
+                                        onChange={item => {
+                                            let newArr = [...childrenData];
+                                            newArr[index].selected_award = item;
+                                            setChildrenData(newArr);
+                                        }}
+                                        selectedStyle={styles.selectedStyle}
+                                    />
+                                </View>
+                                {item?.selected_award?.concat(item.alloted_awards).length === 0 &&
                                     <Text style={{ fontSize: 10, color: 'red' }}>Current Award is Required</Text>
                                 }
                                 <TouchableOpacity
@@ -588,9 +621,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     classRemoveBtn: {
-        display: 'flex',
         flexDirection: 'row',
-        width: 300,
+        margin: 20,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -660,6 +692,9 @@ const styles = StyleSheet.create({
         height: 100,
         width: 100
     },
+    container: {
+        padding: 16,
+    },
     dropdown: {
         margin: 16,
         height: 80,
@@ -680,8 +715,14 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
+    containerStyle: {
+        height: 200,
+    },
     inputSearchStyle: {
         height: 40,
         fontSize: 16,
+    },
+    selectedStyle: {
+        borderRadius: 12,
     },
 });
