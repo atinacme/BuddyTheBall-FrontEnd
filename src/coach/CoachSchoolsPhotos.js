@@ -15,6 +15,7 @@ export default function CoachSchoolsPhotos({ navigation }) {
         schoolData.forEach(async targetObj => {
             try {
                 const result = await GetParticularSchoolPhotosService(targetObj._id);
+                console.log("sxcd--->", schoolData, result);
                 const sourceObj = result.find(sourceObj => sourceObj.school_id === targetObj._id);
                 if (sourceObj) {
                     targetObj.photo = sourceObj;

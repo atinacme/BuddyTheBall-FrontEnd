@@ -96,16 +96,15 @@ export default function CoachDashboard({ navigation }) {
                             var endTimeSplit = endTime.split(":");
                             var dateTimeEndString = new Date(getYear(timestamp), getMon(timestamp), getDate(timestamp), endTimeSplit[0], endTimeSplit[1]);
                             var parsedTimeEndString = Date.parse(dateTimeEndString);
-                            if (u.status === "Upcoming" && isCurrentInterval(dateTimeStartString, dateTimeEndString)) {
+                            if (u.status === "Incomplete" && isCurrentInterval(dateTimeStartString, dateTimeEndString)) {
                                 return { ...u, progress: progress };
-                            } else if (u.status === "Upcoming" && parsedTimeCurrentString >= parsedTimeStartString && parsedTimeCurrentString >= parsedTimeEndString) {
-                                sessionUpdate(u._id);
-                            } else if (u.status === "Upcoming" && parsedTimeCurrentString <= parsedTimeStartString) {
+                            } else if (u.status === "Incomplete" && parsedTimeCurrentString >= parsedTimeStartString && parsedTimeCurrentString >= parsedTimeEndString) {
+                                // sessionUpdate(u._id);
+                            } else if (u.status === "Incomplete" && parsedTimeCurrentString <= parsedTimeStartString) {
                                 return { ...u, progress: 0 };
                             } else {
                                 return { ...u, progress: 1 };
                             }
-
                         })
                     }));
                     setClasses(allNewArray);
@@ -213,6 +212,7 @@ export default function CoachDashboard({ navigation }) {
                         onPress={handleUpload}
                     />
                 )}
+                {console.log("wdwdxw---->", state.authPage.auth_data?.profile_data)}
                 {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url === undefined ? <Text style={styles.playPara}>Upload Player Picture</Text> : null}
                 {state.authPage.auth_data && (
                     <>
