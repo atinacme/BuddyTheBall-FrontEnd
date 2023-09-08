@@ -80,6 +80,7 @@ export default function RegionalManagerDashboard({ navigation }) {
         } catch (e) { }
     };
 
+    console.log("jsndjd---->", state.authPage.auth_data?.profile_data?.url);
     return (
         <LinearGradient colors={['#BCD7EF', '#D1E3AA', '#E3EE68', '#E1DA00']} style={styles.linearGradient}>
             <SafeAreaView style={styles.wrapper}>

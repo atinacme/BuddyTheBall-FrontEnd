@@ -10,7 +10,7 @@ import parents from '../assets/PARENTS_REV1.png';
 import schools from '../assets/SCHOOLS_REV1.png';
 import axios from 'axios';
 import Config from '../../Config';
-import { GetParticularCoachService } from '../services/CoachService';
+import { GetAnyParticularImageService, GetParticularCoachService } from '../services/CoachService';
 import { AuthPageAction } from '../redux/Actions';
 import LinearGradient from 'react-native-linear-gradient';
 import { ProgressBar } from 'react-native-paper';
@@ -26,6 +26,7 @@ export default function CoachDashboard({ navigation }) {
     const [progress, setProgress] = useState(0);
     const [classes, setClasses] = useState([]);
     const today = new Date();
+    const [profileImg, setProfileImg] = useState();
     const baseUrl = Config.REACT_APP_BASE_URL;
     const dispatch = useDispatch();
 
@@ -76,6 +77,9 @@ export default function CoachDashboard({ navigation }) {
                             });
                         }
                     });
+                    const result1 = await GetAnyParticularImageService(state.authPage.auth_data?.profile_data.filename);
+                    setProfileImg(result1);
+                    console.log("xsxsx---->", profileImg);
                     const updatedArray = result.map(obj => ({
                         ...obj,
                         schedules: obj.schedules.filter(item => new Date(item.date).toLocaleDateString() === today.toLocaleDateString())
@@ -109,7 +113,7 @@ export default function CoachDashboard({ navigation }) {
                     }));
                     setClasses(allNewArray);
                 }
-            } catch (e) { }
+            } catch (e) { console.log(e.message); }
         };
         getClasses();
     }, [elapsedTime]);
@@ -192,7 +196,7 @@ export default function CoachDashboard({ navigation }) {
                 <Text style={styles.dashimgWrap}>
                     <TouchableOpacity onPress={openGallery} style={styles.profileImgContainer}>
                         {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url ?
-                            <Image source={{ uri: state.authPage.auth_data?.profile_data.url }} style={styles.profileImg} />
+                            <Image source={{ uri: profileImg }} style={styles.profileImg} />
                             :
                             <>
                                 {selectedFile !== null ?
@@ -212,7 +216,7 @@ export default function CoachDashboard({ navigation }) {
                         onPress={handleUpload}
                     />
                 )}
-                {console.log("wdwdxw---->", state.authPage.auth_data?.profile_data)}
+                {/* {console.log("wdwdxw---->", state.authPage.auth_data?.profile_data)} */}
                 {state.authPage.auth_data?.profile_data && state.authPage.auth_data?.profile_data.url === undefined ? <Text style={styles.playPara}>Upload Player Picture</Text> : null}
                 {state.authPage.auth_data && (
                     <>

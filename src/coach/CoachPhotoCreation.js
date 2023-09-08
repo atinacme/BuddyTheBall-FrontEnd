@@ -15,8 +15,8 @@ export default function CoachPhotoCreation({ navigation, route }) {
     const [parentId, setParentId] = useState();
     const [classId, setClassId] = useState();
     const [sessionId, setSessionId] = useState();
-    const [classes, setClasses] = useState([])
-    const [sessions, setSessions] = useState([])
+    const [classes, setClasses] = useState([]);
+    const [sessions, setSessions] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
     const state = useSelector((state) => state);
 
@@ -39,17 +39,18 @@ export default function CoachPhotoCreation({ navigation, route }) {
                         if (v.school.region === state.authPage.auth_data?.assigned_region && v.school._id === route.params.schoolId) {
                             v?.schedules?.map(u => {
                                 if (u?.coaches?.some(element => element._id === state.authPage.auth_data?._id) === true) {
-                                    Object.assign(v, { key: v._id, value: v.topic })
+                                    Object.assign(v, { key: v._id, value: v.topic });
                                 }
-                            })
+                            });
                         }
-                    })
+                    });
                     setClasses(result);
                 }
             } catch (e) { }
         };
         getClasses();
     }, []);
+    console.log("cdc--->", classes);
 
     const openGallery = async () => {
         const result = await ImagePicker.openPicker({
@@ -101,8 +102,8 @@ export default function CoachPhotoCreation({ navigation, route }) {
                             }
                         ]
                     );
-                    const data = { status: 'Completed' }
-                    await UpdateSessionService(sessionId, data)
+                    const data = { status: 'Completed' };
+                    await UpdateSessionService(sessionId, data);
                 }
             } catch (e) { }
         } else {
@@ -134,10 +135,10 @@ export default function CoachPhotoCreation({ navigation, route }) {
                     <Text style={styles.label}>Classes List</Text>
                     <SelectList
                         setSelected={async (val) => {
-                            setClassId(val)
-                            const result = await GetParticularClassService(val)
+                            setClassId(val);
+                            const result = await GetParticularClassService(val);
                             if (result) {
-                                setSessions(result.schedules.map(v => Object.assign(v, { key: v._id, value: v.topic })))
+                                setSessions(result.schedules.map(v => Object.assign(v, { key: v._id, value: v.topic })));
                             }
                         }}
                         data={classes}

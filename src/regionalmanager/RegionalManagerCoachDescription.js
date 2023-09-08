@@ -2,14 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Text, SafeAreaView, TextInput, StyleSheet, TouchableOpacity, Image, Alert, ScrollView, View, Pressable } from "react-native";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
 import buddy from '../assets/buddy.png';
-import { CoachUpdateService, DeleteCoachService } from '../services/CoachService';
+import { CoachUpdateService, DeleteCoachService, GetParticularCoachService } from '../services/CoachService';
 import { GetRegionWiseSchools } from '../services/SchoolService';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector } from 'react-redux';
-import { GetCoachOfParticularRegionalManager } from '../services/RegionalManagerService';
 
 export default function RegionalManagerCoachDescription({ navigation, route }) {
-    const state = useSelector((state) => state);
     const [coachData, setCoachData] = useState({
         coach_id: "",
         user_id: "",
@@ -22,52 +19,45 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
         handed: "",
         favorite_drill: ""
     });
-    const [data, setData] = useState([]);
     const handed_list = ["Left", "Right"];
+    const [data, setData] = useState([]);
     const [coachSchools, setCoachSchools] = useState([]);
     const [assignedSchools, setAssignedSchools] = useState([]);
-    const [assignedSlots, setAssignedSlots] = useState([]);
     const [selected, setSelected] = useState([]);
 
     useEffect(() => {
         const getParticularCoach = async () => {
             try {
-                const result = await GetCoachOfParticularRegionalManager(route.params.coachData._id, state.authPage.auth_data?.user_id);
+                const result = await GetParticularCoachService(route.params.coachData._id);
                 if (result) {
                     setCoachData({
-                        coach_id: result[0]._id,
-                        user_id: result[0].user_id,
-                        email: result[0].email,
-                        password: result[0].password,
-                        coach_name: result[0].coach_name,
-                        assigned_region: result[0].assigned_region,
-                        tennis_club: result[0].tennis_club,
-                        favorite_pro_player: result[0].favorite_pro_player,
-                        handed: result[0].handed,
-                        favorite_drill: result[0].favorite_drill
+                        coach_id: result._id,
+                        user_id: result.user_id,
+                        email: result.email,
+                        password: result.password,
+                        coach_name: result.coach_name,
+                        assigned_region: result.assigned_region,
+                        tennis_club: result.tennis_club,
+                        favorite_pro_player: result.favorite_pro_player,
+                        handed: result.handed,
+                        favorite_drill: result.favorite_drill
                     });
-                    setCoachSchools(result[0].assigned_schools.map(v => v.school_name));
-                    setAssignedSchools(result[0].assigned_schools.map(v => { return { key: v._id, value: v.school_name }; }));
-                    setAssignedSlots(result[0].assign_slot);
+                    setCoachSchools(result.assigned_schools.map(v => v.school_name));
+                    setAssignedSchools(result.assigned_schools.map(v => { return { ...v, key: v._id, value: v.school_name }; }));
+                    const arr1 = result.assigned_schools.map(v => { return { ...v, key: v._id, value: v.school_name }; });
+                    const data = { region: result.assigned_region };
+                    const result1 = await GetRegionWiseSchools(data);
+                    result1.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
+                    var c = result1.filter(function (objFromA) {
+                        return !arr1.find(function (objFromB) {
+                            return objFromA.key === objFromB.key;
+                        });
+                    });
+                    setData(c);
                 }
             } catch (e) { }
         };
         getParticularCoach();
-
-        const getAllSchools = async () => {
-            try {
-                const data = { region: state.authPage.auth_data?.assigned_region };
-                const result = await GetRegionWiseSchools(data);
-                result.map(v => Object.assign(v, { key: v._id, value: v.school_name }));
-                var res = result.filter(function (item) {
-                    return !assignedSchools.find(function (school) {
-                        return item.key === school.key;
-                    });
-                });
-                setData(res);
-            } catch (e) { }
-        };
-        getAllSchools();
     }, []);
 
     const handleCoachUpdate = async () => {
@@ -80,7 +70,6 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                     tennis_club: coachData.tennis_club,
                     assigned_region: coachData.assigned_region,
                     assigned_schools: coachSchools.concat(selected),
-                    assign_slot: assignedSlots,
                     favorite_pro_player: coachData.favorite_pro_player,
                     handed: coachData.handed,
                     favorite_drill: coachData.favorite_drill
@@ -116,7 +105,7 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                     {
                         text: "YES",
                         onPress: async () => {
-                            const data = { id: route.params.coach._id, user_id: coachData.user_id };
+                            const data = { id: route.params.coachData._id, user_id: coachData.user_id };
                             const result = await DeleteCoachService(data);
                             if (result) {
                                 Alert.alert(
@@ -191,6 +180,7 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                                     onPress={() => {
                                         setAssignedSchools(assignedSchools.filter((school) => school.key !== item.key));
                                         setCoachSchools(coachSchools.filter((school) => school !== item.value));
+                                        setData(prev => [...prev, item]);
                                     }}>
                                     <Text style={styles.agendaCrossBtn}>X</Text>
                                 </Pressable>
@@ -201,7 +191,7 @@ export default function RegionalManagerCoachDescription({ navigation, route }) {
                         setSelected={(val) => setSelected(val)}
                         data={data}
                         save="value"
-                        onSelect={() => alert(selected)}
+                        // onSelect={() => alert(selected)}
                         label="Selected Schools"
                     />
                     {coachSchools.concat(selected).length === 0 &&

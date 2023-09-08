@@ -4,6 +4,7 @@ import { GetParticularSchoolPhotosService } from '../services/SchoolService';
 import galley from '../assets/galley.png';
 import profile from '../assets/profile.png';
 import LinearGradient from 'react-native-linear-gradient';
+import { GetAnyParticularImageService } from '../services/CoachService';
 
 export default function CoachParticularSchoolPhotos({ navigation, route }) {
     const [customerData, setCustomerData] = useState([]);
@@ -13,7 +14,17 @@ export default function CoachParticularSchoolPhotos({ navigation, route }) {
             try {
                 const result = await GetParticularSchoolPhotosService(route.params.schoolItem._id);
                 if (result) {
-                    setCustomerData(result);
+                    result.forEach(element => {
+                        setTimeout(async () => {
+                            const result1 = await GetAnyParticularImageService(element.name);
+                            setCustomerData(prev => [...prev, {
+                                _id: element._id, user_id: element.user_id, customer_id: element.customer_id,
+                                school_id: element.school_id, coach_id: element.coach_id, class_id: element.class_id, schedule_id: element.schedule_id,
+                                photo_id: element.photo_id, originalname: element.originalname, name: element.name,
+                                url: element.url, messages: element.messages, filename: element.name, filebinary: result1
+                            }]);
+                        }, 5000);
+                    });
                 }
             } catch (e) { }
         };
@@ -28,11 +39,17 @@ export default function CoachParticularSchoolPhotos({ navigation, route }) {
                         <Text style={styles.cta}>Create Parent Photo</Text>
                     </TouchableOpacity>
                     <Text style={styles.label}>{route.params.schoolItem.school_name}</Text>
+                    {/* {arr.map(v => {
+
+                        console.log("jsndjd---->", v);
+                        return <Image source={{ uri: v.filebinary }} style={{ width: 200, height: 200 }} />;
+                    })} */}
                     <View style={styles.imgWrap}>
                         {customerData.length > 0 && customerData.map((item, index) => {
+                            console.log("jsndjd---->", item);
                             return (
                                 <TouchableOpacity key={index} onPress={() => navigation.navigate("Parent Particular Photo", { photo: item })}>
-                                    <ImageBackground key={item?._id} source={{ uri: item?.url }} style={styles.cardBackground}>
+                                    <ImageBackground key={item?._id} source={{ uri: item?.filebinary }} style={styles.cardBackground}>
                                         <View style={styles.cardContent}>
                                             <View style={styles.carddes}>
                                                 <Text style={styles.cardSubtitle}>Class: {item?.class_id?.topic}</Text>

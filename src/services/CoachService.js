@@ -31,7 +31,11 @@ const DeleteCoachService = async (data) => {
     return await HttpRequest("DELETE", `${baseUrl}/deleteCoach`, data);
 };
 
+const GetAnyParticularImageService = async (filename) => {
+    return await HttpRequest("GET", `${baseUrl}/getAnyParticularImage/${filename}`, null);
+};
+
 export {
     CoachPhotoUploadService, GetAllCoachesService, GetParticularCoachService, GetCustomersOfParticularCoachService,
-    GetCustomersOfParticularCoachOfParticularSchool, CoachUpdateService, DeleteCoachService
+    GetCustomersOfParticularCoachOfParticularSchool, CoachUpdateService, DeleteCoachService, GetAnyParticularImageService
 };
